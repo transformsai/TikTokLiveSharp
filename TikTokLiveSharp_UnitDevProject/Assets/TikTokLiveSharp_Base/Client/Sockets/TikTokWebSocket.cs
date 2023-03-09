@@ -7,19 +7,31 @@ using TikTokLiveSharp.Client.Requests;
 
 namespace TikTokLiveSharp.Client.Sockets
 {
-    public class TikTokWebSocket : ITikTokWebSocket
+    /// <summary>
+    /// WebSocket-Connection to TikTok-servers
+    /// </summary>
+    public sealed class TikTokWebSocket : ITikTokWebSocket
     {
+        /// <summary>
+        /// WebSocket-Client
+        /// </summary>
         private ClientWebSocket clientWebSocket;
-
+        /// <summary>
+        /// Size for Messages
+        /// <para>
+        /// Should be large enough to be able to read a message to the end
+        /// </para>
+        /// </summary>
         private uint bufferSize;
 
         /// <summary>
-        /// Creates a TikTok websocket instance.
+        /// Creates a TikTok WebSocket instance
         /// </summary>
-        /// <param name="cookieContainer">The cookie container to use.</param>
-        public TikTokWebSocket(TikTokCookieJar cookieContainer, uint buffSize = 10_000)
+        /// <param name="cookieContainer">The cookie container to use</param>
+        /// <param name="buffSize">Size for Message-Buffer</param>
+        public TikTokWebSocket(TikTokCookieJar cookieContainer, uint buffSize = 500_000)
         {
-            bufferSize = 200_000;
+            bufferSize = buffSize;
             clientWebSocket = new ClientWebSocket();
             clientWebSocket.Options.AddSubProtocol("echo-protocol");
             clientWebSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(15);
@@ -30,36 +42,36 @@ namespace TikTokLiveSharp.Client.Sockets
         }
 
         /// <summary>
-        /// Connect to the websocket.
+        /// Connects to the websocket
         /// </summary>
-        /// <param name="url">Websocket url.</param>
-        /// <returns>Task to await.</returns>
+        /// <param name="url">Websocket url</param>
+        /// <returns>Task to await</returns>
         public async Task Connect(string url)
         {
             await clientWebSocket.ConnectAsync(new Uri(url), CancellationToken.None);
         }
 
         /// <summary>
-        /// Disconnects from the websocket.
+        /// Disconnects from the websocket
         /// </summary>
-        /// <returns>Task to await.</returns>
+        /// <returns>Task to await</returns>
         public async Task Disconnect()
         {
             await clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
         }
 
         /// <summary>
-        /// Writes a message to the websocket.
+        /// Writes a message to the websocket
         /// </summary>
-        /// <param name="arr">The bytes to write.</param>
-        /// <returns>Task to await.</returns>
+        /// <param name="arr">The bytes to write</param>
+        /// <returns>Task to await</returns>
         public async Task WriteMessage(ArraySegment<byte> arr)
         {
             await clientWebSocket.SendAsync(arr, WebSocketMessageType.Binary, true, CancellationToken.None);
         }
 
         /// <summary>
-        /// Recieves a message from websocket.
+        /// Recieves a message from websocket
         /// </summary>
         /// <returns></returns>
         public async Task<TikTokWebSocketResponse> ReceiveMessage()
@@ -72,7 +84,7 @@ namespace TikTokLiveSharp.Client.Sockets
         }
 
         /// <summary>
-        /// Is the websocket currently connected.
+        /// Is the websocket currently connected?
         /// </summary>
         public bool IsConnected => clientWebSocket.State == WebSocketState.Open;
     }

@@ -5,13 +5,18 @@ using System.Net;
 
 namespace TikTokLiveSharp.Client.Proxy
 {
+    /// <summary>
+    /// Proxy with list of rotating Addresses
+    /// </summary>
     public class RotatingProxy : IWebProxy
     {
         /// <summary>
         /// List of addresses
         /// </summary>
         public List<string> Addresses;
-
+        /// <summary>
+        /// Current Index
+        /// </summary>
         private int index;
 
         /// <summary>
@@ -54,15 +59,20 @@ namespace TikTokLiveSharp.Client.Proxy
         }
 
         /// <summary>
-        /// Whether the proxies should be enabled.
+        /// Whether this Proxy is enabled
         /// </summary>
         public bool IsEnabled { get; set; }
 
         /// <summary>
-        /// The rotation settings.
+        /// The rotation settings
         /// </summary>
         public RotationSettings Settings { get; set; }
 
+        /// <summary>
+        /// Proxies for Url
+        /// </summary>
+        /// <param name="destination">Url to Proxy</param>
+        /// <returns>Proxied Address</returns>
         public Uri GetProxy(Uri destination)
         {
             if (!IsEnabled || Addresses?.Count <= 0) 
@@ -85,10 +95,16 @@ namespace TikTokLiveSharp.Client.Proxy
                     return destination;
             }
         }
-
+        /// <summary>
+        /// Whether this Proxy is Bypassed
+        /// <para>
+        /// Inverse of IsEnabled
+        /// </para>
+        /// </summary>
+        /// <returns></returns>
         public bool IsBypassed(Uri host)
         {
-            return IsEnabled;
+            return !IsEnabled;
         }
     }
 }

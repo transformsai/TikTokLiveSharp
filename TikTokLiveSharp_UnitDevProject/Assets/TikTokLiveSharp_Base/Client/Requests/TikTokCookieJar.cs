@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace TikTokLiveSharp.Client.Requests
 {
+    /// <summary>
+    /// Holds Cookies for TikTok-Connection
+    /// </summary>
     public class TikTokCookieJar : IEnumerable<string>
     {
         private IDictionary<string, string> cookies;

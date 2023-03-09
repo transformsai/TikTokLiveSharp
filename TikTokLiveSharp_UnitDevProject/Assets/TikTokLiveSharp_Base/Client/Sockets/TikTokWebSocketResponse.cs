@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TikTokLiveSharp.Client.Sockets
+﻿namespace TikTokLiveSharp.Client.Sockets
 {
+    /// <summary>
+    /// Response-Message received from TikTok-Servers
+    /// </summary>
     public class TikTokWebSocketResponse
     {
         /// <summary>
         /// Creates a TikTok websocket response instance.
         /// </summary>
-        /// <param name="array">Response array.</param>
-        /// <param name="count">Response count.</param>
+        /// <param name="array">Response array</param>
+        /// <param name="count">Size of Message in Array</param>
         public TikTokWebSocketResponse(byte[] array, int count)
         {
             Array = array;
@@ -18,12 +17,12 @@ namespace TikTokLiveSharp.Client.Sockets
         }
 
         /// <summary>
-        /// Array recieved from web socket.
+        /// Array received from web socket
         /// </summary>
         public readonly byte[] Array;
 
         /// <summary>
-        /// Max count for values recieved from response.
+        /// Size of valid Data-Length in Array
         /// </summary>
         public readonly int Count;
     }

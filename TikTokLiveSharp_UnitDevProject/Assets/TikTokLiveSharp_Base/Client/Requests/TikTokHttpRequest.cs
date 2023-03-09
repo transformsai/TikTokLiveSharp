@@ -10,26 +10,53 @@ using TikTokLiveSharp.Utils;
 
 namespace TikTokLiveSharp.Client.Requests
 {
+    /// <summary>
+    /// HTTP-Request for TikTok-Page
+    /// </summary>
     public class TikTokHttpRequest : ITikTokHttpRequest
     {
         /// <summary>
-        /// The cookie jar.
+        /// Cookies for Requests
         /// </summary>
         public static TikTokCookieJar CookieJar => cookieJar;
         /// <summary>
-        /// The current headers in use.
+        /// (Default) Headers for Requests
         /// </summary>
         public static HttpRequestHeaders CurrentHeaders => client?.DefaultRequestHeaders;
 
+        /// <summary>
+        /// Client used for Requests
+        /// </summary>
         private static HttpClient client;
+        /// <summary>
+        /// Handler for Request-Data
+        /// </summary>
         private static HttpClientHandler handler;
+        /// <summary>
+        /// Cookies for Requests
+        /// </summary>
         private static TikTokCookieJar cookieJar;
 
+        /// <summary>
+        /// Timeout for Requests
+        /// </summary>
         private static TimeSpan timeout;
+        /// <summary>
+        /// Proxy for Requests
+        /// </summary>
         private static IWebProxy webProxy;
 
+        /// <summary>
+        /// Query for this Request
+        /// </summary>
         private string query;
+        /// <summary>
+        /// HTTP-Message for this Request
+        /// </summary>
         private readonly HttpRequestMessage request;
+        /// <summary>
+        /// Whether this Request has been sent to the TikTok-Server
+        /// </summary>
         private bool sent;
 
         /// <summary>
