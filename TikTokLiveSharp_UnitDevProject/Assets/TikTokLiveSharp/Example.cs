@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using TikTokLiveSharp.Client;
+using TikTokLiveSharp.Events.MessageData.Messages;
 using TikTokLiveSharp.Models;
+using TikTokLiveSharp.Models.Protobuf;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -40,7 +42,7 @@ public class Example : MonoBehaviour
         _client = new TikTokLiveClient(id);
         _profilePictures = new Queue<string>();
         // Subscribe to the OnCommentReceived event.
-        _client.OnCommentReceived += Client_OnCommentReceived;
+        _client.OnComment += Client_OnCommentReceived;
         _client.OnException += Client_OnException;
         yield return new WaitForSeconds(.5f); // Wait .5s between Startup & Starting Connection
         // Try catch doesn't work well here due to Async. Exceptions are handled via Callback instead
@@ -69,19 +71,19 @@ public class Example : MonoBehaviour
         tokenSource.Cancel();
         _client?.Stop();
         // Unsubscribe from the OnCommentReceived event.
-        _client.OnCommentReceived -= Client_OnCommentReceived;
+        _client.OnComment -= Client_OnCommentReceived;
     }
 
     /// <summary>
     /// Comment received method.
     /// </summary>
-    void Client_OnCommentReceived(object sender, WebcastChatMessage e)
+    void Client_OnCommentReceived(object sender, Comment e)
     {
         // We need to lock the profile pictures queue as we're not currently working on the main thread.
         lock (_profilePictures)
         {
             // Get the JPEG url for the users profile picture.
-            var url = e.User.profilePicture.Urls.FirstOrDefault(x => x.Contains(".jpeg"));
+            var url = e.User.ProfilePicture.URLs.FirstOrDefault(x => x.Contains(".jpeg"));
             if (url != null)
             {
                 // Enqueue the url of the user.

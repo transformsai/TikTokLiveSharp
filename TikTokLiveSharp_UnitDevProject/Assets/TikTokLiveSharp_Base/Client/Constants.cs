@@ -44,7 +44,9 @@ namespace TikTokLiveSharp.Utils
             Proxy = null,
             SocketBufferSize = 500_000,
             PrintToConsole = true,
-            LogLevel = LogLevel.Error | LogLevel.Warning            
+            LogLevel = LogLevel.Error | LogLevel.Warning,
+            CheckForUnparsedData = true,
+            PrintMessageData = true
         };
 
         /// <summary>

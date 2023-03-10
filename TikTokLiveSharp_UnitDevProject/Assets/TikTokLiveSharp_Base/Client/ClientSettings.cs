@@ -54,6 +54,10 @@ namespace TikTokLiveSharp.Client
         /// LoggingLevel for Logs
         /// </summary>
         public LogLevel LogLevel;
+
+        public bool PrintMessageData;
+
+        public bool CheckForUnparsedData;
         #endregion
     }
 

@@ -10,6 +10,7 @@ using TikTokLiveSharp.Client.Proxy;
 using TikTokLiveSharp.Client.Requests;
 using TikTokLiveSharp.Errors.Permissions;
 using TikTokLiveSharp.Models;
+using TikTokLiveSharp.Models.Protobuf;
 using TikTokLiveSharp.Utils;
 
 namespace TikTokLiveSharp.Networking

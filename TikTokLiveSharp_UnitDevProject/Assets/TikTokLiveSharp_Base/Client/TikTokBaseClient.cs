@@ -17,8 +17,10 @@ using TikTokLiveSharp.Errors.Connections;
 using TikTokLiveSharp.Errors.FetchErrors;
 using TikTokLiveSharp.Errors.Messaging;
 using TikTokLiveSharp.Models;
+using TikTokLiveSharp.Models.Protobuf;
 using TikTokLiveSharp.Networking;
 using TikTokLiveSharp.Utils;
+using UnityEditor.TextCore.Text;
 
 namespace TikTokLiveSharp.Client
 {
@@ -49,7 +51,7 @@ namespace TikTokLiveSharp.Client
 
         public string UniqueID => hostName;
 
-        public int? ViewerCount => viewerCount;
+        public uint? ViewerCount => viewerCount;
 
 
 
@@ -69,7 +71,7 @@ namespace TikTokLiveSharp.Client
         private Dictionary<int, TikTokGift> availableGifts;
         private string roomID;
         private JObject roomInfo;
-        private int? viewerCount;
+        protected uint? viewerCount;
         #endregion
 
         #region Constructors
@@ -127,7 +129,9 @@ namespace TikTokLiveSharp.Client
             string lang = "en-US",
             uint socketBufferSize = 10_000,
             bool logDebug = true, 
-            LogLevel logLevel = LogLevel.Error | LogLevel.Warning
+            LogLevel logLevel = LogLevel.Error | LogLevel.Warning,
+            bool printMessageData = false,
+            bool checkForUnparsedData = true
             )
             : this(uniqueID,
                   new ClientSettings
@@ -140,7 +144,9 @@ namespace TikTokLiveSharp.Client
                       ClientLanguage = lang,
                       SocketBufferSize = socketBufferSize,
                       PrintToConsole = logDebug,
-                      LogLevel = logLevel
+                      LogLevel = logLevel,
+                      PrintMessageData = printMessageData,
+                      CheckForUnparsedData = checkForUnparsedData
                   },
                   clientParams)
         { }
@@ -307,12 +313,18 @@ namespace TikTokLiveSharp.Client
         /// <exception cref="WebcastMessageException">Thrown if an Error occurred during Parse of initial Messages</exception>
         protected async Task CreateWebSocket(WebcastResponse webcastResponse)
         {
-            if (string.IsNullOrEmpty(webcastResponse.wsUrl) || webcastResponse.wsParam == null)
+            if (string.IsNullOrEmpty(webcastResponse.SocketUrl) || webcastResponse.SocketParams == null)
                 throw new LiveNotFoundException("Could not find Room");
             try
             {
-                clientParams[webcastResponse.wsParam.Name] = webcastResponse.wsParam.Value;
-                string url = $"{webcastResponse.wsUrl}?{string.Join("&", clientParams.Select(x => $"{x.Key}={HttpUtility.UrlEncode(x.Value.ToString())}"))}";
+                for (int i = 0; i < webcastResponse.SocketParams.Count; i++)
+                {
+                    WebsocketRouteParam param = webcastResponse.SocketParams[i];
+                    if (clientParams.ContainsKey(param.Name))
+                        clientParams[param.Name] = param.Value;
+                    else clientParams.Add(param.Name, param.Value);
+                }
+                string url = $"{webcastResponse.SocketUrl}?{string.Join("&", clientParams.Select(x => $"{x.Key}={HttpUtility.UrlEncode(x.Value.ToString())}"))}";
                 socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, Settings.SocketBufferSize);
                 await socketClient.Connect(url);
                 runningTask = Task.Run(WebSocketLoop, token);
@@ -428,7 +440,7 @@ namespace TikTokLiveSharp.Client
         {
             WebcastResponse webcastResponse = await httpClient.GetDeserializedMessage("im/fetch/", clientParams, true);
             clientParams["cursor"] = webcastResponse.Cursor;
-            clientParams["internal_ext"] = webcastResponse.internalExt;
+            clientParams["internal_ext"] = webcastResponse.AckIds;
             return webcastResponse;
         }
 
