@@ -48,9 +48,31 @@ namespace TikTokLiveSharp.Unity.Utils
         {
             MAX_CACHE_SIZE = maxCacheSize;
         }
+
+        ~TextureCache() 
+        {
+            textureCache.Clear();
+            textureCallbacks.Clear();
+            spriteCache.Clear();
+            spriteCallbacks.Clear();
+        }
         #endregion
 
         #region Methods
+
+
+        public void RequestImage(IEnumerable<string> urls, Action<Texture2D> onComplete = null)
+        {
+            if (urls == null || urls.Count() == 0)
+                return;
+            string url = urls.FirstOrDefault(url => url.Contains("jpg") || url.Contains("jpeg") || url.Contains("png"));
+            if (url == null) 
+                url = urls.FirstOrDefault(url => url.Contains("webp"));
+            if (url != null)
+                RequestImage(url, onComplete);
+            else onComplete?.Invoke(null);
+        }
+
         /// <summary>
         /// Requests a Texture from the Cache
         /// </summary>
@@ -75,6 +97,18 @@ namespace TikTokLiveSharp.Unity.Utils
                 textureCallbacks.Add(url, new List<Action<Texture2D>> { onComplete });
             }
             Dispatcher.RunCoroutineOnMainThread(DownloadTexture(url, OnCompleteDownload));
+        }
+
+        public void RequestSprite(IEnumerable<string> urls, Action<Sprite> onComplete = null)
+        {
+            if (urls == null || urls.Count() == 0)
+                return;
+            string url = urls.FirstOrDefault(url => url.Contains("jpg") || url.Contains("jpeg") || url.Contains("png"));
+            if (url == null)
+                url = urls.FirstOrDefault(url => url.Contains("webp"));
+            if (url != null)
+                RequestSprite(url, onComplete);
+            else onComplete?.Invoke(null);
         }
 
         /// <summary>

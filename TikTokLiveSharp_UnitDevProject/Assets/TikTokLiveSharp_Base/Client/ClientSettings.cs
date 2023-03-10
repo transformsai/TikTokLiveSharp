@@ -32,6 +32,8 @@ namespace TikTokLiveSharp.Client
         /// </summary>
         public uint SocketBufferSize;
 
+        public bool RetryOnConnectionFailure;
+
         #region Connecting
         /// <summary>
         /// Whether to handle Messages received from Room when Connecting

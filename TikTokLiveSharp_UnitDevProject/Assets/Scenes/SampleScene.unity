@@ -328,20 +328,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8182dca3149b1c4a99b3432abeb501e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settings:
-    ClientLanguage: 
-    SocketBufferSize: 0
-    HandleExistingMessagesOnConnect: 0
-    DownloadGiftInfo: 0
-    PrintToConsole: 0
-    LogLevel: -1
-    PrintMessageData: 0
-    CheckForUnparsedData: 0
   hasRootObject: 0
   texCacheSize: 2048
-  connectionTimeout: 10
-  pollingInterval: 0.2
-  parseExistingRoomData: 1
-  downloadGiftData: 1
-  clientLanguage: en-US
-  retryOnConnectionFailure: 0
+  settings:
+    ClientLanguage: en-US
+    SocketBufferSize: 500000
+    RetryOnConnectionFailure: 1
+    HandleExistingMessagesOnConnect: 1
+    DownloadGiftInfo: 1
+    PrintToConsole: 1
+    LogLevel: -1
+    PrintMessageData: 0
+    CheckForUnparsedData: 1

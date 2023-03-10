@@ -15,8 +15,8 @@ namespace TikTokLiveSharp.Models
         public int font_size { get; set; }
         public bool italic { get; set; }
         public int italic_angle { get; set; }
-        public bool use_heigh_light_color { get; set; }
-        public bool use_remote_clor { get; set; }
+        public bool use_highlight_color { get; set; }
+        public bool use_remote_color { get; set; }
         public int weight { get; set; }
     }
 

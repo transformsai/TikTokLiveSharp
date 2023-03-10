@@ -18,6 +18,7 @@ using TikTokGift = TikTokLiveSharp.Events.MessageData.Objects.TikTokGift;
 using RoomMessage = TikTokLiveSharp.Events.MessageData.Messages.RoomMessage;
 using LinkMicMethod = TikTokLiveSharp.Events.MessageData.Messages.LinkMicMethod;
 using Newtonsoft.Json.Serialization;
+using System.Threading;
 
 namespace TikTokLiveSharp.Client
 {
@@ -44,6 +45,10 @@ namespace TikTokLiveSharp.Client
 
         private readonly Dictionary<GiftId, TikTokGift> activeGifts = new Dictionary<GiftId, TikTokGift>();
 
+        public TikTokLiveClient(string hostId, ClientSettings? settings = null, Dictionary<string, object> clientParams = null)
+            : base(hostId, settings, clientParams)
+        { }
+
         /// <summary>
         /// Creates a new instance of the TikTok Live client.
         /// Used for retrieving a stream of information from live streams.
@@ -53,7 +58,6 @@ namespace TikTokLiveSharp.Client
         /// <param name="pollingInterval">The polling interval to use (The space between requests).</param>
         /// <param name="clientParams">The client parameters available.</param>
         /// <param name="processInitialData">Should the data be processed on connection.</param>
-        /// <param name="fetchRoomInfoOnConnect">Should room information be retrieved on connection.</param>
         /// <param name="enableExtendedGiftInfo"></param>
         /// <param name="proxyHandler"></param>
         /// <param name="lang"></param>
@@ -78,6 +82,17 @@ namespace TikTokLiveSharp.Client
         {
             socketClient?.Disconnect();
         }
+
+
+        /// <summary>
+        /// Event fired when the client connects.
+        /// </summary>
+        public event TikTokEventHandler<bool> OnConnected;
+
+        /// <summary>
+        /// Event fired when the client disconnects.
+        /// </summary>
+        public event TikTokEventHandler<bool> OnDisconnected;
 
         public event TikTokEventHandler<RoomMessage> OnRoomIntro;
 
@@ -215,31 +230,6 @@ namespace TikTokLiveSharp.Client
         /// It's up to you how you can interpret this message.
         /// </summary>
         public event TikTokEventHandler<Message> UnhandledEvent;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        /// <summary>
-        /// Event fired when the client connects.
-        /// </summary>
-        public event TikTokEventHandler<bool> OnConnected;
-
-        /// <summary>
-        /// Event fired when the client disconnects.
-        /// </summary>
-        public event TikTokEventHandler<bool> OnDisconnected;
 
 
 

@@ -20,7 +20,6 @@ using TikTokLiveSharp.Models;
 using TikTokLiveSharp.Models.Protobuf;
 using TikTokLiveSharp.Networking;
 using TikTokLiveSharp.Utils;
-using UnityEditor.TextCore.Text;
 
 namespace TikTokLiveSharp.Client
 {

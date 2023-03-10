@@ -9,6 +9,7 @@ using TikTokLiveSharp.Client;
 using TikTokLiveSharp.Events.MessageData.Messages;
 using TikTokLiveSharp.Models;
 using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Unity;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -37,22 +38,24 @@ public class Example : MonoBehaviour
     /// </summary>
     IEnumerator Start()
     {
-        tokenSource = new CancellationTokenSource();
-        cancelToken = tokenSource.Token;
-        _client = new TikTokLiveClient(id);
-        _profilePictures = new Queue<string>();
-        // Subscribe to the OnCommentReceived event.
-        _client.OnComment += Client_OnCommentReceived;
-        _client.OnException += Client_OnException;
-        yield return new WaitForSeconds(.5f); // Wait .5s between Startup & Starting Connection
-        // Try catch doesn't work well here due to Async. Exceptions are handled via Callback instead
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        _client.Start(cancelToken, e =>
-        {
-            Debug.LogWarning($"Caught Exception while Connecting: {e.Message}");
-            Debug.LogException(e);
-        });
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        yield return null;
+        TikTokLiveManager.Instance.ConnectToStreamAsync(id, null);
+//        tokenSource = new CancellationTokenSource();
+//        cancelToken = tokenSource.Token;
+//        _client = new TikTokLiveClient(id);
+//        _profilePictures = new Queue<string>();
+//        // Subscribe to the OnCommentReceived event.
+//        _client.OnComment += Client_OnCommentReceived;
+//        _client.OnException += Client_OnException;
+//        yield return new WaitForSeconds(.5f); // Wait .5s between Startup & Starting Connection
+//        // Try catch doesn't work well here due to Async. Exceptions are handled via Callback instead
+//#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+//        _client.Start(cancelToken, e =>
+//        {
+//            Debug.LogWarning($"Caught Exception while Connecting: {e.Message}");
+//            Debug.LogException(e);
+//        });
+//#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
     }
 
     private void Client_OnException(object sender, System.Exception e)
@@ -68,10 +71,12 @@ public class Example : MonoBehaviour
     /// </summary>
     void OnDestroy()
     {
-        tokenSource.Cancel();
-        _client?.Stop();
+        if (TikTokLiveManager.Exists)
+            TikTokLiveManager.Instance.DisconnectFromLivestream();
+        //tokenSource.Cancel();
+        //_client?.Stop();
         // Unsubscribe from the OnCommentReceived event.
-        _client.OnComment -= Client_OnCommentReceived;
+        //_client.OnComment -= Client_OnCommentReceived;
     }
 
     /// <summary>
@@ -99,16 +104,16 @@ public class Example : MonoBehaviour
     {
         /* We need to lock the profile picture queue here
            as we don't want any modifications to the queue while using it. */
-        lock (_profilePictures)
-        {
-            if (_profilePictures.Count > 0)
-            {
-                // Dequeue the url.
-                var url = _profilePictures.Dequeue();
-                // Add a new cube.
-                StartCoroutine(AddNewCube(url));
-            }
-        }
+    //    lock (_profilePictures)
+    //    {
+    //        if (_profilePictures.Count > 0)
+    //        {
+    //            // Dequeue the url.
+    //            var url = _profilePictures.Dequeue();
+    //            // Add a new cube.
+    //            StartCoroutine(AddNewCube(url));
+    //        }
+    //    }
     }
 
     /// <summary>

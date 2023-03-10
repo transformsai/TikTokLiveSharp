@@ -41,6 +41,7 @@ namespace TikTokLiveSharp.Utils
             ClientLanguage = "en-US",
             HandleExistingMessagesOnConnect = true,
             DownloadGiftInfo = true,
+            RetryOnConnectionFailure = true,
             Proxy = null,
             SocketBufferSize = 500_000,
             PrintToConsole = true,
