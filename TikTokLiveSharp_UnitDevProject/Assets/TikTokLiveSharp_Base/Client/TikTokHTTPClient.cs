@@ -6,12 +6,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using TikTokLiveSharp.Client;
 using TikTokLiveSharp.Client.Proxy;
 using TikTokLiveSharp.Client.Requests;
 using TikTokLiveSharp.Errors.Permissions;
-using TikTokLiveSharp.Models;
 using TikTokLiveSharp.Models.Protobuf;
-using TikTokLiveSharp.Utils;
 
 namespace TikTokLiveSharp.Networking
 {
@@ -161,10 +160,7 @@ namespace TikTokLiveSharp.Networking
                     { "uuc", clientNum },
                     { "url", url + getParams }
                 });
-            // TODO: Find a way to log this cleanly (without adding a 'Print()' to this 'sensitive' class)
-            UnityEngine.Debug.Log("Signing");
             HttpContent content = await request.Get();
-            UnityEngine.Debug.Log("Signed"); // Request succeeded to IsaacAPI
             try
             {
                 JObject jObj = JObject.Parse(await content.ReadAsStringAsync());

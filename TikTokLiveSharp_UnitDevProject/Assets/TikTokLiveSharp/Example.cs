@@ -58,26 +58,6 @@ public class Example : MonoBehaviour
 //#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
     }
 
-    private void Client_OnException(object sender, System.Exception e)
-    {
-        Debug.LogWarning($"Caught Exception: {e.Message}");
-        Debug.LogException(e);
-    }
-
-    /// <summary>
-    /// On Destroy method.
-    /// Required as seperate threads continuing running outside of play mode in Unity.
-    /// Without this Client_OnCommentReceived would continue to be called.
-    /// </summary>
-    void OnDestroy()
-    {
-        if (TikTokLiveManager.Exists)
-            TikTokLiveManager.Instance.DisconnectFromLivestream();
-        //tokenSource.Cancel();
-        //_client?.Stop();
-        // Unsubscribe from the OnCommentReceived event.
-        //_client.OnComment -= Client_OnCommentReceived;
-    }
 
     /// <summary>
     /// Comment received method.

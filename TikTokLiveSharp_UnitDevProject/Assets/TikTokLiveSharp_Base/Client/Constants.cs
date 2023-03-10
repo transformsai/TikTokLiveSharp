@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using TikTokLiveSharp.Client;
 
-namespace TikTokLiveSharp.Utils
+namespace TikTokLiveSharp.Client
 {
     /// <summary>
     /// Constant Values for the Library
     /// </summary>
-    internal static class Constants
+    public static class Constants
     {
         /// <summary>
         /// Web-URL for TikTok

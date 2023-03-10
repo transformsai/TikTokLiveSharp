@@ -1,7 +1,11 @@
 {
     "name": "TikTokLiveSharp_Unity.Editor",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "GUID:4a4f5effe6c987f408ae03521511551d",
+        "GUID:88e1ab50440065640bef8fea00b1a4f4",
+        "GUID:9d1a10f6438028d4491a8d8a43c7bc38"
+    ],
     "includePlatforms": [
         "Editor"
     ],

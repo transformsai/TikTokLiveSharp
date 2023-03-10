@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,7 +20,6 @@ using TikTokLiveSharp.Errors.Messaging;
 using TikTokLiveSharp.Models;
 using TikTokLiveSharp.Models.Protobuf;
 using TikTokLiveSharp.Networking;
-using TikTokLiveSharp.Utils;
 
 namespace TikTokLiveSharp.Client
 {
@@ -84,7 +84,10 @@ namespace TikTokLiveSharp.Client
         {
             hostName = hostId;
             if (!settings.HasValue)
+            {
+                Debug.Log("Using Default Settings");
                 settings = Constants.DEFAULT_SETTINGS;
+            }
             Settings = settings.Value;
             CheckSettings();
             roomInfo = null;
@@ -100,7 +103,6 @@ namespace TikTokLiveSharp.Client
                     this.clientParams[param.Key] = param.Value;
             this.clientParams["app_language"] = Settings.ClientLanguage;
             this.clientParams["webcast_language"] = Settings.ClientLanguage;
-
             httpClient = new TikTokHTTPClient(Settings.Timeout, Settings.Proxy);
         }
 
@@ -179,6 +181,8 @@ namespace TikTokLiveSharp.Client
         {
             token = cancellationToken ?? new CancellationToken();
             token.ThrowIfCancellationRequested();
+            if (ShouldLog(LogLevel.Information))
+                Debug.Log("Starting Threads");
             var run = Task.Run(() => Start(token, null, retryConnection), token);
             run.Wait();
             runningTask.Wait();
@@ -200,21 +204,27 @@ namespace TikTokLiveSharp.Client
             try
             {
                 token.ThrowIfCancellationRequested();
+                if (ShouldLog(LogLevel.Information))
+                    Debug.Log("Connecting");
                 return await Connect(onConnectException);
             }
             catch (OperationCanceledException) // cancelled by User
             {
-                if (Settings.PrintToConsole)
+                if (ShouldLog(LogLevel.Warning))
                     Debug.LogWarning("Cancelled by User");
                 return null;
             }
             catch (AConnectionException e)
             {
+                if (ShouldLog(LogLevel.Error))
+                    Debug.LogException(e);
                 if (e is FailedConnectionException)
                 {
                     // Failed to Connect, but Host was Online
                     if (retryConnection)
                     {
+                        if (ShouldLog(LogLevel.Information))
+                            Debug.Log("Retrying");
                         await Task.Delay(Settings.PollingInterval);
                         return await Start(cancellationToken, onConnectException, retryConnection);
                     }
@@ -238,11 +248,15 @@ namespace TikTokLiveSharp.Client
             }
             catch (AFetchException e)
             {
+                if (ShouldLog(LogLevel.Error))
+                    Debug.LogException(e);
                 onConnectException?.Invoke(e); // Failed to fetch critical Info for Connection
                 throw e;
             }
             catch (Exception e) // Other type of Exception
             {
+                if (ShouldLog(LogLevel.Error))
+                    Debug.LogException(e);
                 onConnectException?.Invoke(e);
                 throw e;
             }
@@ -263,11 +277,11 @@ namespace TikTokLiveSharp.Client
             if (Connected)
                 throw new AlreadyConnectedException();
             isConnecting = true;
-            if (Settings.PrintToConsole)
+            if (ShouldLog(LogLevel.Verbose))
                 Debug.Log("Fetching RoomID");
             await FetchRoomId();
             token.ThrowIfCancellationRequested();
-            if (Settings.PrintToConsole)
+            if (ShouldLog(LogLevel.Verbose))
                 Debug.Log("Fetch RoomInfo");
             JObject info = await FetchRoomInfo();
             JToken status = info["data"]["status"];
@@ -276,27 +290,27 @@ namespace TikTokLiveSharp.Client
             token.ThrowIfCancellationRequested();
             if (Settings.DownloadGiftInfo)
             {
-                if (Settings.PrintToConsole)
-                    Debug.Log("Fetch Gifts");
                 try
                 {
+                    if (ShouldLog(LogLevel.Verbose))
+                        Debug.Log("Fetch GiftInfo");
                     await FetchAvailableGifts();
                 }
                 catch (FailedFetchGiftsException e)
                 {
-                    if (Settings.PrintToConsole)
+                    if (ShouldLog(LogLevel.Error))
                         Debug.LogException(e);
                     onConnectException?.Invoke(e);
                     // Continue connecting (not a critical error)
                 }
             }
             token.ThrowIfCancellationRequested();
-            if (Settings.PrintToConsole)
+            if (ShouldLog(LogLevel.Verbose))
                 Debug.Log("Fetch ClientData");
             WebcastResponse response = await FetchClientData();
             token.ThrowIfCancellationRequested();
-            if (Settings.PrintToConsole)
-                Debug.Log("Open Socket");
+            if (ShouldLog(LogLevel.Information))
+                Debug.Log("Creating WebSocketClient");
             await CreateWebSocket(response);
             token.ThrowIfCancellationRequested();
             return roomID;
@@ -319,18 +333,26 @@ namespace TikTokLiveSharp.Client
                 for (int i = 0; i < webcastResponse.SocketParams.Count; i++)
                 {
                     WebsocketRouteParam param = webcastResponse.SocketParams[i];
+                    if (ShouldLog(LogLevel.Verbose))
+                        Debug.Log($"Adding Custom Param {param.Name}-{param.Value}");
                     if (clientParams.ContainsKey(param.Name))
                         clientParams[param.Name] = param.Value;
                     else clientParams.Add(param.Name, param.Value);
                 }
                 string url = $"{webcastResponse.SocketUrl}?{string.Join("&", clientParams.Select(x => $"{x.Key}={HttpUtility.UrlEncode(x.Value.ToString())}"))}";
+                if (ShouldLog(LogLevel.Verbose))
+                    Debug.Log($"Creating Socket with URL {url}");
                 socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, Settings.SocketBufferSize);
                 await socketClient.Connect(url);
+                if (ShouldLog(LogLevel.Information))
+                    Debug.Log($"Starting Socket-Threads");
                 runningTask = Task.Run(WebSocketLoop, token);
                 pollingTask = Task.Run(PingLoop, token);
             }
             catch (Exception e)
             {
+                if (ShouldLog(LogLevel.Error))
+                    Debug.LogException(e);
                 throw new FailedConnectionException("Failed to connect to the websocket", e);
             }
             if (Settings.HandleExistingMessagesOnConnect)
@@ -341,6 +363,8 @@ namespace TikTokLiveSharp.Client
                 }
                 catch (Exception e)
                 {
+                    if (ShouldLog(LogLevel.Error))
+                        Debug.LogException(e);
                     throw new WebcastMessageException("Error Handling Initial Messages", e);
                 }
             }
@@ -368,7 +392,11 @@ namespace TikTokLiveSharp.Client
             roomInfo = null;
             isConnecting = false;
             if (Connected)
+            {
+                if (ShouldLog(LogLevel.Verbose))
+                    Debug.Log("Disconnecting SocketClient");
                 await socketClient.Disconnect();
+            }
             clientParams["cursor"] = string.Empty;
             await runningTask;
             await pollingTask;
@@ -390,7 +418,10 @@ namespace TikTokLiveSharp.Client
             }
             catch (Exception e)
             {
-                throw new FailedFetchRoomInfoException("Failed to fetch room id from WebCast, see stacktrace for more info.", e);
+                FailedFetchRoomInfoException exc = new FailedFetchRoomInfoException("Failed to fetch room id from WebCast, see stacktrace for more info.", e);
+                if (ShouldLog(LogLevel.Error))
+                    Debug.LogException(exc);
+                throw exc;
             }
             var first = Regex.Match(html, "room_id=([0-9]*)");
             var second = Regex.Match(html, "\"roomId\":\"([0 - 9] *)\"");
@@ -402,7 +433,12 @@ namespace TikTokLiveSharp.Client
                 return id;
             }
             else
-                throw new FailedFetchRoomInfoException(html.Contains("\"og:url\"") ? "User might be offline" : "Your IP or country might be blocked by TikTok.");
+            {
+                FailedFetchRoomInfoException exc = new FailedFetchRoomInfoException(html.Contains("\"og:url\"") ? "User might be offline" : "Your IP or country might be blocked by TikTok.");
+                if (ShouldLog(LogLevel.Error))
+                    Debug.LogException(exc);
+                throw exc;
+            }
         }
 
         /// <summary>
@@ -421,13 +457,18 @@ namespace TikTokLiveSharp.Client
                 foreach (JToken giftToken in giftTokens)
                 {
                     TikTokGift gift = giftToken.ToObject<TikTokGift>();
+                    if (ShouldLog(LogLevel.Verbose))
+                        Debug.Log($"Found Available Gift {gift.name} with ID {gift.id}");
                     availableGifts[gift.id] = gift;
                 }
                 return availableGifts;
             }
             catch (Exception e)
             {
-                throw new FailedFetchGiftsException("Failed to fetch giftTokens from WebCast, see stacktrace for more info.", e);
+                FailedFetchGiftsException exc = new FailedFetchGiftsException("Failed to fetch giftTokens from WebCast, see stacktrace for more info.", e);
+                if (ShouldLog(LogLevel.Error))
+                    Debug.LogException(exc);
+                throw exc;
             }
         }
 
@@ -458,7 +499,10 @@ namespace TikTokLiveSharp.Client
             }
             catch (Exception e)
             {
-                throw new FailedFetchRoomInfoException("Failed to fetch room info from WebCast, see stacktrace for more info.", e);
+                FailedFetchRoomInfoException exc = new FailedFetchRoomInfoException("Failed to fetch room info from WebCast, see stacktrace for more info.", e);
+                if (ShouldLog(LogLevel.Error))
+                    Debug.LogException(exc);
+                throw exc;
             }
         }
         #endregion
@@ -500,7 +544,7 @@ namespace TikTokLiveSharp.Client
                 }
                 catch (OperationCanceledException)
                 {
-                    if (Settings.PrintToConsole)
+                    if (ShouldLog(LogLevel.Information))
                         Debug.LogWarning("User Closed Connection. Stopping WebSocketLoop."); 
                     socketClient?.Disconnect(); // Disconnect for PingLoop
                     return; // Stop this Loop (Cleanly)
@@ -559,6 +603,9 @@ namespace TikTokLiveSharp.Client
             OnException?.Invoke(this, exception);
         }
         #endregion
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected bool ShouldLog(LogLevel msgLevel) => Settings.PrintToConsole && Settings.LogLevel.HasFlag(msgLevel);
 
         /// <summary>
         /// Handles Response received from TikTokServer
