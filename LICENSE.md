@@ -20,3 +20,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+TikTokLiveSharp/TikTokLiveUnity is a fork/continuation of sebheron's [TikTokLiveSharp V0.1.4](https://github.com/sebheron/TikTokLiveSharp)
+The original project uses the same MIT-License as this one

@@ -3,5 +3,5 @@
 *.meta
 *.asmdef
 *.unity
-Project/TikTokLiveUnity/
-Project/package.json
+TikTokLiveUnity/
+package.json

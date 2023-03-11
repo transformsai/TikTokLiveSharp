@@ -3,7 +3,6 @@
   "displayName": "TikTokLive Unity",
   "description": "TikTokLive-Client for Unity",
   "version": "0.9.0",
-  "unity": "2020.1",
   "author": {
     "name": "Frank van Hoof",
     "email": "frank_van_hoof@hotmail.com",
