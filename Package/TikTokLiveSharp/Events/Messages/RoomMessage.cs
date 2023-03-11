@@ -1,13 +1,10 @@
-using JetBrains.Annotations;
 using TikTokLiveSharp.Models.Protobuf;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
     public sealed class RoomMessage : AMessageData
     {
-        [CanBeNull]
         public readonly Objects.User Host;
-        [CanBeNull]
         public readonly string HostLanguage;
         public readonly string Message;
 

@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,13 +15,10 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
 
         public readonly Picture ProfilePicture;
 
-        [CanBeNull]
         public readonly Picture Picture720;
 
-        [CanBeNull]
         public readonly Picture Picture1080;
 
-        [CanBeNull]
         public readonly List<Picture> AdditionalPictures;
 
         public readonly uint Following;

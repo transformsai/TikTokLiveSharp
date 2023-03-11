@@ -21,7 +21,7 @@ namespace TikTokLiveSharp.Models.Protobuf
         public int Data2 { get; set; }
 
         [ProtoMember(5)]
-        public int RepeatCount { get; set; }
+        public uint RepeatCount { get; set; }
 
         [ProtoMember(6)]
         public uint Amount { get; set; }

@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,11 +6,8 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
     public sealed class Badge
     {
         // Typically either Text, Image or Combo-data is populated, but only one at a time.
-        [CanBeNull]
         public readonly IReadOnlyList<TextBadge> TextBadges;
-        [CanBeNull]
         public readonly IReadOnlyList<ImageBadge> ImageBadges;
-        [CanBeNull]
         public readonly ComboBadge ComboBadges;
 
         internal Badge(Models.Protobuf.UserBadgesAttributes badge)

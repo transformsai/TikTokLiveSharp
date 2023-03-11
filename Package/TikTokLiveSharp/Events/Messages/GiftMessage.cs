@@ -10,6 +10,10 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public readonly string PurchaseId;
         public readonly string Receipt;
 
+        public readonly uint Amount;
+        public readonly bool StreakFinished;
+        public readonly uint StreakIndex;
+
         internal GiftMessage(WebcastGiftMessage msg) : 
             base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
@@ -17,6 +21,9 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
             Sender = new Objects.User(msg.User);
             PurchaseId = msg.LogId;
             Receipt = msg.ReceiptJSON;
+            Amount = msg.Amount;
+            StreakFinished = msg.RepeatEnd;
+            StreakIndex = msg.RepeatCount;
         }
     }
 }
