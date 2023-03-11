@@ -1,0 +1,23 @@
+{
+  "name": "dev.vanhoof.tiktokliveunity",
+  "displayName": "TikTokLive.Unity",
+  "description": "TikTokLive-Client for Unity",
+  "version": "0.9.0",
+  "unity": "2020.1",
+  "author": {
+    "name": "Frank van Hoof",
+    "email": "frank_van_hoof@hotmail.com",
+    "url": "https://www.vanhoof.dev"
+  },
+  "keywords": ["TikTok","TikTokLive"],
+  "license": "MIT",
+  "type": "library",
+  "hideInEditor": false,
+  "samples": [
+    {
+      "displayName": "TikTokLive Example",
+      "description": "ExampleScene to show the Library working",
+      "path": "Samples~/Example"
+    }
+  ]
+}
