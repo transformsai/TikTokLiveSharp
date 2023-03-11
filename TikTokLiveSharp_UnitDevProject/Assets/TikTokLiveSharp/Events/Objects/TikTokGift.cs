@@ -20,6 +20,7 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
         public TikTokGift(WebcastGiftMessage message)
         {
             Gift = new Gift(message.GiftDetails);
+            Sender = new User(message.User);
             Amount = message.Amount;
             StreakFinished = message.RepeatEnd;
         }

@@ -612,6 +612,7 @@ namespace TikTokLiveSharp.Client
         {
             while (socketClient.IsConnected)
             {
+                token.ThrowIfCancellationRequested();
                 using (var messageStream = new MemoryStream())
                     await socketClient.WriteMessage(new ArraySegment<byte>(new byte[] { 58, 2, 104, 98 }));
                 await Task.Delay(10);
@@ -625,6 +626,7 @@ namespace TikTokLiveSharp.Client
         /// <returns>Task to await</returns>
         protected async Task SendAcknowledgement(ulong id)
         {
+            token.ThrowIfCancellationRequested();
             using (var messageStream = new MemoryStream())
             {
                 Serializer.Serialize(messageStream, new WebcastWebsocketAck

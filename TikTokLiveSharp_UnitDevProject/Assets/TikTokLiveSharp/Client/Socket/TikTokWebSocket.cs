@@ -53,6 +53,7 @@ namespace TikTokLiveSharp.Client.Socket
         /// <returns>Task to await</returns>
         public async Task Connect(string url)
         {
+            token.ThrowIfCancellationRequested();
             await clientWebSocket.ConnectAsync(new Uri(url), token);
         }
 
@@ -62,7 +63,15 @@ namespace TikTokLiveSharp.Client.Socket
         /// <returns>Task to await</returns>
         public async Task Disconnect()
         {
-            await clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
+            try
+            {
+                token.ThrowIfCancellationRequested();
+                await clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
+            }
+            finally
+            {
+                clientWebSocket = null;
+            }
         }
 
         /// <summary>
@@ -72,6 +81,7 @@ namespace TikTokLiveSharp.Client.Socket
         /// <returns>Task to await</returns>
         public async Task WriteMessage(ArraySegment<byte> arr)
         {
+            token.ThrowIfCancellationRequested();
             await clientWebSocket.SendAsync(arr, WebSocketMessageType.Binary, true, token);
         }
 
@@ -81,6 +91,7 @@ namespace TikTokLiveSharp.Client.Socket
         /// <returns>Task to Await</returns>
         public async Task<TikTokWebSocketResponse> ReceiveMessage()
         {
+            token.ThrowIfCancellationRequested();
             var arr = new ArraySegment<byte>(new byte[bufferSize]);
             WebSocketReceiveResult response = await clientWebSocket.ReceiveAsync(arr, token);
             if (response.MessageType == WebSocketMessageType.Binary)
