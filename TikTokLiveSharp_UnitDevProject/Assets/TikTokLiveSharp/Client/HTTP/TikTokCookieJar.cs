@@ -1,13 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace TikTokLiveSharp.Client.Requests
+namespace TikTokLiveSharp.Client.HTTP
 {
     /// <summary>
     /// Holds Cookies for TikTok-Connection
     /// </summary>
     public class TikTokCookieJar : IEnumerable<string>
     {
+        /// <summary>
+        /// Cookies in Jar
+        /// </summary>
         private IDictionary<string, string> cookies;
 
         /// <summary>
@@ -29,11 +32,17 @@ namespace TikTokLiveSharp.Client.Requests
             set => cookies[key] = value;
         }
 
+        /// <summary>
+        /// Enumerates Cookies
+        /// </summary>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return cookies.GetEnumerator();
         }
 
+        /// <summary>
+        /// Enumerates Cookies
+        /// </summary>
         public IEnumerator<string> GetEnumerator()
         {
             foreach (var cookie in cookies)

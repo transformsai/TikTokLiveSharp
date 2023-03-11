@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 
-namespace TikTokLiveSharp.Unity.Utils
+namespace TikTokLiveUnity.Utils
 {
     /// <summary>
     /// Dispatches Actions & Coroutines between Threads

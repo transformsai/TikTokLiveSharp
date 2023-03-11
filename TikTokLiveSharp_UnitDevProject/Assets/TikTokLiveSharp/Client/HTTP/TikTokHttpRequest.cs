@@ -7,7 +7,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace TikTokLiveSharp.Client.Requests
+namespace TikTokLiveSharp.Client.HTTP
 {
     /// <summary>
     /// HTTP-Request for TikTok-Page

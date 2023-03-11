@@ -1,4 +1,4 @@
-﻿namespace TikTokLiveSharp.Client.Sockets
+﻿namespace TikTokLiveSharp.Client.Socket
 {
     /// <summary>
     /// Response-Message received from TikTok-Servers

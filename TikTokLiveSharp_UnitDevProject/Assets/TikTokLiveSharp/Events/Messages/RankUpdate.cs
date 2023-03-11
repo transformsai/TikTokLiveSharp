@@ -18,8 +18,8 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
             var rankData = msg.Data.Rankings;
             EventType = rankData.Type;
             Label = rankData.Label;
-            Rank = rankData.Data.Rank;
-            Color = rankData.RankColor.Colour;
+            Rank = rankData.Data?.Rank;
+            Color = rankData.RankColor?.Colour;
         }
 
         internal RankUpdate(WebcastRankUpdateMessage msg)
@@ -28,8 +28,8 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
             var rankData = msg.Rankings.RankData;
             EventType = rankData.Type;
             Label = rankData.Label;
-            Rank = rankData.Data.Rank;
-            Color = rankData.RankColor.Colour;
+            Rank = rankData.Data?.Rank;
+            Color = rankData.RankColor?.Colour;
         }
     }
 }

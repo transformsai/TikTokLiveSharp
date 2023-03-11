@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using TikTokLiveSharp.Client;
@@ -9,25 +10,36 @@ using TikTokLiveSharp.Events;
 using TikTokLiveSharp.Events.MessageData.Messages;
 using TikTokLiveSharp.Events.MessageData.Objects;
 using TikTokLiveSharp.Models.Protobuf;
-using TikTokLiveSharp.Unity.Utils;
+using TikTokLiveUnity.Utils;
 using UnityEngine;
 using UnityEngine.Events;
+using Debug = TikTokLiveSharp.Debugging.Debug;
 using LinkMicMethod = TikTokLiveSharp.Events.MessageData.Messages.LinkMicMethod;
 using Picture = TikTokLiveSharp.Events.MessageData.Objects.Picture;
 using RoomMessage = TikTokLiveSharp.Events.MessageData.Messages.RoomMessage;
-using Debug = TikTokLiveSharp.Debugging.Debug;
-using System.Runtime.CompilerServices;
 
-namespace TikTokLiveSharp.Unity
+namespace TikTokLiveUnity
 {
+    /// <summary>
+    /// Manager for TikTokLive-Client in Unity
+    /// </summary>
     public class TikTokLiveManager : MonoBehaviour
     {
         #region Singleton
+        /// <summary>
+        /// Whether this GameObject is not Root
+        /// </summary>
         [SerializeField]
+        [Tooltip("Enable if this GameObject is not Root")]
         private bool hasRootObject;
 
+        /// <summary>
+        /// Whether an Instance Exists (!= NULL)
+        /// </summary>
         public static bool Exists => _instance != null;
-
+        /// <summary>
+        /// Singleton-Instance for TikTokLiveManager. Auto-Creates new TikTokLiveManager if none exists
+        /// </summary>
         public static TikTokLiveManager Instance
         {
             get
@@ -43,52 +55,85 @@ namespace TikTokLiveSharp.Unity
             }
             protected set { _instance = value; }
         }
-
+        /// <summary>
+        /// Singleton-Instance for TikTokLiveManager
+        /// </summary>
         protected static TikTokLiveManager _instance;
         #endregion
 
+        #region Properties
         #region Public
-
+        /// <summary>
+        /// Gifts Available (for Room)
+        /// </summary>
         public IReadOnlyDictionary<int, TikTokGift> AvailableGifts => (IReadOnlyDictionary<int, TikTokGift>)client?.AvailableGifts;
-
+        /// <summary>
+        /// Whether currently Connected to the TikTokLive-Servers
+        /// </summary>
         public bool Connected => client?.Connected ?? false;
-
-        public string RoomID => currRoomHost;
-
+        /// <summary>
+        /// Whether currently initializing a Connection to the TikTokLive-Servers
+        /// </summary>
+        public bool Connecting => client?.Connecting ?? false;
+        /// <summary>
+        /// Username for Host
+        /// </summary>
+        public string HostName => client?.HostName;
+        /// <summary>
+        /// RoomInfo
+        /// </summary>
         public JObject RoomInfo => client?.RoomInfo;
-
-        public string UniqueID => client?.UniqueID;
-
+        /// <summary>
+        /// Number of Viewers in Room
+        /// </summary>
         public uint? ViewerCount => client?.ViewerCount;
         #endregion
 
-
+        #region Unity
+        /// <summary>
+        /// Max amount of Textures Cached
+        /// </summary>
         [Min(1)]
         [SerializeField]
         [Header("TextureCache")]
-        [Tooltip("TEST")]
+        [Tooltip("Max amount of Textures Cached")]
         private uint texCacheSize = 2048;
 
+        /// <summary>
+        /// Whether to Connect on Start (using set HostId)
+        /// </summary>
         [SerializeField]
         [Header("Auto-Connect")]
+        [Tooltip("Whether to Connect on Start (using set HostId)")]
         private bool autoConnect;
-
+        /// <summary>
+        /// HostName to Connect to on Start
+        /// </summary>
         [SerializeField]
+        [Tooltip("HostName to Connect to on Start")]
         private string autoConnectHostId;
-
-        #region ConnectionSettings
-
+        /// <summary>
+        /// Settings for TikTokClient
+        /// </summary>
         [SerializeField]
+        [Tooltip("Settings for TikTokClient")]
         private ClientSettings settings;
         #endregion
 
-        private string currRoomHost;
-
-        private TikTokLiveClient client;
+        #region Private
+        /// <summary>
+        /// TikTokClient used for Connection
+        /// </summary>
+        protected TikTokLiveClient client;
+        /// <summary>
+        /// Tokensource for CancelToken used with Client-Threads
+        /// </summary>
+        protected CancellationTokenSource tokenSource = new CancellationTokenSource();
+        /// <summary>
+        /// Cached Access for Textures
+        /// </summary>
         private TextureCache textureCache;
-
-        private CancellationToken? cancelToken = null;
-        private CancellationTokenSource tokenSource = new CancellationTokenSource();
+        #endregion
 
         #region Events
         #region C#
@@ -331,14 +376,28 @@ namespace TikTokLiveSharp.Unity
         private UnityEvent<Message> onUnhandledEvent;
         #endregion
         #endregion
+        #endregion
 
-
-
+        #region Methods
+        #region Public
+        #region Connection
+        /// <summary>
+        /// Connects to a LiveStream. 
+        /// This can be called from the Unity Main Thread.
+        /// </summary>
+        /// <param name="userID">UserName for Host of Room</param>
+        /// <param name="onConnectException">Callback for Exception whilst Connecting</param>
         public async void ConnectToStreamAsync(string userID, Action<Exception> onConnectException = null)
         {
             await ConnectToStream(userID, onConnectException);
         }
-
+        /// <summary>
+        /// Connects to a LiveStream.
+        /// Returns Task to Await
+        /// </summary>
+        /// <param name="userID">UserName for Host of Room</param>
+        /// <param name="onConnectException">Callback for Exception whilst Connecting</param>
+        /// <returns>Task to Await</returns>
         public async Task ConnectToStream(string userID, Action<Exception> onConnectException = null)
         {
             if (string.IsNullOrWhiteSpace(userID))
@@ -358,7 +417,6 @@ namespace TikTokLiveSharp.Unity
                 if (ShouldLog(LogLevel.Verbose))
                     Debug.Log("Creating new TikTokLiveClient");
                 client = new TikTokLiveClient(userID, settings, null);
-                currRoomHost = userID;
                 if (ShouldLog(LogLevel.Information))
                     Debug.Log($"Created new Client with HostName {userID}");
                 // Set up Events for Client
@@ -375,8 +433,7 @@ namespace TikTokLiveSharp.Unity
             }
             try
             {
-                cancelToken = tokenSource.Token;
-                await client.Start(cancelToken, onConnectException, settings.RetryOnConnectionFailure);
+                await client.Start(tokenSource.Token, onConnectException, settings.RetryOnConnectionFailure);
                 if (ShouldLog(LogLevel.Verbose))
                     Debug.Log("Connected");
             }
@@ -387,7 +444,170 @@ namespace TikTokLiveSharp.Unity
                 onConnectException?.Invoke(e);
             }
         }
+        /// <summary>
+        /// Disconnects from current LiveStream. 
+        /// This can be called from the Unity Main Thread.
+        /// </summary>
+        public async void DisconnectFromLivestreamAsync() => await DisconnectFromLivestream();
+        /// <summary>
+        /// Disconnects from current LiveStream. 
+        /// Returns Task to Await
+        /// </summary>
+        /// <returns>Task to Await</returns>
+        public async Task DisconnectFromLivestream()
+        {
+            if (client != null)
+            {
+                if (ShouldLog(LogLevel.Information))
+                    Debug.Log("Disconnecting Client");
+                await client.Stop();
+                if (ShouldLog(LogLevel.Verbose))
+                    Debug.Log("Removing EventListeners from Client");
+                TearDownEvents(client);
+                client = null;
+            }
+            await Task.Delay(200);
+            if (ShouldLog(LogLevel.Verbose))
+                Debug.Log("Stopping Threads");
+            tokenSource?.Cancel();
+            tokenSource = new CancellationTokenSource();
+        }
+        #endregion
 
+        #region Images
+        /// <summary>
+        /// Gets Texture from TikTok
+        /// </summary>
+        /// <param name="picture">Picture-Object for Texture</param>
+        /// <param name="onComplete">Callback for Texture-Retrieval</param>
+        public void RequestImage(Picture picture, Action<Texture2D> onComplete) => RequestImage(picture.URLs, onComplete);
+        /// <summary>
+        /// Gets Texture from TikTok
+        /// </summary>
+        /// <param name="urls">URLs for Texture. First one with valid Extension is used</param>
+        /// <param name="onComplete">Callback for Texture-Retrieval</param>
+        public void RequestImage(IEnumerable<string> urls, Action<Texture2D> onComplete) => textureCache.RequestImage(urls, onComplete);
+        /// <summary>
+        /// Gets Texture from TikTok
+        /// </summary>
+        /// <param name="url">URL for Texture</param>
+        /// <param name="onComplete">Callback for Texture-Retrieval</param>
+        public void RequestImage(string url, Action<Texture2D> onComplete) => textureCache.RequestImage(url, onComplete);
+
+        /// <summary>
+        /// Gets Sprite from TikTok
+        /// </summary>
+        /// <param name="picture">Picture-Object for Sprite</param>
+        /// <param name="onComplete">Callback for Sprite-Retrieval</param>
+        public void RequestSprite(Picture picture, Action<Sprite> onComplete) => RequestSprite(picture.URLs, onComplete);
+        /// <summary>
+        /// Gets Sprite from TikTok
+        /// </summary>
+        /// <param name="urls">URLs for Sprite. First one with valid Extension is used</param>
+        /// <param name="onComplete">Callback for Sprite-Retrieval</param>
+        public void RequestSprite(IEnumerable<string> urls, Action<Sprite> onComplete) => textureCache.RequestSprite(urls, onComplete);
+        /// <summary>
+        /// Gets Sprite from TikTok
+        /// </summary>
+        /// <param name="url">URL for Sprite</param>
+        /// <param name="onComplete">Callback for Sprite-Retrieval</param>
+        public void RequestSprite(string url, Action<Sprite> onComplete) => textureCache.RequestSprite(url, onComplete);
+        #endregion
+        #endregion
+
+        #region Unity
+        /// <summary>
+        /// Initializes Manager
+        /// </summary>
+        protected virtual void Awake()
+        {
+            // Destroy any duplicate Instance
+            if (Exists && _instance != this)
+            {
+                if ((_instance.settings.PrintToConsole && _instance.settings.LogLevel.HasFlag(LogLevel.Error))
+                    || settings.PrintToConsole && settings.LogLevel.HasFlag(LogLevel.Error))
+                    Debug.LogError($"TikTokLiveManager already exists! Existing Object: {_instance.gameObject.name}. New Object: {gameObject.name}. Destroying new Object", _instance.gameObject);
+                DestroyImmediate(gameObject, false);
+                return;
+            }
+            #region Singleton
+            if (transform.parent != null)
+            {
+                if (!hasRootObject)
+                {
+                    if (ShouldLog(LogLevel.Warning))
+                        Debug.LogWarning("TikTokLiveManager is not a Root-Object. Did you mean to set hasRootObject? Unparenting", gameObject);
+                    transform.SetParent(null, true);
+                    DontDestroyOnLoad(gameObject);
+                }
+                else DontDestroyOnLoad(transform.root.gameObject);
+            }
+            else DontDestroyOnLoad(gameObject);
+            // Set Instance
+            if (ShouldLog(LogLevel.Verbose))
+                Debug.Log("Setting Singleton-Instance");
+            _instance = this;
+            #endregion
+            #region Init
+            if (ShouldLog(LogLevel.Verbose))
+                Debug.Log("Creating TextureCache");
+            textureCache = new TextureCache(texCacheSize);
+            if (ShouldLog(LogLevel.Verbose))
+                Debug.Log("Linking UnityEvents to C#-Events");
+            LinkUnityEvents();
+            #endregion
+        }
+        /// <summary>
+        /// Performs Auto-Connect
+        /// </summary>
+        protected virtual IEnumerator Start()
+        {
+            if (autoConnect)
+            {
+                yield return null;
+                if (ShouldLog(LogLevel.Information))
+                    Debug.Log($"Auto-Connecting to {autoConnectHostId}");
+                ConnectToStreamAsync(autoConnectHostId, null);
+            }
+        }
+        /// <summary>
+        /// Sets default Settings
+        /// </summary>
+        protected virtual void Reset()
+        {
+            hasRootObject = transform.parent != null;
+            texCacheSize = 2048;
+            autoConnect = false;
+            autoConnectHostId = string.Empty;
+            settings = Constants.DEFAULT_SETTINGS;
+        }
+        /// <summary>
+        /// DeInitializes Manager. Closes any Active Connection
+        /// </summary>
+        protected virtual void OnDestroy()
+        {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            DisconnectFromLivestream();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            if (Exists && ReferenceEquals(_instance, this))
+            {
+                #region DeInit
+                if (ShouldLog(LogLevel.Verbose))
+                    Debug.Log("Clearing TextureCache");
+                textureCache = null;
+                Resources.UnloadUnusedAssets();
+                #endregion
+                if (ShouldLog(LogLevel.Verbose))
+                    Debug.Log("Removing Singleton-Instance");
+                _instance = null;
+            }
+        }
+        #endregion
+
+        #region Private
+        /// <summary>
+        /// Links UnityEvents to C#-Events
+        /// </summary>
         private void LinkUnityEvents()
         {
             OnException += (_, args) => onException?.Invoke(args);
@@ -434,7 +654,10 @@ namespace TikTokLiveSharp.Unity
             UnhandledMemberEvent += (_, args) => onUnhandledMemberEvent?.Invoke(args);
             UnhandledEvent += (_, args) => onUnhandledEvent?.Invoke(args);
         }
-
+        /// <summary>
+        /// Links Events to Client
+        /// </summary>
+        /// <param name="client">Client to Link to</param>
         private void SetupEvents(TikTokLiveClient client)
         {
             client.OnException += OnException.Invoke;
@@ -481,6 +704,10 @@ namespace TikTokLiveSharp.Unity
             client.UnhandledMemberEvent += UnhandledMemberEvent.Invoke;
             client.UnhandledEvent += UnhandledEvent.Invoke;
         }
+        /// <summary>
+        /// Unlinks Events from Client
+        /// </summary>
+        /// <param name="client">Client to Unlink from</param>
         private void TearDownEvents(TikTokLiveClient client)
         {
             client.OnException -= OnException.Invoke;
@@ -527,111 +754,14 @@ namespace TikTokLiveSharp.Unity
             client.UnhandledMemberEvent -= UnhandledMemberEvent.Invoke;
             client.UnhandledEvent -= UnhandledEvent.Invoke;
         }
-
-        public async Task DisconnectFromLivestream()
-        {
-            if (client != null)
-            {
-                if (ShouldLog(LogLevel.Information))
-                    Debug.Log("Disconnecting Client");
-                await client.Stop();
-                if (ShouldLog(LogLevel.Verbose))
-                    Debug.Log("Removing EventListeners from Client");
-                TearDownEvents(client);
-                client = null;
-            }
-            if (ShouldLog(LogLevel.Verbose))
-                Debug.Log("Stopping Threads");
-            tokenSource?.Cancel();
-        }
-
-        protected virtual void Awake()
-        {
-            // Destroy any duplicate Instance
-            if (Exists && _instance != this)
-            {
-                if ((_instance.settings.PrintToConsole && _instance.settings.LogLevel.HasFlag(LogLevel.Error))
-                    || settings.PrintToConsole && settings.LogLevel.HasFlag(LogLevel.Error))
-                    Debug.LogError($"TikTokLiveManager already exists! Existing Object: {_instance.gameObject.name}. New Object: {gameObject.name}. Destroying new Object", _instance.gameObject);
-                DestroyImmediate(gameObject, false);
-                return;
-            }
-            #region Singleton
-            if (transform.parent != null)
-            {
-                if (!hasRootObject)
-                {
-                    if (ShouldLog(LogLevel.Warning))
-                        Debug.LogWarning("TikTokLiveManager is not a Root-Object. Did you mean to set hasRootObject? Unparenting", gameObject);
-                    transform.SetParent(null, true);
-                    DontDestroyOnLoad(gameObject);
-                }
-                else DontDestroyOnLoad(transform.root.gameObject);
-            }
-            else DontDestroyOnLoad(gameObject);
-            // Set Instance
-            if (ShouldLog(LogLevel.Verbose))
-                Debug.Log("Setting Singleton-Instance");
-            _instance = this;
-            #endregion
-            #region Init
-            if (ShouldLog(LogLevel.Verbose))
-                Debug.Log("Creating TextureCache");
-            textureCache = new TextureCache(texCacheSize);
-            if (ShouldLog(LogLevel.Verbose))
-                Debug.Log("Linking UnityEvents to C#-Events");
-            LinkUnityEvents();
-            #endregion
-        }
-
-        private IEnumerator Start()
-        {
-            if (autoConnect)
-            {
-                yield return null;
-                if (ShouldLog(LogLevel.Information))
-                    Debug.Log($"Auto-Connecting to {autoConnectHostId}");
-                ConnectToStreamAsync(autoConnectHostId, null);
-            }
-        }
-
-        protected virtual void Reset()
-        {
-            hasRootObject = transform.parent != null;
-            texCacheSize = 2048;
-            autoConnect = false;
-            autoConnectHostId = string.Empty;
-            settings = Constants.DEFAULT_SETTINGS;
-        }
-
-        protected virtual void OnDestroy()
-        {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            DisconnectFromLivestream();
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            if (Exists && ReferenceEquals(_instance, this))
-            {
-                #region DeInit
-                if (ShouldLog(LogLevel.Verbose))
-                    Debug.Log("Clearing TextureCache");
-                textureCache = null;
-                Resources.UnloadUnusedAssets();
-                #endregion
-                if (ShouldLog(LogLevel.Verbose))
-                    Debug.Log("Removing Singleton-Instance");
-                _instance = null;
-            }
-        }
-
+        /// <summary>
+        /// Checks whether a LogMessage should be printed
+        /// </summary>
+        /// <param name="msgLevel">LogLevel for Message</param>
+        /// <returns>True if Message should be printed to Console</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected bool ShouldLog(LogLevel msgLevel) => settings.PrintToConsole && settings.LogLevel.HasFlag(msgLevel);
-
-        public void RequestImage(Picture picture, Action<Texture2D> onComplete) => RequestImage(picture.URLs, onComplete);
-        public void RequestImage(IEnumerable<string> urls, Action<Texture2D> onComplete) => textureCache.RequestImage(urls, onComplete);
-        public void RequestImage(string url, Action<Texture2D> onComplete) => textureCache.RequestImage(url, onComplete);
-
-        public void RequestSprite(Picture picture, Action<Sprite> onComplete) => RequestSprite(picture.URLs, onComplete);
-        public void RequestSprite(IEnumerable<string> urls, Action<Sprite> onComplete) => textureCache.RequestSprite(urls, onComplete);
-        public void RequestSprite(string url, Action<Sprite> onComplete) => textureCache.RequestSprite(url, onComplete);
+        #endregion
+        #endregion
     }
 }

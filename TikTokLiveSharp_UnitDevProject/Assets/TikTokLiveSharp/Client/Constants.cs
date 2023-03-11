@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace TikTokLiveSharp.Client
 {
     /// <summary>
-    /// Constant Values for the Library
+    /// Constant Values for TikTokLiveSharp
     /// </summary>
     public static class Constants
     {
@@ -45,8 +45,8 @@ namespace TikTokLiveSharp.Client
             SocketBufferSize = 500_000,
             PrintToConsole = true,
             LogLevel = LogLevel.Error | LogLevel.Warning,
-            CheckForUnparsedData = true,
-            PrintMessageData = true
+            CheckForUnparsedData = false,
+            PrintMessageData = false
         };
 
         /// <summary>

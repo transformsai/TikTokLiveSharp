@@ -133,7 +133,6 @@ GameObject:
   m_Component:
   - component: {fileID: 705507995}
   - component: {fileID: 705507994}
-  - component: {fileID: 705507996}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -216,21 +215,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!114 &705507996
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 705507993}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62330d87e05170c49aafc33e5d3f7e4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  id: 7colorcrystals
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -314,7 +300,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &963194229
 MonoBehaviour:
@@ -331,7 +317,7 @@ MonoBehaviour:
   hasRootObject: 0
   texCacheSize: 2048
   autoConnect: 0
-  autoConnectHostId: 
+  autoConnectHostId: 7colorcrystals
   settings:
     ClientLanguage: en-US
     SocketBufferSize: 500000
@@ -339,9 +325,9 @@ MonoBehaviour:
     HandleExistingMessagesOnConnect: 1
     DownloadGiftInfo: 1
     PrintToConsole: 1
-    LogLevel: 7
+    LogLevel: 3
     PrintMessageData: 0
-    CheckForUnparsedData: 0
+    CheckForUnparsedData: 1
   onException:
     m_PersistentCalls:
       m_Calls: []

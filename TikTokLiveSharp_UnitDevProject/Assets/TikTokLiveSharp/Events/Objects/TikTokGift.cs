@@ -1,5 +1,4 @@
 using TikTokLiveSharp.Models.Protobuf;
-using TikTokLiveSharp.Unity.Utils;
 
 namespace TikTokLiveSharp.Events.MessageData.Objects
 {
@@ -27,10 +26,10 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
 
         internal virtual void FinishStreak()
         {
-            StreakFinished = true;
-#if UNITY
-            Dispatcher.RunOnMainThread(() => {
+#if UNITY // This Code is strictly for TikTokLive-Unity
+            TikTokLiveUnity.Utils.Dispatcher.RunOnMainThread(() => {
 #endif
+                StreakFinished = true;
                 OnStreakFinished?.Invoke(this, Amount);
 #if UNITY
             });
@@ -39,10 +38,10 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
 
         internal void UpdateGiftAmount(uint amount)
         {
-            Amount = amount;
-#if UNITY
-            Dispatcher.RunOnMainThread(() => {
+#if UNITY // This Code is strictly for TikTokLive-Unity
+            TikTokLiveUnity.Utils.Dispatcher.RunOnMainThread(() => {
 #endif
+                Amount = amount;
                 OnAmountChanged?.Invoke(this, amount);
 #if UNITY
             });

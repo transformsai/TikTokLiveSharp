@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace TikTokLiveSharp.Client.Sockets
+namespace TikTokLiveSharp.Client.Socket
 {
     /// <summary>
     /// Interface for WebSocket-Connection to TikTok-servers
@@ -27,7 +27,7 @@ namespace TikTokLiveSharp.Client.Sockets
         Task Disconnect();
 
         /// <summary>
-        /// Recieves a message from websocket
+        /// Receives a message from websocket
         /// </summary>
         /// <returns>Task to Await. Result is Response-Message from Socket</returns>
         Task<TikTokWebSocketResponse> ReceiveMessage();

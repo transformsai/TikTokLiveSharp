@@ -6,13 +6,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using TikTokLiveSharp.Client;
 using TikTokLiveSharp.Client.Proxy;
-using TikTokLiveSharp.Client.Requests;
 using TikTokLiveSharp.Errors.Permissions;
 using TikTokLiveSharp.Models.Protobuf;
 
-namespace TikTokLiveSharp.Networking
+namespace TikTokLiveSharp.Client.HTTP
 {
     /// <summary>
     /// HTTP-Client for TikTok-WebPage & Signing-Page

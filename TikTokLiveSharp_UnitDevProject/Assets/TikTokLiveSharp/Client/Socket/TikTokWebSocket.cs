@@ -3,9 +3,9 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using TikTokLiveSharp.Client.Requests;
+using TikTokLiveSharp.Client.HTTP;
 
-namespace TikTokLiveSharp.Client.Sockets
+namespace TikTokLiveSharp.Client.Socket
 {
     /// <summary>
     /// WebSocket-Connection to TikTok-servers
@@ -23,14 +23,19 @@ namespace TikTokLiveSharp.Client.Sockets
         /// </para>
         /// </summary>
         private uint bufferSize;
+        /// <summary>
+        /// Token used to Cancel this Connection
+        /// </summary>
+        private CancellationToken token;
 
         /// <summary>
         /// Creates a TikTok WebSocket instance
         /// </summary>
         /// <param name="cookieContainer">The cookie container to use</param>
         /// <param name="buffSize">Size for Message-Buffer</param>
-        public TikTokWebSocket(TikTokCookieJar cookieContainer, uint buffSize = 500_000)
+        public TikTokWebSocket(TikTokCookieJar cookieContainer, CancellationToken? token = null, uint buffSize = 500_000)
         {
+            this.token = token ?? CancellationToken.None;
             bufferSize = buffSize;
             clientWebSocket = new ClientWebSocket();
             clientWebSocket.Options.AddSubProtocol("echo-protocol");
@@ -48,7 +53,7 @@ namespace TikTokLiveSharp.Client.Sockets
         /// <returns>Task to await</returns>
         public async Task Connect(string url)
         {
-            await clientWebSocket.ConnectAsync(new Uri(url), CancellationToken.None);
+            await clientWebSocket.ConnectAsync(new Uri(url), token);
         }
 
         /// <summary>
@@ -57,7 +62,7 @@ namespace TikTokLiveSharp.Client.Sockets
         /// <returns>Task to await</returns>
         public async Task Disconnect()
         {
-            await clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+            await clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
         }
 
         /// <summary>
@@ -67,17 +72,17 @@ namespace TikTokLiveSharp.Client.Sockets
         /// <returns>Task to await</returns>
         public async Task WriteMessage(ArraySegment<byte> arr)
         {
-            await clientWebSocket.SendAsync(arr, WebSocketMessageType.Binary, true, CancellationToken.None);
+            await clientWebSocket.SendAsync(arr, WebSocketMessageType.Binary, true, token);
         }
 
         /// <summary>
-        /// Recieves a message from websocket
+        /// Receives a message from websocket. Result is Response-Message from Socket
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task to Await</returns>
         public async Task<TikTokWebSocketResponse> ReceiveMessage()
         {
             var arr = new ArraySegment<byte>(new byte[bufferSize]);
-            WebSocketReceiveResult response = await clientWebSocket.ReceiveAsync(arr, CancellationToken.None);
+            WebSocketReceiveResult response = await clientWebSocket.ReceiveAsync(arr, token);
             if (response.MessageType == WebSocketMessageType.Binary)
                 return new TikTokWebSocketResponse(arr.Array, response.Count);
             return null;

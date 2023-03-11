@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace TikTokLiveSharp.Unity.Utils
+namespace TikTokLiveUnity.Utils
 {
     /// <summary>
     /// Downloads & Caches Textures & Sprites
@@ -48,7 +48,9 @@ namespace TikTokLiveSharp.Unity.Utils
         {
             MAX_CACHE_SIZE = maxCacheSize;
         }
-
+        /// <summary>
+        /// Clears Dictionaries to minimize floating References to Textures
+        /// </summary>
         ~TextureCache() 
         {
             textureCache.Clear();
@@ -59,8 +61,11 @@ namespace TikTokLiveSharp.Unity.Utils
         #endregion
 
         #region Methods
-
-
+        /// <summary>
+        /// Requests a Texture from the Caches
+        /// </summary>
+        /// <param name="urls">URLs for Texture. Uses first with valid extension</param>
+        /// <param name="onComplete">Callback for Texture-Retrieval</param>
         public void RequestImage(IEnumerable<string> urls, Action<Texture2D> onComplete = null)
         {
             if (urls == null || urls.Count() == 0)
@@ -98,7 +103,11 @@ namespace TikTokLiveSharp.Unity.Utils
             }
             Dispatcher.RunCoroutineOnMainThread(DownloadTexture(url, OnCompleteDownload));
         }
-
+        /// <summary>
+        /// Requests a Sprite from the Caches
+        /// </summary>
+        /// <param name="urls">URLs for Texture. Uses first with valid extension</param>
+        /// <param name="onComplete">Callback for Sprite-Retrieval</param>
         public void RequestSprite(IEnumerable<string> urls, Action<Sprite> onComplete = null)
         {
             if (urls == null || urls.Count() == 0)
@@ -110,7 +119,6 @@ namespace TikTokLiveSharp.Unity.Utils
                 RequestSprite(url, onComplete);
             else onComplete?.Invoke(null);
         }
-
         /// <summary>
         /// Requests a Sprite from the Cache
         /// </summary>
@@ -156,7 +164,6 @@ namespace TikTokLiveSharp.Unity.Utils
             };
             RequestImage(url, texOnComplete);
         }
-
         /// <summary>
         /// Callback for Download-Completion. 
         /// Handles stored User-Callbacks
