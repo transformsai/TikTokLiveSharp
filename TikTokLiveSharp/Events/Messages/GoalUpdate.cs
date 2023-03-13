@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -22,10 +22,10 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
             : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
             Picture = new Objects.Picture(msg.Picture);
-            GoalId = msg.Id1;
-            EventType = msg.Data1.EventType;
-            Label = msg.Details.Label;
-            Users = msg.Details.Users.Select(u => new Objects.User(u.UserId, null, u.Nickname, null, new Objects.Picture(u.ProfilePicture), null, null, null, 0, 0, 0, null)).ToList();
+            GoalId = msg.Id;
+            EventType = msg.Data.Type;
+            Label = msg.UpdateData.Label;
+            Users = msg.UpdateData.Users.Select(u => new Objects.User(u.Id, null, u.Nickname, null, new Objects.Picture(u.ProfilePicture), null, null, null, 0, 0, 0, null)).ToList();
         }
     }
 }

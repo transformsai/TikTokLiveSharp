@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -14,8 +14,8 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
             base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
             Language = msg.Language;
-            Data = new List<uint>{ msg.Data2.Data1, msg.Data2.Data2, msg.Data2.Data3 };
-            Timings = new List<ulong> { msg.Timestamps.TimeStamp1, msg.Timestamps.TimeStamp2, msg.Timestamps.TimeStamp3 };
+            Data = new List<uint>{ (uint)msg.Data2.Data1, msg.Data2.Data2, msg.Data2.Data3 };
+            Timings = new List<ulong> { msg.Timestamps.Timestamp1, msg.Timestamps.Timestamp2, msg.Timestamps.Timestamp3 };
         }
     }
 }

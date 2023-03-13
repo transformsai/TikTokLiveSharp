@@ -1123,7 +1123,7 @@ message WebcastRoomUserSeqMessage {
 // Sent for a variety of events, including Follow & Share
 message WebcastSocialMessage {
   SocialMessageHeader header = 1;
-  User sender = 2;
+  User sender = 2; // CAN BE NULL
   uint64 data1 = 3; // Exists on Share-Message
   uint64 data2 = 4;
   string data3 = 5;

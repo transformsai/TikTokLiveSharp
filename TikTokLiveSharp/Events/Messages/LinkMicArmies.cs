@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -20,7 +20,7 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         internal LinkMicArmies(WebcastLinkMicArmies msg)
             : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
-            BattleId = msg.Id1;
+            BattleId = msg.Id;
             Armies = msg.BattleItems.Select(a => new Objects.LinkMicArmy(a)).ToList();
             Picture = new Objects.Picture(msg.Picture);
             BattleStatus = msg.BattleStatus;

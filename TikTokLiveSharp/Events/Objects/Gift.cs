@@ -1,5 +1,3 @@
-using TikTokLiveSharp.Models.Protobuf;
-
 namespace TikTokLiveSharp.Events.MessageData.Objects
 {
     public sealed class Gift
@@ -9,18 +7,18 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
         public readonly string Description;
         public readonly uint DiamondCost;
 
-        public readonly int Type;
+        public readonly uint Type;
 
         public readonly Picture Picture;
 
-        internal Gift(WebcastGiftMessageGiftDetails gift)
+        internal Gift(Models.Protobuf.Objects.Gift gift)
         {
-            Id = gift.GiftId;
-            Name = gift.GiftName;
-            Description = gift.Describe;
-            DiamondCost = gift.DiamondCount;
+            Id = gift.Id;
+            Name = gift.Name;
+            Description = gift.Description;
+            DiamondCost = gift.CoinCount;
             Type = gift.GiftType;
-            Picture = new Picture(gift.giftImage.PictureUrl);
+            Picture = new Picture(gift.Image);
         }
     }
 }

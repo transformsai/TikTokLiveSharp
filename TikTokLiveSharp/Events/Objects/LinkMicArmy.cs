@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using TikTokLiveSharp.Models.Protobuf;
 
 namespace TikTokLiveSharp.Events.MessageData.Objects
 {
@@ -8,9 +7,9 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
     {
         public sealed class Army
         {
-            public readonly IReadOnlyList<Objects.User> Users;
-            public readonly int Points;
-            public Army(List<Objects.User> users, int points)
+            public readonly IReadOnlyList<User> Users;
+            public readonly uint Points;
+            public Army(List<User> users, uint points)
             {
                 Users = users;
                 Points = points;
@@ -26,10 +25,15 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
             Armies = armies;
         }
 
-        internal LinkMicArmy(WebcastLinkMicArmiesItems army)
+        internal LinkMicArmy(Models.Protobuf.Objects.LinkMicArmiesItems army)
         {
             ArmyId = army.HostUserId;
-            Armies = army.BattleGroups.Select(g => new Army(g.Users.Select(u => new Objects.User(u)).ToList(), g.Points)).ToList();
+            Armies = army.BattleGroups.Select(g => new Army(g.Users.Select(u => 
+            {
+                if (u != null)
+                    return new Objects.User(u);
+                return null;
+            }).ToList(), g.Points)).ToList();
         }
     }
 }

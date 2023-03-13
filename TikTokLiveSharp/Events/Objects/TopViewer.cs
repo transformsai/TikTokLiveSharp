@@ -6,10 +6,11 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
         public readonly User User;
         public readonly uint CoinsGiven;
 
-        internal TopViewer(Models.Protobuf.TopViewer viewer)
+        internal TopViewer(Models.Protobuf.Objects.TopViewer viewer)
         {
-            Rank = viewer.Rank;
-            User = new User(viewer.User);
+            Rank = viewer.Rank; 
+            if (viewer.User != null)
+                User = new User(viewer.User);
             CoinsGiven = viewer.CoinsGiven;
         }
     }

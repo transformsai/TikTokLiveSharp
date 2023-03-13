@@ -1,4 +1,4 @@
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -9,7 +9,8 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         internal Subscribe(WebcastMemberMessage msg)
             : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
-            NewSubscriber = new Objects.User(msg.User);
+            if (msg.Sender != null)
+                NewSubscriber = new Objects.User(msg.Sender);
         }
     }
 }

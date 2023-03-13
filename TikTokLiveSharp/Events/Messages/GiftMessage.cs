@@ -1,4 +1,4 @@
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -18,9 +18,10 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
             base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
             Gift = new Objects.Gift(msg.GiftDetails);
-            Sender = new Objects.User(msg.User);
+            if (msg.Sender != null)
+                Sender = new Objects.User(msg.Sender);
             PurchaseId = msg.LogId;
-            Receipt = msg.ReceiptJSON;
+            Receipt = msg.ReceiptJson;
             Amount = msg.Amount;
             StreakFinished = msg.RepeatEnd;
             StreakIndex = msg.RepeatCount;

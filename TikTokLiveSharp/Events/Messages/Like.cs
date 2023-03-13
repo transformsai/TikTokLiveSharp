@@ -1,4 +1,4 @@
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -19,7 +19,8 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         internal Like(WebcastSocialMessage msg)
             : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
-            Sender = new Objects.User(msg.User);
+            if (msg.Sender != null)
+                Sender = new Objects.User(msg.Sender);
             Count = 1;
             TotalLikes = 0;
         }
@@ -27,8 +28,9 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         internal Like(WebcastLikeMessage msg) 
             : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
-            Sender = new Objects.User(msg.User);
-            Count = msg.LikeCount;
+            if (msg.Sender != null)
+                Sender = new Objects.User(msg.Sender);
+            Count = msg.Count;
             TotalLikes = msg.TotalLikes;
         }
     }

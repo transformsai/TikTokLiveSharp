@@ -1,4 +1,4 @@
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -11,7 +11,7 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         internal RoomMessage(WebcastRoomMessage msg)
             : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
-            Message = msg.Data1;
+            Message = msg.Data;
         }
 
         internal RoomMessage(SystemMessage msg)
@@ -22,7 +22,7 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
             Message = msg.Message;
         }
 
-        internal RoomMessage(Models.Protobuf.RoomMessage msg)
+        internal RoomMessage(Models.Protobuf.Messages.RoomMessage msg)
             : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
             Host = null;
@@ -33,7 +33,8 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         internal RoomMessage(WebcastLiveIntroMessage msg) 
             : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
-            Host = new Objects.User(msg.RoomOwner);
+            if (msg.Host != null)
+                Host = new Objects.User(msg.Host);
             Message = msg.Description;
             HostLanguage = msg.Language;
         }

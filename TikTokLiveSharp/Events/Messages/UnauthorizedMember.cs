@@ -1,4 +1,4 @@
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -13,9 +13,9 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         internal UnauthorizedMember(WebcastUnauthorizedMemberMessage msg) 
             : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
-            Data = msg.Data3;
-            Event = (msg.Detail1.EventType, msg.Detail1.Label);
-            Underlying = (msg.Detail2.EventType, msg.Detail2.Label);
+            Data = msg.Data2;
+            Event = (msg.Details1.Type, msg.Details1.Label);
+            Underlying = (msg.Details2.Type, msg.Details2.Label);
         }
     }
 }

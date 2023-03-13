@@ -1,4 +1,4 @@
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -14,14 +14,16 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         internal Join(WebcastSocialMessage msg)
             : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
-            User = new Objects.User(msg.User);
+            if (msg.Sender != null)
+                User = new Objects.User(msg.Sender);
             TotalViewers = 0;
         }
 
         internal Join(WebcastMemberMessage msg)
             : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
-            User = new Objects.User(msg.User);
+            if (msg.Sender != null)
+                User = new Objects.User(msg.Sender);
             TotalViewers = msg.TotalViewers;
         }
     }

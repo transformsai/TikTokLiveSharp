@@ -102,6 +102,6 @@ namespace TikTokLiveSharp.Client.Socket
         /// <summary>
         /// Is the websocket currently connected?
         /// </summary>
-        public bool IsConnected => clientWebSocket.State == WebSocketState.Open;
+        public bool IsConnected => clientWebSocket != null && clientWebSocket.State == WebSocketState.Open;
     }
 }

@@ -1,4 +1,4 @@
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -6,10 +6,11 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
     {
         public readonly Objects.User User;
 
-        internal SubNotify(WebcastSubNotifyMessage msg) 
+        internal SubNotify(WebcastSubnotifyMessage msg) 
             : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
-            User = new Objects.User(msg.User);
+            if (msg.Sender != null)
+                User = new Objects.User(msg.Sender);
         }
     }
 }

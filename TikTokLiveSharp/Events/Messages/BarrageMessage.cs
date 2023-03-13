@@ -1,6 +1,5 @@
-using System.Collections.Generic;
 using System.Linq;
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -14,14 +13,19 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
 
         public readonly Objects.BarrageData BarrageData;
 
-        internal BarrageMessage(WebcastBarrageMessage msg) : 
+        internal BarrageMessage(WebcastBarrageMessage msg) :
             base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
             Picture = new Objects.Picture(msg.Picture);
             Picture2 = new Objects.Picture(msg.Picture2);
             Picture3 = new Objects.Picture(msg.Picture3);
             User = new Objects.User(msg.UserData.User);
-            BarrageData = new Objects.BarrageData(msg.Data2.EventType, msg.Data2.Label, msg.Data2.Data1.Select(d => (new Objects.User(d.User.User), d.Data2)).ToList());
+            BarrageData = new Objects.BarrageData(msg.Message.EventType, msg.Message.Label, msg.Message?.Data1?.Select(d =>
+            {
+                if (d.User?.User != null)
+                    return (new Objects.User(d.User?.User), d.Data2);
+                return (null, d.Data2);
+            }).ToList());
         }
     }
 }

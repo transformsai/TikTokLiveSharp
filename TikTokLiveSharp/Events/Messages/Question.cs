@@ -1,4 +1,4 @@
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -12,11 +12,12 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         internal Question(WebcastQuestionNewMessage msg) 
             : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
-            var data = msg.QuestionDetails;
+            var data = msg.Details;
             QuestionId = data.Id;
-            Text = data.QuestionText;
+            Text = data.Text;
             Time = data.Timestamp;
-            User = new Objects.User(data.User);
+            if (data?.User != null)
+                User = new Objects.User(data.User);
         }
     }
 }

@@ -1,4 +1,4 @@
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -9,7 +9,7 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         internal InRoomBanner(WebcastInRoomBannerMessage msg)
             : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
         {
-            JSON = msg.JsonData;
+            JSON = msg.Json;
         }
     }
 }
