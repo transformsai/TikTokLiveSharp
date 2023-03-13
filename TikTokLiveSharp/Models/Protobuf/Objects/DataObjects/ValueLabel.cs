@@ -16,5 +16,10 @@ namespace TikTokLiveSharp.Models.Protobuf.Objects
         [ProtoMember(3)]
         [DefaultValue("")]
         public string Label2 { get; set; } = "";
+
+
+        [ProtoMember(11)]
+        [DefaultValue("")]
+        public string Label3 { get; set; } = "";
     }
 }

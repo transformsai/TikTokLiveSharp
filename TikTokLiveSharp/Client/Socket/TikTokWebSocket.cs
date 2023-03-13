@@ -27,6 +27,10 @@ namespace TikTokLiveSharp.Client.Socket
         /// Token used to Cancel this Connection
         /// </summary>
         private CancellationToken token;
+        /// <summary>
+        /// Buffer used to store incoming Messages
+        /// </summary>
+        private byte[] buffer;
 
         /// <summary>
         /// Creates a TikTok WebSocket instance
@@ -37,13 +41,14 @@ namespace TikTokLiveSharp.Client.Socket
         {
             this.token = token ?? CancellationToken.None;
             bufferSize = buffSize;
+            buffer = new byte[bufferSize];
             clientWebSocket = new ClientWebSocket();
             clientWebSocket.Options.AddSubProtocol("echo-protocol");
             clientWebSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(15);
             StringBuilder cookieHeader = new StringBuilder();
             foreach (string cookie in cookieContainer)
                 cookieHeader.Append(cookie);
-            clientWebSocket.Options.SetRequestHeader("Cookie", cookieHeader.ToString());
+            clientWebSocket.Options.SetRequestHeader("Cookie", cookieHeader.ToString());            
         }
 
         /// <summary>
@@ -92,7 +97,7 @@ namespace TikTokLiveSharp.Client.Socket
         public async Task<TikTokWebSocketResponse> ReceiveMessage()
         {
             token.ThrowIfCancellationRequested();
-            var arr = new ArraySegment<byte>(new byte[bufferSize]);
+            var arr = new ArraySegment<byte>(buffer);
             WebSocketReceiveResult response = await clientWebSocket.ReceiveAsync(arr, token);
             if (response.MessageType == WebSocketMessageType.Binary)
                 return new TikTokWebSocketResponse(arr.Array, response.Count);
