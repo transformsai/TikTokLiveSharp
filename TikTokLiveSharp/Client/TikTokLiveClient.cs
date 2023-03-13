@@ -864,12 +864,12 @@ namespace TikTokLiveSharp.Client
         {
             switch (msg.Action)
             {
-                case MemberMessageAction.Joined:
+                case (int)MemberMessageAction.Joined:
                     if (ShouldLog(LogLevel.Verbose))
                         Debug.Log("Handling Join");
                     RunEvent(OnJoin, new Join(msg));
                     return;
-                case MemberMessageAction.Subscribed:
+                case (int)MemberMessageAction.Subscribed:
                     if (ShouldLog(LogLevel.Verbose))
                         Debug.Log("Handling Subscribe");
                     RunEvent(OnSubscribe, new Subscribe(msg));
@@ -878,7 +878,7 @@ namespace TikTokLiveSharp.Client
 //                case 27: // ?? (Done by host? (User null, User2 == host))
 //                case 50: // Share?
                 default:
-                case MemberMessageAction.Unknown:
+                case (int)MemberMessageAction.Unknown:
                     if (ShouldLog(LogLevel.Warning))
                         Debug.LogWarning("Handling UnhandledMemberMessage!");
                     RunEvent(UnhandledMemberEvent, msg);

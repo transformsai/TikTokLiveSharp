@@ -157,10 +157,10 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages
         [ProtoMember(1)]
         public uint Data1 { get; set; }
 
-        [ProtoMember(2)]
+        [ProtoMember(3)]
         public uint Data2 { get; set; }
 
-        [ProtoMember(3)]
+        [ProtoMember(4)]
         public List<string> Urls { get; set; } = new List<string>();
     }
 }

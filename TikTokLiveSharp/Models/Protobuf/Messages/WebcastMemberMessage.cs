@@ -35,7 +35,7 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages
         public User User2 { get; set; }
 
         [ProtoMember(10)]
-        public MemberMessageAction Action { get; set; }
+        public int Action { get; set; }
 
         /// <summary>
         /// Identical to details in Header
@@ -71,8 +71,7 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages
         [DefaultValue("")]
         public string Data4 { get; set; } = "";
 
-//        [ProtoMember(24)]
-        [DefaultValue("")]
-        public string Data5 { get; set; } = "";
+        [ProtoMember(24)]
+        public uint Data5 { get; set; }
     }
 }

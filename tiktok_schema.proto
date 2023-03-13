@@ -88,48 +88,6 @@ message WebcastResponse {
 
 */
 
-message UserContainer {
-  User user = 1;
-  uint32 data1 = 2;
-}
-
-// Links IDs & data
-message IdData 
-{
-  string data1 = 1;
-  string id1 = 2;
-  string data2 = 3;
-  string id2 = 4;
-}
-
-message IdContainer {
-  uint64 id1 = 1;
-  uint64 id2 = 2;
-}
-
-// Container for Strings
-message StringData {
-  string data1 = 1;
-  string data2 = 2;
-}
-
-// Type & Value
-message TypeValue {
-  string type = 1;
-  uint32 data = 2;
-}
-
-message ValueLabel {
-  uint32 data = 1;
-  string label = 2;
-  string label2 = 3;
-}
-
-message TimeData {
-  uint32 data = 1;
-  uint64 timeStamp = 3;
-}
-
 // Container for uint-Data
 message DataContainer {
   uint64 data1 = 1;
@@ -143,6 +101,34 @@ message DataContainer {
   uint32 data9 = 9;
 }
 
+// Links 2 Ids
+message IdContainer {
+  uint64 id1 = 1;
+  uint64 id2 = 2;
+}
+
+// Links IDs & data
+message IdData 
+{
+  string data1 = 1;
+  string id1 = 2;
+  string data2 = 3;
+  string id2 = 4;
+}
+
+// Container for Strings
+message StringData {
+  string data1 = 1;
+  string data2 = 2;
+}
+
+// Links Data & Timestamp
+message TimeData {
+  uint32 data = 1;
+  uint64 timeStamp = 2;
+  uint64 timeStamp2 = 3;
+}
+
 // Container for multiple Timestamps
 message TimeStampContainer {
   uint64 timestamp1 = 1;
@@ -150,49 +136,22 @@ message TimeStampContainer {
   uint64 timestamp3 = 3;
 }
 
-message TikTokColor {
-  string color = 1;
-  uint64 id = 4;
-  uint32 data1 = 6;
+// Type & Value
+message TypeValue {
+  string type = 1;
+  uint32 data = 2;
 }
 
-// TikTok-User
-message User {
-  uint64 userId = 1;
+message UserContainer {
+  User user = 1;
   uint32 data1 = 2;
-  string nickname = 3; // Name set in Profile
-  string description = 5; // User-Description
-  Picture profilePicture = 9; // Avatar
-  Picture picture720 = 10; // 720p
-  Picture picture1080 = 11; // 1080p
-  uint32 data2 = 15;
-  uint64 data3 = 16;
-  repeated Picture additionalPictures = 21;
-  FollowerData followerData = 22;
-  string userString1 = 23;
-  UserRanking userRank1 = 25;
-  string userString2 = 32;
-  uint64 data4 = 37;
-  string uniqueId = 38; // @-ID for user
-  string data5 = 46;
-  UserRanking userRank2 = 61;
-  repeated Badge badges = 64;
-  string userIdString = 1028;
-  
-  // Data about Follower-Counts
-  message FollowerData {
-    uint32 following = 1; // Amount this user Follows
-    uint32 followers = 2; // Amount following this user
-    uint32 followsHost = 3; // Relative Role of this User to the Host. IS AN ENUM
-  }
-  
-  message UserRanking {
-    Picture img1 = 1;
-    string eventType = 3;
-    Picture img2 = 4;
-    IdData id1 = 5;
-    IdData id2 = 6;
-  }
+}
+
+message ValueLabel {
+  uint32 data = 1;
+  string label = 2;
+  string label2 = 3;
+  string label3 = 11;
 }
 
 
@@ -219,13 +178,13 @@ message Badge {
   }
   
   message BadgeImage {
-    int32 displayType = 1;
+    uint32 displayType = 1; // Is an Enum
     Picture image = 2;
   }
   
   message BadgeComplex {
     uint32 data1 = 1;
-    Picture image = 2;
+    string imageUrl = 2;
     string data = 4;
     DataContainer detail1 = 5;
     string data2 = 6;
@@ -244,7 +203,7 @@ message Gift {
   uint64 id = 5; // Gift-Id
   int32 data2 = 7;
   int32 data3 = 10;
-  int32 giftType = 11; // SHOULD BE AN ENUM?
+  uint32 giftType = 11; // SHOULD BE AN ENUM?
   uint32 coinCount = 12; // Value of Gift
   int32 data4 = 13;
   uint32 data5 = 14;
@@ -307,46 +266,59 @@ message GiftReceipt {
   string data1 = 11; // 270504 (Id?)
 }
 
-// Is part of WebcastGiftBroadcastMessage. Thus far not seen sent seperately
-message WebcastRoomNotifyMessage {
-  string type = 1;
-  uint64 id1 = 2;
-  uint64 id2 = 3;
-  uint64 timeStamp = 4;
-  uint32 data1 = 6;
-  NotifyData data = 8;
+message GoalUpdateData {
+  uint64 id = 1;
+  uint32 data1 = 2;
+  uint32 data2 = 3;
+  GoalUpdateDetails details = 4;
+  string label = 5;
+  uint32 data3 = 6;
+  uint32 data4 = 7;
+  uint64 timeStamp2 = 8;
+  uint64 timeStamp3 = 9;
+  repeated GoalUpdateUser users = 11;
+  uint32 data5 = 12;
+  string idString = 13;
+  string label2 = 14; // same as label?
+}
+
+message GoalUpdateDetails {
+  uint32 data1 = 1;
+  uint32 data2 = 2;
+  uint32 data3 = 3;
+  uint32 data4 = 4;
+  GoalUpdateGiftData data5 = 5;
+  string data6 = 6;
   
-  message NotifyData {
-    string type = 1;
-    string label = 2;
-    TikTokColor color = 3;
-    repeated GiftDetailsData data = 4;
+  message GoalUpdateGiftData {
+    string name = 1;
+    Picture picture = 2;
+    uint32 data1 = 3;
+    uint32 data2 = 4;
   }
 }
 
-// Links to Image-Files on the TikTok CDN
-message Picture {
-  repeated string urls = 1; // Usually has 3 different urls with different sizes/extensions
-  string prefix = 2; // uri
-  uint32 data1 = 3;
-  uint32 data2 = 4;
-  string color = 5;
-  uint32 data3 = 6;
-  string additionalUrl = 7;
-  string data4 = 8;
-}
-
-message TopViewer {
-  uint32 coinsGiven = 1; // Coins given to Room
-  User user = 2; // 
-  uint32 rank = 3; // Index in list
-}
-
-message Ranking {
-  string type = 1;
-  string label = 2;
-  TikTokColor color = 3;
-  ValueLabel details = 4;
+message GoalUpdateUser {
+  uint64 id = 1;
+  Picture profilePicture = 2;
+  string nickname = 3;
+  uint64 timeStamp = 4;
+  string idString = 5;
+  uint32 data1 = 6;
+  uint32 data2 = 7;
+  GoalUpdateUserDetails details = 10;
+  
+  message GoalUpdateUserDetails {
+    uint32 data1 = 1;
+    uint32 data2 = 2;
+    uint32 data3 = 3;
+    GoalUserPictureContainer links = 10;
+    
+    message GoalUserPictureContainer {
+      uint32 data1 = 1;
+      Picture links = 2;
+    }
+  }
 }
 
 message LikeData {
@@ -357,11 +329,7 @@ message LikeData {
   
   message LikeUserContainer {
     uint64 data1 = 1;
-    LikeUser user = 21;
-    
-    message LikeUser {
-      User user = 1;
-    }
+    UserContainer user = 21;
   }
 }
 
@@ -371,12 +339,12 @@ message LinkMicArmiesItems {
   
   message LinkMicArmiesGroup {
     repeated User users = 1;
-    int32 points = 2;
+    uint32 points = 2;
   }
 }
 
 message MessageDetails {
-  int32 data1 = 1;
+  uint32 data1 = 1;
   TikTokColor color = 2;
   string category = 11;
   UserContainer user = 21;
@@ -403,6 +371,92 @@ message RankTextMessage {
   repeated MessageDetails details = 4;
 }
 
+// Links to Image-Files on the TikTok CDN
+message Picture {
+  repeated string urls = 1; // Usually has 3 different urls with different sizes/extensions
+  string prefix = 2; // uri
+  uint32 data1 = 3;
+  uint32 data2 = 4;
+  string color = 5;
+  uint32 data3 = 6;
+  string additionalUrl = 7;
+  string data4 = 8;
+}
+
+message Ranking {
+  string type = 1;
+  string label = 2;
+  TikTokColor color = 3;
+  ValueLabel details = 4;
+}
+
+message TikTokColor {
+  string color = 1;
+  uint64 id = 4;
+  uint32 data1 = 6;
+}
+
+message TopViewer {
+  uint32 coinsGiven = 1; // Coins given to Room
+  User user = 2; // 
+  uint32 rank = 3; // Index in list
+}
+
+// TikTok-User
+message User {
+  uint64 userId = 1;
+  uint32 data1 = 2;
+  string nickname = 3; // Name set in Profile
+  string description = 5; // User-Description
+  Picture profilePicture = 9; // Avatar
+  Picture picture720 = 10; // 720p
+  Picture picture1080 = 11; // 1080p
+  uint32 data2 = 15;
+  uint64 data3 = 16;
+  repeated Picture additionalPictures = 21;
+  FollowerData followerData = 22;
+  string userString1 = 23;
+  UserRanking userRank1 = 25;
+  string userString2 = 32;
+  uint64 data4 = 37;
+  string uniqueId = 38; // @-ID for user
+  string data5 = 46;
+  UserRanking userRank2 = 61;
+  repeated Badge badges = 64;
+  string userIdString = 1028;
+  
+  // Data about Follower-Counts
+  message FollowerData {
+    uint32 following = 1; // Amount this user Follows
+    uint32 followers = 2; // Amount following this user
+    uint32 followsHost = 3; // Relative Role of this User to the Host. IS AN ENUM
+  }
+  
+  message UserRanking {
+    Picture img1 = 1;
+    string eventType = 3;
+    Picture img2 = 4;
+    IdData id1 = 5;
+    IdData id2 = 6;
+  }
+}
+
+// Is part of WebcastGiftBroadcastMessage. Thus far not seen sent seperately
+message WebcastRoomNotifyMessage {
+  string type = 1;
+  uint64 id1 = 2;
+  uint64 id2 = 3;
+  uint64 timeStamp = 4;
+  uint32 data1 = 6;
+  NotifyData data = 8;
+  
+  message NotifyData {
+    string type = 1;
+    string label = 2;
+    TikTokColor color = 3;
+    repeated GiftDetailsData data = 4;
+  }
+}
 
 /**
 
@@ -411,16 +465,6 @@ message RankTextMessage {
 -=-=-=-=-=-=-=-=-=-=-=
 
 */
-
-message SystemMessage {
-  MessageHeader header = 1;
-  string message = 2;
-}
-
-message RoomMessage {
-  MessageHeader header = 1;
-  string message = 2;
-}
 
 // Separate from WebcastLinkMicMethod. This contains RTC-Data
 message LinkMicMethod {
@@ -441,7 +485,16 @@ message LinkMicMethod {
   uint32 data10 = 51;
 }
 
-// ALL MESSAGES STARTING WITH "WEBCAST" ARE IN ALPHABETICAL ORDER
+message RoomMessage {
+  MessageHeader header = 1;
+  string message = 2;
+}
+
+message SystemMessage {
+  MessageHeader header = 1;
+  string message = 2;
+}
+
 message WebcastBarrageMessage {
   MessageHeader header = 1;
   uint32 data1 = 3;
@@ -537,7 +590,7 @@ message WebcastEmoteChatMessage {
     EmoteImage image = 2;
     
     message EmoteImage {
-      string url;
+      string url = 1;
     }
   }
 }
@@ -552,7 +605,7 @@ message WebcastEnvelopeMessage {
     string id = 1;
     uint32 data1 = 2;
     string username = 3;
-    string id2 = 11;
+    string id2 = 4;
   }
 }
 
@@ -567,16 +620,16 @@ message WebcastGiftBroadcastMessage {
     WebcastRoomNotifyMessage roomNotifyMessage = 1;
     string uri = 2;
     uint32 data1 = 3;
-    GiftBroadcastImageData imageData = 6;
+    GiftBroadCastImageDataContainer imageData = 6;
     string notifyType = 9;
     uint64 data2 = 10;
     StringData data3 = 11;
     
-    message GiftBroadcastImageData {
+    message GiftBroadCastImageDataContainer {
       uint32 data1 = 1;
-      GiftBroadcastImage image = 2;
+      GiftBroadcastImageData image = 2;
       
-      message GiftBroadcastImage {
+      message GiftBroadcastImageData {
         uint32 data1 = 1;
         uint32 data2 = 2;
         repeated string urls = 3;
@@ -646,61 +699,6 @@ message WebcastGoalUpdateMessage {
   uint32 data4 = 11;
   string idString = 12;
   TimeData timeData = 15;
-  
-  message GoalUpdateDetails {
-    uint32 data1 = 1;
-    uint32 data2 = 2;
-    uint32 data3 = 3;
-    uint32 data4 = 4;
-    GoalUpdateGiftData data5 = 5;
-    string data6 = 6;
-    
-    message GoalUpdateGiftData {
-      string name = 1;
-      Picture picture = 2;
-      uint32 data1 = 3;
-      uint32 data2 = 4;
-    }
-  }
-  
-  message GoalUpdateData {
-    uint64 id = 1;
-    uint32 data1 = 2;
-    uint32 data2 = 3;
-    GoalUpdateDetails details = 4;
-    string label = 5;
-    int32 data3 = 6;
-    uint32 data4 = 7;
-    uint64 timeStamp2 = 8;
-    uint64 timeStamp3 = 9;
-    repeated GoalUpdateUser users = 11;
-    uint32 data5 = 12;
-    string idString = 13;
-    string label2 = 14; // same as label?
-    
-    message GoalUpdateUser {
-      uint64 id = 1;
-      Picture profilePicture = 2;
-      string nickname = 3;
-      uint64 timeStamp = 4;
-      string idString = 5;
-      uint32 data1 = 6;
-      uint32 data2 = 7;
-      GoalUpdateUserDetails details = 10;
-      
-      message GoalUpdateUserDetails {
-        uint32 data1 = 1;
-        uint32 data2 = 2;
-        uint32 data3 = 3;
-        GoalUserPictureContainer links = 10;
-        
-        message GoalUserPictureContainer {
-          uint32 data1 = 1;
-          Picture links = 2;
-        }
-      }
-    }
-  }
 }
 
 message WebcastHourlyRankMessage {
@@ -880,7 +878,7 @@ message WebcastLinkMicFanTicketMethod {
 
 message WebcastLinkMicMethod {
   MessageHeader header = 1;
-  uint32 data1 = 2;
+  uint64 data1 = 2;
   uint64 id1 = 5;
   uint32 data2 = 6;
   uint32 data3 = 7;
@@ -1028,7 +1026,7 @@ message WebcastRankTextMessage {
 
 message WebcastRankUpdateMessage {
   MessageHeader header = 1;
-  RANKUPDATE
+  RankUpdateData data = 2;
   uint32 data1 = 3;
   uint32 data2 = 5;
   
@@ -1073,11 +1071,11 @@ message WebcastRoomPinMessage {
   
   message RoomPinMessageData {
     RoomPinMessageDataDetails details = 1;
-    User user = 2;
-    string message = 3;
-    User user2 = 12;
+    User sender = 2;
+    string comment = 3;
+    repeated User mentionedUsers = 12;
     string language = 14;
-    DataContainer data2 = 18;
+    DataContainer chatData = 18;
     
     // Basically a RoomPinMessageHeader
     message RoomPinMessageDataDetails { 
@@ -1221,16 +1219,16 @@ message GiftMessageHeader {
     repeated GiftHeaderGiftData giftData = 4;
     
     message GiftHeaderGiftData {
-      int32 data1 = 1;
+      uint32 data1 = 1;
       TikTokColor color = 2;
       string details = 11;
       UserContainer user = 21;
       GiftHeaderGiftDataDetails data2 = 22;
       
       message GiftHeaderGiftDataDetails {
-        uint32 data1 = 1;
+        uint64 data1 = 1;
         StringData details = 2; // 1 = DataType, 2 = GiftName
-        int32 data2 = 4;
+        uint64 data2 = 4;
       }
     }
   }
@@ -1243,6 +1241,7 @@ message LikeMessageHeader {
   uint64 serverTime = 4;
   uint32 data1 = 5;
   uint64 data2 = 6;
+  string description = 7
   LikeData likeData = 8;
   uint64 data3 = 9;
   uint64 data4 = 10;
@@ -1263,6 +1262,7 @@ message MemberMessageHeader {
   uint64 serverTime = 4;
   uint32 data1 = 5;
   uint64 data2 = 6;
+  string description = 7
   MemberMessageData messageData = 8;
   uint64 data3 = 9;
   uint64 data4 = 10;
@@ -1283,6 +1283,7 @@ message SocialMessageHeader {
   uint64 serverTime = 4;
   uint32 data1 = 5;
   uint64 data2 = 6;
+  string description = 7
   SocialMessageData socialData = 8;
   uint64 data3 = 9;
   uint64 data4 = 10;
