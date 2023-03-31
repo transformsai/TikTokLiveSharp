@@ -17,21 +17,21 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public readonly ulong TotalLikes;
 
         internal Like(WebcastSocialMessage msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            if (msg.Sender != null)
+            if (msg?.Sender != null)
                 Sender = new Objects.User(msg.Sender);
             Count = 1;
             TotalLikes = 0;
         }
 
         internal Like(WebcastLikeMessage msg) 
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            if (msg.Sender != null)
+            if (msg?.Sender != null)
                 Sender = new Objects.User(msg.Sender);
-            Count = msg.Count;
-            TotalLikes = msg.TotalLikes;
+            Count = msg?.Count ?? 0;
+            TotalLikes = msg?.TotalLikes ?? 0;
         }
     }
 }

@@ -11,11 +11,11 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public readonly ulong TotalFollowers;
 
         internal Follow(WebcastSocialMessage msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            if (msg.Sender != null)
+            if (msg?.Sender != null)
                 NewFollower = new Objects.User(msg.Sender);
-            TotalFollowers = msg.TotalFollowers;
+            TotalFollowers = msg?.TotalFollowers ?? 0;
         }
     }
 }

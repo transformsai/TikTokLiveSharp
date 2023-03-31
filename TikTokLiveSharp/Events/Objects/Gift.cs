@@ -13,12 +13,12 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
 
         internal Gift(Models.Protobuf.Objects.Gift gift)
         {
-            Id = gift.Id;
-            Name = gift.Name;
-            Description = gift.Description;
+            Id = gift?.Id ?? 0;
+            Name = gift?.Name;
+            Description = gift?.Description;
             DiamondCost = gift.CoinCount;
-            Type = gift.GiftType;
-            Picture = new Picture(gift.Image);
+            Type = gift?.GiftType ?? 0;
+            Picture = new Picture(gift?.Image);
         }
     }
 }

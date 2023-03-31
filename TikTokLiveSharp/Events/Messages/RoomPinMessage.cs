@@ -9,10 +9,10 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public Comment Comment;
 
         internal RoomPinMessage(WebcastRoomPinMessage msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            PinTimeStamp = msg.Timestamp;
-            Comment = new Comment(msg.PinData1);
+            PinTimeStamp = msg?.Timestamp ?? 0;
+            Comment = new Comment(msg?.PinData1);
         }
     }
 }

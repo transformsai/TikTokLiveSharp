@@ -11,17 +11,17 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public readonly uint Amount;
 
         public Share(WebcastSocialMessage msg, int amount)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            if (msg.Sender != null)
+            if (msg?.Sender != null)
                 User = new Objects.User(msg.Sender);
             Amount = (uint)amount;
         }
 
         internal Share(WebcastSocialMessage msg) 
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            if (msg.Sender != null)
+            if (msg?.Sender != null)
                 User = new Objects.User(msg.Sender);
             Amount = 1u;
         }

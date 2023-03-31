@@ -12,19 +12,19 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public readonly ulong TotalViewers;
 
         internal Join(WebcastSocialMessage msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            if (msg.Sender != null)
+            if (msg?.Sender != null)
                 User = new Objects.User(msg.Sender);
             TotalViewers = 0;
         }
 
         internal Join(WebcastMemberMessage msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            if (msg.Sender != null)
+            if (msg?.Sender != null)
                 User = new Objects.User(msg.Sender);
-            TotalViewers = msg.TotalViewers;
+            TotalViewers = msg?.TotalViewers ?? 0;
         }
     }
 }

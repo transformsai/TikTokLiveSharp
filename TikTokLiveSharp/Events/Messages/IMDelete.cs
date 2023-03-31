@@ -8,10 +8,10 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public readonly string Data2;
 
         internal IMDelete(WebcastImDeleteMessage msg) 
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            Data1 = msg.Data1;
-            Data2 = msg.Data2;
+            Data1 = msg?.Data1;
+            Data2 = msg?.Data2;
         }
     }
 }

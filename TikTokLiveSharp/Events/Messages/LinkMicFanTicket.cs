@@ -9,11 +9,11 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public readonly uint Data2;
 
         internal LinkMicFanTicket(WebcastLinkMicFanTicketMethod msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            Id = msg.Data.Details.Id;
-            Data1 = msg.Data.Data1;
-            Data2 = msg.Data.Details.Data;
+            Id = msg?.Data?.Details?.Id ?? 0;
+            Data1 = msg?.Data?.Data1 ?? 0;
+            Data2 = msg?.Data?.Details?.Data ?? 0;
         }
     }
 }

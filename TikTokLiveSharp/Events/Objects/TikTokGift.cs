@@ -19,11 +19,11 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
 
         public TikTokGift(WebcastGiftMessage message)
         {
-            Gift = new Gift(message.GiftDetails); 
-            if (message.Sender != null)
+            Gift = new Gift(message?.GiftDetails); 
+            if (message?.Sender != null)
                 Sender = new User(message.Sender);
-            Amount = message.Amount;
-            StreakFinished = message.RepeatEnd;
+            Amount = message?.Amount ?? 0;
+            StreakFinished = message?.RepeatEnd ?? true;
         }
 
         internal virtual void FinishStreak()

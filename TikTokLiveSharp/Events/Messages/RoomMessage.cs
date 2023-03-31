@@ -9,34 +9,34 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public readonly string Message;
 
         internal RoomMessage(WebcastRoomMessage msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            Message = msg.Data;
+            Message = msg?.Data;
         }
 
         internal RoomMessage(SystemMessage msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
             Host = null;
             HostLanguage = null;
-            Message = msg.Message;
+            Message = msg?.Message;
         }
 
         internal RoomMessage(Models.Protobuf.Messages.RoomMessage msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
             Host = null;
             HostLanguage = null;
-            Message = msg.Message;
+            Message = msg?.Message;
         }
 
         internal RoomMessage(WebcastLiveIntroMessage msg) 
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            if (msg.Host != null)
+            if (msg?.Host != null)
                 Host = new Objects.User(msg.Host);
-            Message = msg.Description;
-            HostLanguage = msg.Language;
+            Message = msg?.Description;
+            HostLanguage = msg?.Language;
         }
     }
 }

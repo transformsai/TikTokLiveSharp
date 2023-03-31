@@ -12,9 +12,9 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
 
         internal Badge(Models.Protobuf.Objects.Badge badge)
         {
-            TextBadges = badge.TextBadges == null ? null : new List<TextBadge>(badge.TextBadges.Select(b => new TextBadge(b.Type, b.Name)));
-            ImageBadges = badge.ImageBadges == null ? null : new List<ImageBadge>(badge.ImageBadges.Select(b => new ImageBadge(b.DisplayType, new Picture(b.Image))));
-            ComboBadges = badge.ComplexBadge == null ? null : new ComboBadge(new Picture(new List<string> { badge.ComplexBadge.ImageUrl }), badge.ComplexBadge.Data);
+            TextBadges = badge?.TextBadges == null ? null : new List<TextBadge>(badge.TextBadges.Select(b => new TextBadge(b.Type, b.Name)));
+            ImageBadges = badge?.ImageBadges == null ? null : new List<ImageBadge>(badge.ImageBadges.Select(b => new ImageBadge(b.DisplayType, new Picture(b.Image))));
+            ComboBadges = badge?.ComplexBadge == null ? null : new ComboBadge(new Picture(new List<string> { badge.ComplexBadge.ImageUrl }), badge.ComplexBadge.Data);
         }
     }
 

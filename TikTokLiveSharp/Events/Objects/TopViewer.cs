@@ -8,10 +8,10 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
 
         internal TopViewer(Models.Protobuf.Objects.TopViewer viewer)
         {
-            Rank = viewer.Rank; 
-            if (viewer.User != null)
+            Rank = viewer?.Rank ?? 0; 
+            if (viewer?.User != null)
                 User = new User(viewer.User);
-            CoinsGiven = viewer.CoinsGiven;
+            CoinsGiven = viewer?.CoinsGiven ?? 0;
         }
     }
 }

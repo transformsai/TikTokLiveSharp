@@ -27,13 +27,13 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
 
         internal LinkMicArmy(Models.Protobuf.Objects.LinkMicArmiesItems army)
         {
-            ArmyId = army.HostUserId;
-            Armies = army.BattleGroups.Select(g => new Army(g.Users.Select(u => 
+            ArmyId = army?.HostUserId ?? 0;
+            Armies = army?.BattleGroups?.Select(g => new Army(g?.Users?.Select(u => 
             {
                 if (u != null)
-                    return new Objects.User(u);
+                    return new User(u);
                 return null;
-            }).ToList(), g.Points)).ToList();
+            }).ToList(), g?.Points ?? 0)).ToList();
         }
     }
 }

@@ -45,17 +45,17 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
 
         internal User(Models.Protobuf.Objects.User user)
         {
-            UserId = user.UserId;
-            UniqueId = user.UniqueId;
-            NickName = user.NickName;
-            Description = user.Description;
-            ProfilePicture = new Picture(user.ProfilePicture);
-            Picture720 = user.Picture720 != null ? new Picture(user.Picture720) : null;
-            Picture1080 = user.Picture1080 != null ? new Picture(user.Picture1080) : null;
-            Following = user.FollowerData?.Following ?? 0;
-            Followers = user.FollowerData?.Followers ?? 0;
-            FollowsHost = user.FollowerData?.FollowsHost ?? 0;
-            if (user.Badges != null && user.Badges.Count > 0)
+            UserId = user?.UserId ?? 0;
+            UniqueId = user?.UniqueId;
+            NickName = user?.NickName;
+            Description = user?.Description;
+            ProfilePicture = new Picture(user?.ProfilePicture);
+            Picture720 = user?.Picture720 != null ? new Picture(user.Picture720) : null;
+            Picture1080 = user?.Picture1080 != null ? new Picture(user.Picture1080) : null;
+            Following = user?.FollowerData?.Following ?? 0;
+            Followers = user?.FollowerData?.Followers ?? 0;
+            FollowsHost = user?.FollowerData?.FollowsHost ?? 0;
+            if (user?.Badges != null && user.Badges.Count > 0)
                 Badges = new List<Badge>(user.Badges.Select(b => new Badge(b)));
         }
     }

@@ -13,12 +13,12 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public readonly IReadOnlyList<Objects.User> OtherUsers;
 
         internal LinkMessage(WebcastLinkMessage msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            Token = msg.Token;
-            if (msg.User?.User?.User != null)
-                User = new Objects.User(msg.User?.User?.User);
-            OtherUsers = msg.User?.OtherUsers.Select(u => u == null ? null : new Objects.User(u.User)).ToList();
+            Token = msg?.Token;
+            if (msg?.User?.User?.User != null)
+                User = new Objects.User(msg.User.User.User);
+            OtherUsers = msg?.User?.OtherUsers?.Select(u => u == null ? null : new Objects.User(u.User))?.ToList();
         }
     }
 }

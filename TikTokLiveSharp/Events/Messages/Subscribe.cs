@@ -7,9 +7,9 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public readonly Objects.User NewSubscriber;
 
         internal Subscribe(WebcastMemberMessage msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            if (msg.Sender != null)
+            if (msg?.Sender != null)
                 NewSubscriber = new Objects.User(msg.Sender);
         }
     }
