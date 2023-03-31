@@ -1,11 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.2.32505.173
+VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TikTokLiveSharp", "TikTokLiveSharp.csproj", "{D7BEE4FF-E9EA-4D1E-A685-47C91383DE17}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TikTokLiveSharpTestApplication", "..\TikTokLiveSharp_TestApplication\TikTokLiveSharpTestApplication.csproj", "{5B66CB3F-C393-428D-82F3-B52E5E1A063D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TikTokLiveSharpTestApplication", "..\TikTokLiveSharp_TestApplication\TikTokLiveSharpTestApplication.csproj", "{5B66CB3F-C393-428D-82F3-B52E5E1A063D}"
+EndProject
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

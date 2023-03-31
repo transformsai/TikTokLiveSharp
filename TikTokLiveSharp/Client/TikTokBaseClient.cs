@@ -17,8 +17,9 @@ using TikTokLiveSharp.Debugging;
 using TikTokLiveSharp.Errors.Connections;
 using TikTokLiveSharp.Errors.FetchErrors;
 using TikTokLiveSharp.Errors.Messaging;
-using TikTokLiveSharp.Models;
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.HTTP;
+using TikTokLiveSharp.Models.Protobuf.Messages;
+using TikTokLiveSharp.Models.Protobuf.Messages.Generic;
 
 namespace TikTokLiveSharp.Client
 {
@@ -351,6 +352,7 @@ namespace TikTokLiveSharp.Client
                 Debug.Log("Creating WebSocketClient");
             await CreateWebSocket(response);
             token.ThrowIfCancellationRequested();
+            Connecting = false;
             return RoomID;
         }
 
@@ -437,7 +439,7 @@ namespace TikTokLiveSharp.Client
             Connecting = false;
             if (Connected)
             {
-                if (ShouldLog(LogLevel.Verbose))
+                if (ShouldLog(LogLevel.Information))
                     Debug.Log("Disconnecting SocketClient");
                 await socketClient.Disconnect();
             }

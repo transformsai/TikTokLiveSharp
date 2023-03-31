@@ -1,4 +1,4 @@
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -11,11 +11,11 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public readonly string Text;
 
         internal Caption(WebcastCaptionMessage msg) 
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            CaptionTimeStamp = msg.Timestamp;
-            ISOLanguage = msg.CaptionData.ISOLanguage;
-            Text = msg.CaptionData.Text;
+            CaptionTimeStamp = msg?.Timestamp ?? 0;
+            ISOLanguage = msg?.CaptionData?.ISOLanguage;
+            Text = msg?.CaptionData?.Text;
         }
     }
 }

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using TikTokLiveSharp.Models.Protobuf;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -13,12 +12,12 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         /// </summary>
         public readonly ulong BattleId;
 
-        internal LinkMicBattle(WebcastLinkMicBattle msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+        internal LinkMicBattle(Models.Protobuf.Messages.WebcastLinkMicBattle msg)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            BattleId = msg.Id1;
-            Team1 = msg.Teams.Select(t => new Objects.LinkMicBattleTeam(t)).ToList();
-            Team2 = msg.Teams2.Select(t => new Objects.LinkMicBattleTeam(t)).ToList();
+            BattleId = msg?.Id ?? 0;
+            Team1 = msg?.Teams1?.Select(t => new Objects.LinkMicBattleTeam(t))?.ToList();
+            Team2 = msg?.Teams2?.Select(t => new Objects.LinkMicBattleTeam(t))?.ToList();
         }
     }
 }

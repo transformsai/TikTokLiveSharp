@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -15,12 +15,12 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public readonly List<Objects.PollOption.Option> Options;
 
         internal PollMessage(WebcastPollMessage msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            Id = msg.Id;
-            Option1 = new Objects.PollOption(new Objects.User(msg.Options1.User), msg.Options1.Options.Select(o => new Objects.PollOption.Option(o.Label, o.CurrentTotal)).ToList());
-            Option2 = new Objects.PollOption(new Objects.User(msg.Options2.User), msg.Options2.Options.Select(o => new Objects.PollOption.Option(o.Label, o.CurrentTotal)).ToList());
-            Options = msg.PollData.Options.Select(o => new Objects.PollOption.Option(o.Label, o.CurrentTotal)).ToList();
+            Id = msg?.Id ?? 0;
+            Option1 = new Objects.PollOption(msg?.Options1?.User == null ? null : new Objects.User(msg.Options1.User), msg.Options1.Options.Select(o => new Objects.PollOption.Option(o.Label, o.CurrentTotal))?.ToList());
+            Option2 = new Objects.PollOption(msg?.Options2?.User == null ? null : new Objects.User(msg.Options2.User), msg.Options2.Options.Select(o => new Objects.PollOption.Option(o.Label, o.CurrentTotal))?.ToList());
+            Options = msg?.PollData?.Options?.Select(o => new Objects.PollOption.Option(o.Label, o.CurrentTotal))?.ToList();
         }
     }
 }

@@ -11,9 +11,14 @@ using TikTokLiveSharp.Errors.Messaging;
 using TikTokLiveSharp.Events;
 using TikTokLiveSharp.Events.MessageData.Messages;
 using TikTokLiveSharp.Models.Protobuf;
-using TikTokGift = TikTokLiveSharp.Events.MessageData.Objects.TikTokGift;
-using RoomMessage = TikTokLiveSharp.Events.MessageData.Messages.RoomMessage;
+using TikTokLiveSharp.Models.Protobuf.Messages;
+using TikTokLiveSharp.Models.Protobuf.Messages.Generic;
+using static TikTokLiveSharp.Models.Protobuf.Messages.WebcastControlMessage;
+using static TikTokLiveSharp.Models.Protobuf.Messages.WebcastMemberMessage;
+using BarrageMessage = TikTokLiveSharp.Events.MessageData.Messages.BarrageMessage;
 using LinkMicMethod = TikTokLiveSharp.Events.MessageData.Messages.LinkMicMethod;
+using RoomMessage = TikTokLiveSharp.Events.MessageData.Messages.RoomMessage;
+using TikTokGift = TikTokLiveSharp.Events.MessageData.Objects.TikTokGift;
 
 namespace TikTokLiveSharp.Client
 {
@@ -181,7 +186,7 @@ namespace TikTokLiveSharp.Client
         /// Event fired when an unhandled event is received from the webcast.
         /// It's up to you how you can interpret this message.
         /// </summary>
-        public event TikTokEventHandler<Message> UnhandledEvent;
+        public event TikTokEventHandler<Models.Protobuf.Messages.Generic.Message> UnhandledEvent;
         #endregion
 
         #region Constructors
@@ -268,7 +273,7 @@ namespace TikTokLiveSharp.Client
         /// Closes & Stops Connection
         /// </summary>
         /// <returns>Task to await</returns>
-        protected override async Task Disconnect()
+        protected override async System.Threading.Tasks.Task Disconnect()
         {
             await base.Disconnect();
             if (ShouldLog(LogLevel.Information))
@@ -332,12 +337,12 @@ namespace TikTokLiveSharp.Client
                                 CheckForUnparsedData(controlMessage);
                             switch (controlMessage.Action)
                             {                                
-                                case ControlAction.StreamPaused:
+                                case ControlAction.Stream_Paused:
                                     if (ShouldLog(LogLevel.Verbose))
                                         Debug.Log("Handling Stream Paused!");
                                     RunEvent(OnLivePaused);
                                     return;
-                                case ControlAction.StreamEnded:
+                                case ControlAction.Stream_Ended:
                                     if (ShouldLog(LogLevel.Verbose))
                                         Debug.Log("Handling Stream Ended!");
                                     RunEvent(OnLiveEnded);
@@ -389,8 +394,8 @@ namespace TikTokLiveSharp.Client
                             RunEvent(OnViewerData, new RoomViewerData(userSeqMessage));
                         }
                         return;
-                    case nameof(Models.Protobuf.RoomMessage):
-                        Models.Protobuf.RoomMessage roomMessage = Serializer.Deserialize<Models.Protobuf.RoomMessage>(stream);
+                    case nameof(Models.Protobuf.Messages.RoomMessage):
+                        Models.Protobuf.Messages.RoomMessage roomMessage = Serializer.Deserialize<Models.Protobuf.Messages.RoomMessage>(stream);
                         if (roomMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -538,8 +543,8 @@ namespace TikTokLiveSharp.Client
                             RunEvent(OnLinkMicArmies, new LinkMicArmies(linkMicArmiesMessage));
                         }
                         return;
-                    case nameof(Models.Protobuf.LinkMicMethod):
-                        Models.Protobuf.LinkMicMethod linkMicMethodMessage = Serializer.Deserialize<Models.Protobuf.LinkMicMethod>(stream);
+                    case nameof(Models.Protobuf.Messages.LinkMicMethod):
+                        Models.Protobuf.Messages.LinkMicMethod linkMicMethodMessage = Serializer.Deserialize<Models.Protobuf.Messages.LinkMicMethod>(stream);
                         if (linkMicMethodMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -549,8 +554,8 @@ namespace TikTokLiveSharp.Client
                             RunEvent(OnLinkMicMethod, new LinkMicMethod(linkMicMethodMessage));
                         }
                         return;
-                    case nameof(Models.Protobuf.WebcastLinkMicMethod):
-                        Models.Protobuf.WebcastLinkMicMethod webcastLinkMicMethodMessage = Serializer.Deserialize<Models.Protobuf.WebcastLinkMicMethod>(stream);
+                    case nameof(Models.Protobuf.Messages.WebcastLinkMicMethod):
+                        Models.Protobuf.Messages.WebcastLinkMicMethod webcastLinkMicMethodMessage = Serializer.Deserialize<Models.Protobuf.Messages.WebcastLinkMicMethod>(stream);
                         if (webcastLinkMicMethodMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -731,8 +736,8 @@ namespace TikTokLiveSharp.Client
                             RunEvent(OnEnvelope, new Envelope(envelopeMessage));
                         }
                         return;
-                    case nameof(WebcastSubNotifyMessage):
-                        WebcastSubNotifyMessage subNotifyMessage = Serializer.Deserialize<WebcastSubNotifyMessage>(stream);
+                    case nameof(WebcastSubnotifyMessage):
+                        WebcastSubnotifyMessage subNotifyMessage = Serializer.Deserialize<WebcastSubnotifyMessage>(stream);
                         if (subNotifyMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -775,7 +780,7 @@ namespace TikTokLiveSharp.Client
             GiftId giftId = new GiftId
             {
                 Gift = message.GiftId,
-                UserName = message.User.UniqueId
+                UserName = message.Sender.UniqueId
             };
             if (activeGifts.ContainsKey(giftId))
             {
@@ -812,7 +817,7 @@ namespace TikTokLiveSharp.Client
         /// <param name="messageEvent">Message to Handle</param>
         private void HandleSocialMessage(WebcastSocialMessage messageEvent)
         {
-            Match match = Regex.Match(messageEvent.Header.Details.DataType, "pm_mt_guidance_viewer_([0-9]+)_share");
+            Match match = Regex.Match(messageEvent.Header.SocialData.Type, "pm_mt_guidance_viewer_([0-9]+)_share");
             if (match.Success)
             {
                 if (ShouldLog(LogLevel.Verbose))
@@ -821,7 +826,7 @@ namespace TikTokLiveSharp.Client
                     RunEvent(OnShare, new Share(messageEvent, result));
                 return;
             }
-            switch (messageEvent.Header.Details.DataType)
+            switch (messageEvent.Header.SocialData.Type)
             {
                 case SocialTypes.LikeType:
                     if (ShouldLog(LogLevel.Verbose))
@@ -857,14 +862,14 @@ namespace TikTokLiveSharp.Client
         /// <param name="msg">Message to Handle</param>
         private void HandleMemberMessage(WebcastMemberMessage msg)
         {
-            switch (msg.ActionId)
+            switch (msg.Action)
             {
-                case MemberMessageActionType.Joined:
+                case (int)MemberMessageAction.Joined:
                     if (ShouldLog(LogLevel.Verbose))
                         Debug.Log("Handling Join");
                     RunEvent(OnJoin, new Join(msg));
                     return;
-                case MemberMessageActionType.Subscribed:
+                case (int)MemberMessageAction.Subscribed:
                     if (ShouldLog(LogLevel.Verbose))
                         Debug.Log("Handling Subscribe");
                     RunEvent(OnSubscribe, new Subscribe(msg));
@@ -873,7 +878,7 @@ namespace TikTokLiveSharp.Client
 //                case 27: // ?? (Done by host? (User null, User2 == host))
 //                case 50: // Share?
                 default:
-                case MemberMessageActionType.Unknown:
+                case (int)MemberMessageAction.Unknown:
                     if (ShouldLog(LogLevel.Warning))
                         Debug.LogWarning("Handling UnhandledMemberMessage!");
                     RunEvent(UnhandledMemberEvent, msg);
@@ -943,6 +948,15 @@ namespace TikTokLiveSharp.Client
             {
                 T msg = Serializer.Deserialize<T>(stream);
                 return msg;
+            }
+            catch (OverflowException e)
+            {
+                WebcastMessageException exc = new WebcastMessageException("Error Deserializing Message", e);
+                if (ShouldLog(LogLevel.Error))
+                    Debug.LogException(exc);
+                CallOnException(exc); // Inform user of Error
+                // This is a recoverable error. Client remains connected. Do not Throw
+                return default; // Return null to quietly quit out of this message
             }
             catch (Exception ex)
             {

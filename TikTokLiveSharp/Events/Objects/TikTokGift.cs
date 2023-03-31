@@ -1,4 +1,4 @@
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Objects
 {
@@ -19,10 +19,11 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
 
         public TikTokGift(WebcastGiftMessage message)
         {
-            Gift = new Gift(message.GiftDetails);
-            Sender = new User(message.User);
-            Amount = message.Amount;
-            StreakFinished = message.RepeatEnd;
+            Gift = new Gift(message?.GiftDetails); 
+            if (message?.Sender != null)
+                Sender = new User(message.Sender);
+            Amount = message?.Amount ?? 0;
+            StreakFinished = message?.RepeatEnd ?? true;
         }
 
         internal virtual void FinishStreak()
