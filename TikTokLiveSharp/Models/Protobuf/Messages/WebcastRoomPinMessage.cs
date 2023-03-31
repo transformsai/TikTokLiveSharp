@@ -36,7 +36,7 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages
         public uint Data2 { get; set; }
 
         [ProtoMember(35)]
-        public uint Data3 { get; set; }
+        public ulong Data3 { get; set; }
     }
 
     /// <summary>
