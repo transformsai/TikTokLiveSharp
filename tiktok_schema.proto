@@ -488,6 +488,7 @@ message LinkMicMethod {
 message RoomMessage {
   MessageHeader header = 1;
   string message = 2;
+  uint32 data1 = 7;
 }
 
 message SystemMessage {
@@ -539,6 +540,12 @@ message WebcastCaptionMessage {
   }
 }
 
+// Variety of Meta-Data about a (Chat-)Message
+message ModerationData {
+  string type = 1;
+  uint64 value = 2;
+}
+
 // Comment sent by User
 message WebcastChatMessage {
   MessageHeader header = 1;
@@ -549,16 +556,11 @@ message WebcastChatMessage {
   repeated ChatImage images = 13;
   string language = 14; // Language for sender
   DataContainer chatData = 18;
-  ModerationData moderationData = 19;
+  repeated ModerationData moderationData = 19;
   
   message ChatImage {
     uint64 data1 = 1;
     Picture picture = 2;
-  }
-  
-  message ModerationData {
-    string type = 1;
-    uint64 value = 2;
   }
 }
 
@@ -1067,7 +1069,7 @@ message WebcastRoomPinMessage {
   RoomPinMessageData2 pinData2 = 32;
   uint32 data1 = 33;
   uint32 data2 = 34;
-  uint32 data3 = 35;
+  uint64 data3 = 35;
   
   message RoomPinMessageData {
     RoomPinMessageDataDetails details = 1;
@@ -1076,6 +1078,7 @@ message WebcastRoomPinMessage {
     repeated User mentionedUsers = 12;
     string language = 14;
     DataContainer chatData = 18;
+    repeated ModerationData = 19;
     
     // Basically a RoomPinMessageHeader
     message RoomPinMessageDataDetails { 
@@ -1088,10 +1091,12 @@ message WebcastRoomPinMessage {
       uint64 data3 = 9;
       uint64 data4 = 10;
       uint64 data5 = 11;
+      string serverDescription = 15;
       uint64 data6 = 21;
       uint64 data7 = 22;
       uint64 data8 = 23;
       uint64 data9 = 24;
+      uint64 data10 = 25;
       
       message PinMessageStringContainer {
         string data = 3;
