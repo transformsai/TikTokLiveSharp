@@ -18,9 +18,7 @@ namespace TikTokLiveSharp.Debugging
 #if UNITY
             UnityEngine.Object context = null)
         {
-            TikTokLiveUnity.Utils.Dispatcher.RunOnMainThread(() =>
-            UnityEngine.Debug.Log($"[TikTokClient] {message}", context)
-            );
+            UnityEngine.Debug.Log($"[TikTokClient] {message}", context);
         }
 #else
             object context = null)
@@ -41,9 +39,7 @@ namespace TikTokLiveSharp.Debugging
 #if UNITY
             UnityEngine.Object context = null)
         {
-            TikTokLiveUnity.Utils.Dispatcher.RunOnMainThread(() =>
-            UnityEngine.Debug.LogWarning($"[TikTokClient] {message}", context)
-            );
+            UnityEngine.Debug.LogWarning($"[TikTokClient] {message}", context);
         }
 #else
             object context = null)
@@ -64,9 +60,7 @@ namespace TikTokLiveSharp.Debugging
 #if UNITY
             UnityEngine.Object context = null)
         {
-            TikTokLiveUnity.Utils.Dispatcher.RunOnMainThread(() =>
-            UnityEngine.Debug.LogError($"[TikTokClient] {message}", context)
-            );
+            UnityEngine.Debug.LogError($"[TikTokClient] {message}", context);
         }
 #else
             object context = null)
@@ -87,9 +81,7 @@ namespace TikTokLiveSharp.Debugging
 #if UNITY
             UnityEngine.Object context = null)
         {
-            TikTokLiveUnity.Utils.Dispatcher.RunOnMainThread(() =>
-            UnityEngine.Debug.LogException(e, context)
-            );
+            UnityEngine.Debug.LogException(e, context);
         }
 #else
             object context = null)
