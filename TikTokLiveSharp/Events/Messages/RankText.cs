@@ -1,4 +1,4 @@
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -9,10 +9,10 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public readonly string Label;
 
         internal RankText(WebcastRankTextMessage msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            EventType = msg.Details.EventType;
-            Label = msg.Details.Label;
+            EventType = msg?.Details?.Type;
+            Label = msg?.Details?.Label;
         }
     }
 }

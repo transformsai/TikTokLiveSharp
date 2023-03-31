@@ -1,4 +1,4 @@
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -9,10 +9,10 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public Comment Comment;
 
         internal RoomPinMessage(WebcastRoomPinMessage msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            PinTimeStamp = msg.Timestamp1;
-            Comment = new Comment(msg.Data);
+            PinTimeStamp = msg?.Timestamp ?? 0;
+            Comment = new Comment(msg?.PinData1);
         }
     }
 }

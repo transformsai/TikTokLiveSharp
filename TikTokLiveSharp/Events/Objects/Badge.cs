@@ -10,11 +10,11 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
         public readonly IReadOnlyList<ImageBadge> ImageBadges;
         public readonly ComboBadge ComboBadges;
 
-        internal Badge(Models.Protobuf.UserBadgesAttributes badge)
+        internal Badge(Models.Protobuf.Objects.Badge badge)
         {
-            TextBadges = badge.Badges == null ? null : new List<TextBadge>(badge.Badges.Select(b => new TextBadge(b.Type, b.Name)));
-            ImageBadges = badge.ImageBadges == null ? null : new List<ImageBadge>(badge.ImageBadges.Select(b => new ImageBadge(b.DisplayType, new Picture(b.Image))));
-            ComboBadges = badge.ExtraData2 == null ? null : new ComboBadge(new Picture(badge.ExtraData2.Images), badge.ExtraData2.Data);
+            TextBadges = badge?.TextBadges == null ? null : new List<TextBadge>(badge.TextBadges.Select(b => new TextBadge(b.Type, b.Name)));
+            ImageBadges = badge?.ImageBadges == null ? null : new List<ImageBadge>(badge.ImageBadges.Select(b => new ImageBadge(b.DisplayType, new Picture(b.Image))));
+            ComboBadges = badge?.ComplexBadge == null ? null : new ComboBadge(new Picture(new List<string> { badge.ComplexBadge.ImageUrl }), badge.ComplexBadge.Data);
         }
     }
 
@@ -32,10 +32,10 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
 
     public sealed class ImageBadge
     {
-        public readonly int DisplayType;
+        public readonly uint DisplayType;
         public readonly Picture Image;
 
-        internal ImageBadge(int displayType, Picture image)
+        internal ImageBadge(uint displayType, Picture image)
         {
             DisplayType = displayType;
             Image = image;

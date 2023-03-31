@@ -213,12 +213,14 @@ namespace TikTokLiveUnity.Utils
         {
             UnityWebRequest texRequest = UnityWebRequestTexture.GetTexture(url);
             yield return texRequest.SendWebRequest();
-            if (texRequest.result == UnityWebRequest.Result.Success)
+            try
             {
-                Texture2D pic = DownloadHandlerTexture.GetContent(texRequest);
-                AddTextureToCache(url, pic);
-                onComplete?.Invoke(url, pic);
-            }
+                if (texRequest.result == UnityWebRequest.Result.Success)
+                {
+                    Texture2D pic = DownloadHandlerTexture.GetContent(texRequest);
+                    AddTextureToCache(url, pic);
+                    onComplete?.Invoke(url, pic);
+                }
 #if WEBP_INSTALLED
             else if (url.Contains("webp") && texRequest.result == UnityWebRequest.Result.DataProcessingError)
             {
@@ -231,9 +233,16 @@ namespace TikTokLiveUnity.Utils
                 else onComplete?.Invoke(url, null); // TODO: Handle Parsing-Failure
             }
 #endif
-            else
+                else
+                {
+                    // TODO: Handle Download-Failure
+                    onComplete?.Invoke(url, null);
+                }
+            }
+            catch (Exception e)
             {
-                // TODO: Handle Download-Failure
+                Debug.LogError("Error whilst downloading Texture");
+                Debug.LogException(e);
                 onComplete?.Invoke(url, null);
             }
         }

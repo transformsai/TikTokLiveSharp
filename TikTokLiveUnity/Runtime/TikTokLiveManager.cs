@@ -272,19 +272,19 @@ namespace TikTokLiveUnity
         /// Event fired when an unhandled social event is received from the webcast.
         /// It's up to you how you can interpret this message.
         /// </summary>
-        public event TikTokEventHandler<WebcastSocialMessage> UnhandledSocialEvent;
+        public event TikTokEventHandler<TikTokLiveSharp.Models.Protobuf.Messages.WebcastSocialMessage> UnhandledSocialEvent;
 
         /// <summary>
         /// Event fired when an unhandled member event is received from the webcast.
         /// It's up to you how you can interpret this message.
         /// </summary>
-        public event TikTokEventHandler<WebcastMemberMessage> UnhandledMemberEvent;
+        public event TikTokEventHandler<TikTokLiveSharp.Models.Protobuf.Messages.WebcastMemberMessage> UnhandledMemberEvent;
 
         /// <summary>
         /// Event fired when an unhandled event is received from the webcast.
         /// It's up to you how you can interpret this message.
         /// </summary>
-        public event TikTokEventHandler<Message> UnhandledEvent;
+        public event TikTokEventHandler<TikTokLiveSharp.Models.Protobuf.Messages.Generic.Message> UnhandledEvent;
         #endregion
 
         #region UnityEvents
@@ -369,11 +369,11 @@ namespace TikTokLiveUnity
         [SerializeField]
         private UnityEvent<Emote> onEmote;
         [SerializeField]
-        private UnityEvent<WebcastSocialMessage> onUnhandledSocialEvent;
+        private UnityEvent<TikTokLiveSharp.Models.Protobuf.Messages.WebcastSocialMessage> onUnhandledSocialEvent;
         [SerializeField]
-        private UnityEvent<WebcastMemberMessage> onUnhandledMemberEvent;
+        private UnityEvent<TikTokLiveSharp.Models.Protobuf.Messages.WebcastMemberMessage> onUnhandledMemberEvent;
         [SerializeField]
-        private UnityEvent<Message> onUnhandledEvent;
+        private UnityEvent<TikTokLiveSharp.Models.Protobuf.Messages.Generic.Message> onUnhandledEvent;
         #endregion
         #endregion
         #endregion

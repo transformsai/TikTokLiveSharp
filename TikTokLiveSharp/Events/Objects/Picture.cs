@@ -6,7 +6,7 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
     {
         public readonly IReadOnlyList<string> URLs;
 
-        internal Picture(Models.Protobuf.Picture profilePicture)
+        internal Picture(Models.Protobuf.Objects.Picture profilePicture)
         {
             URLs = profilePicture?.Urls ?? new List<string>(0);
         }

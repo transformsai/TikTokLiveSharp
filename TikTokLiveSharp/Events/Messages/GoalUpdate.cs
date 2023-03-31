@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -19,13 +19,13 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public readonly IReadOnlyList<Objects.User> Users;
 
         internal GoalUpdate(WebcastGoalUpdateMessage msg) 
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            Picture = new Objects.Picture(msg.Picture);
-            GoalId = msg.Id1;
-            EventType = msg.Data1.EventType;
-            Label = msg.Details.Label;
-            Users = msg.Details.Users.Select(u => new Objects.User(u.UserId, null, u.Nickname, null, new Objects.Picture(u.ProfilePicture), null, null, null, 0, 0, 0, null)).ToList();
+            Picture = new Objects.Picture(msg?.Picture);
+            GoalId = msg?.Id ?? 0;
+            EventType = msg?.Data?.Type;
+            Label = msg?.UpdateData?.Label;
+            Users = msg?.UpdateData?.Users?.Select(u => new Objects.User(u.Id, null, u.Nickname, null, new Objects.Picture(u.ProfilePicture), null, null, null, 0, 0, 0, null))?.ToList();
         }
     }
 }
