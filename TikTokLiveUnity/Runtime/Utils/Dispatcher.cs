@@ -127,7 +127,8 @@ namespace TikTokLiveUnity.Utils
         /// </summary>
         private void Update()
         {
-            if (_hasWork)
+            bool work = _hasWork;
+            if (work)
             {
                 if (_simpleActionBacklog.Count > 0)
                 {

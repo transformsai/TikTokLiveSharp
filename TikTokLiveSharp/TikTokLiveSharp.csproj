@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>0.1.4</Version>
-    <Authors>Seb Heron</Authors>
+    <Version>0.9.1</Version>
+    <Authors>Frank van Hoof</Authors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/sebheron/tiktoklivesharp</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -11,6 +11,7 @@
     <NeutralLanguage>en</NeutralLanguage>
     <PackageTags>TikTok;Live</PackageTags>
     <Description>Port of TikTokLive client for C#</Description>
+    <Company>Frank van Hoof</Company>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

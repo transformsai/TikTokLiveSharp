@@ -67,14 +67,14 @@ namespace TikTokLiveSharpTestApplication
         private static void Client_OnFollow(TikTokLiveClient sender, Follow e)
         {
             SetConsoleColor(ConsoleColor.DarkRed);
-            Console.WriteLine($"{e.NewFollower.UniqueId} followed!");
+            Console.WriteLine($"{e.NewFollower?.UniqueId} followed!");
             SetConsoleColor(ConsoleColor.White);
         }
 
         private static void Client_OnShare(TikTokLiveClient sender, Share e)
         {
             SetConsoleColor(ConsoleColor.Blue);
-            Console.WriteLine($"{e.User.UniqueId} shared!");
+            Console.WriteLine($"{e.User?.UniqueId} shared!");
             SetConsoleColor(ConsoleColor.White);
         }
 

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TikTokLiveSharp.Client.Proxy;
 using TikTokLiveSharp.Errors.Permissions;
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages.Generic;
 
 namespace TikTokLiveSharp.Client.HTTP
 {

@@ -1,4 +1,4 @@
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -13,14 +13,14 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public readonly string NotifyType;
 
         internal GiftBroadcast(WebcastGiftBroadcastMessage msg) : 
-            base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            Picture = new Objects.Picture(msg.Picture);
-            var data = msg.BroadcastData;
-            ShortURL = data.ShortUrl;
-            NotifyEventType = data.RoomNotifyMessage.NotifyData.EventType;
-            NotifyLabel = data.RoomNotifyMessage.NotifyData.Label;
-            NotifyType = data.NotifyType;
+            Picture = new Objects.Picture(msg?.Picture);
+            var data = msg?.Data;
+            ShortURL = data?.uri;
+            NotifyEventType = data?.RoomNotifyMessage?.Data?.Type;
+            NotifyLabel = data?.RoomNotifyMessage?.Data?.Label;
+            NotifyType = data?.NotifyType;
         }
     }
 }

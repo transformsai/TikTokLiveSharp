@@ -1,4 +1,4 @@
-using TikTokLiveSharp.Models.Protobuf;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
 {
@@ -11,13 +11,13 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
         public readonly string JSON;
 
         internal LinkMicMethod(WebcastLinkMicMethod msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         { }
 
-        internal LinkMicMethod(Models.Protobuf.LinkMicMethod msg)
-            : base(msg.Header.RoomId, msg.Header.MessageId, msg.Header.ServerTime)
+        internal LinkMicMethod(Models.Protobuf.Messages.LinkMicMethod msg)
+            : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
-            JSON = msg.JSONDataRTC;
+            JSON = msg?.Json;
         }
     }
 }
