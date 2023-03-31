@@ -352,6 +352,7 @@ namespace TikTokLiveSharp.Client
                 Debug.Log("Creating WebSocketClient");
             await CreateWebSocket(response);
             token.ThrowIfCancellationRequested();
+            Connecting = false;
             return RoomID;
         }
 
