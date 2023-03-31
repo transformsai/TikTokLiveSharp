@@ -67,7 +67,6 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages
         [ProtoMember(12)]
         public List<User> MentionedUsers { get; set; } = new List<User>();
 
-
         /// <summary>
         /// Language for sender
         /// </summary>
@@ -78,6 +77,8 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages
         [ProtoMember(18)]
         public DataContainer ChatData { get; set; }
 
+        [ProtoMember(19)]
+        public List<ModerationData> ModerationData { get; set; } = new List<ModerationData>();
     }
 
     /// <summary>
@@ -114,6 +115,11 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages
         [ProtoMember(11)]
         public ulong Data5 { get; set; }
 
+        // Example: 'useast2a'
+        [ProtoMember(15)]
+        [DefaultValue("")]
+        public string ServerDescription { get; set; } = "";
+
         [ProtoMember(21)]
         public ulong Data6 { get; set; }
 
@@ -125,6 +131,10 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages
 
         [ProtoMember(24)]
         public ulong Data9 { get; set; }
+
+        // Some kind of Timestamp?
+        [ProtoMember(25)]
+        public ulong Data10 { get; set; }
     }
 
     [ProtoContract]

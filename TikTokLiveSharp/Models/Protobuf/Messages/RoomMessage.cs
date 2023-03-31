@@ -13,5 +13,8 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages
         [ProtoMember(2)]
         [DefaultValue("")]
         public string Message { get; set; } = "";
+
+        [ProtoMember(7)]
+        public uint Data1 { get; set; }
     }
 }

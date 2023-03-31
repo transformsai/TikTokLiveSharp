@@ -52,7 +52,7 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages
         public DataContainer ChatData { get; set; }
 
         [ProtoMember(19)]
-        public ModerationData ModerationData { get; set; }
+        public List<ModerationData> ModerationData { get; set; } = new List<ModerationData>();
     }
 
 
