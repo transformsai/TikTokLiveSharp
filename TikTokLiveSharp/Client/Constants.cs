@@ -19,7 +19,7 @@ namespace TikTokLiveSharp.Client
         /// <summary>
         /// Signing API by Isaac Kogan
         /// </summary>
-        public const string TIKTOK_SIGN_API = "https://tiktok.isaackogan.com/webcast/sign_url";
+        public const string TIKTOK_SIGN_API = "https://tiktok.eulerstream.com/webcast/sign_url";
 
         /// <summary>
         /// Default TimeOut for Connections
