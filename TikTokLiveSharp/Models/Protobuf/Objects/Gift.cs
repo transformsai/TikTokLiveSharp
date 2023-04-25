@@ -168,5 +168,8 @@ namespace TikTokLiveSharp.Models.Protobuf.Objects
 
         [ProtoMember(3)]
         public uint Data2 { get; set; }
+
+        [ProtoMember(4)]
+        public int Data3 { get; set; }
     }
 }

@@ -5,7 +5,7 @@ using TikTokLiveSharp.Models.Protobuf.Objects;
 namespace TikTokLiveSharp.Models.Protobuf.Messages
 {
     [ProtoContract]
-    public partial class WebcastSubnotifyMessage : AProtoBase
+    public partial class WebcastSubNotifyMessage : AProtoBase
     {
         [ProtoMember(1)]
         public SocialMessageHeader Header { get; set; }
