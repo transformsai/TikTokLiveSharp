@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.2] - 2023-04-25
+
+### Added
+
+- Added newly found Message-Data (recently added by ByteDance)
+
+### Fixed
+
+- Fixed bugs in Disconnect causing disconnect to throw an exception.
+
+### Changed
+
+- Set Assemblies to be auto-referenced, so users do not need their own AssemblyDef to use the project
+
+### Removed
+
 ## [0.9.1] - 2023-03-31
 
 ### Added

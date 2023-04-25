@@ -6,7 +6,7 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
     {
         public readonly Objects.User User;
 
-        internal SubNotify(WebcastSubnotifyMessage msg) 
+        internal SubNotify(WebcastSubNotifyMessage msg) 
             : base(msg?.Header?.RoomId ?? 0, msg?.Header?.MessageId ?? 0, msg?.Header?.ServerTime ?? 0)
         {
             if (msg?.Sender != null)

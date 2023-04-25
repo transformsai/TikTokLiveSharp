@@ -561,7 +561,7 @@ namespace TikTokLiveSharp.Client
         /// <exception cref="WebSocketException">Thrown if WebSocket crashed with an Error</exception>
         protected async Task WebSocketLoop()
         {
-            while (!token.IsCancellationRequested)
+            while (!token.IsCancellationRequested && socketClient.IsConnected)
             {
                 token.ThrowIfCancellationRequested();
                 TikTokWebSocketResponse response = await socketClient.ReceiveMessage();
@@ -591,16 +591,16 @@ namespace TikTokLiveSharp.Client
                 catch (OperationCanceledException)
                 {
                     if (ShouldLog(LogLevel.Information))
-                        Debug.LogWarning("User Closed Connection. Stopping WebSocketLoop."); 
-                    socketClient?.Disconnect(); // Disconnect for PingLoop
+                        Debug.LogWarning("User Closed Connection. Stopping WebSocketLoop.");
+                    await Disconnect(); // Disconnect for PingLoop
                     return; // Stop this Loop (Cleanly)
                 }
                 catch (Exception e)
                 {
                     Debug.LogError("Socket Crashed!");
                     Debug.LogException(e);
+                    await Disconnect();
                     OnException?.Invoke(this, e); // Pass Exception to Controller
-                    socketClient?.Disconnect();
                     throw new WebSocketException("Websocket saw an Error and Closed", e); // Crash this Thread (Violently)
                 }
             }
@@ -612,7 +612,7 @@ namespace TikTokLiveSharp.Client
         /// <returns>Task to await</returns>
         protected async Task PingLoop()
         {
-            while (socketClient.IsConnected)
+            while (socketClient != null && socketClient.IsConnected)
             {
                 token.ThrowIfCancellationRequested();
                 using (var messageStream = new MemoryStream())
@@ -629,6 +629,8 @@ namespace TikTokLiveSharp.Client
         protected async Task SendAcknowledgement(ulong id)
         {
             token.ThrowIfCancellationRequested();
+            if (socketClient == null || !socketClient.IsConnected)
+                return; // Socket invalid (closed?)
             using (var messageStream = new MemoryStream())
             {
                 Serializer.Serialize(messageStream, new WebcastWebsocketAck
