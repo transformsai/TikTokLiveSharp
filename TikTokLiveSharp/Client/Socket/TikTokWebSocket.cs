@@ -71,8 +71,10 @@ namespace TikTokLiveSharp.Client.Socket
             try
             {
                 token.ThrowIfCancellationRequested();
-                await clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
+                await clientWebSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
             }
+            catch (OperationCanceledException)
+            { } // Do Not Throw this. Clean exit
             finally
             {
                 clientWebSocket = null;
@@ -87,6 +89,8 @@ namespace TikTokLiveSharp.Client.Socket
         public async Task WriteMessage(ArraySegment<byte> arr)
         {
             token.ThrowIfCancellationRequested();
+            if (clientWebSocket == null || clientWebSocket.State != WebSocketState.Open)
+                return; // Invalid socket (Connection was closed?)
             await clientWebSocket.SendAsync(arr, WebSocketMessageType.Binary, true, token);
         }
 
@@ -97,6 +101,8 @@ namespace TikTokLiveSharp.Client.Socket
         public async Task<TikTokWebSocketResponse> ReceiveMessage()
         {
             token.ThrowIfCancellationRequested();
+            if (clientWebSocket == null)
+                return null; // Socket was Closed
             var arr = new ArraySegment<byte>(buffer);
             WebSocketReceiveResult response = await clientWebSocket.ReceiveAsync(arr, token);
             if (response.MessageType == WebSocketMessageType.Binary)

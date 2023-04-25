@@ -250,6 +250,7 @@ message GiftDataDetailed {
   uint32 data1 = 1;
   StringData strings = 2;
   uint32 data2 = 3;
+  int data3 = 4;
 }
 
 // Receipt for sending a Gift. Names are mostly taken from JSON
@@ -870,6 +871,7 @@ message WebcastLinkMicFanTicketMethod {
   message FanTicketDataContainer {
     FanTicketData details = 1;
     uint32 data1 = 2;
+    string icon = 5;
     
     message FanTicketData {
       uint64 id = 1;
@@ -916,6 +918,7 @@ message WebcastMemberMessage {
     JOINED = 1; // User Joined the Stream
     SUBSCRIBED = 3; // User Subscribed to the Host
     //?? = 26
+    //?? = 27
     //?? = 50 (share?)
   }
   
@@ -1068,7 +1071,7 @@ message WebcastRoomPinMessage {
   uint64 timestamp = 31;
   RoomPinMessageData2 pinData2 = 32;
   uint32 data1 = 33;
-  uint32 data2 = 34;
+  int32 data2 = 34;
   uint64 data3 = 35;
   
   message RoomPinMessageData {
@@ -1134,7 +1137,7 @@ message WebcastSocialMessage {
   uint64 data4 = 8; // Exists on Share-Message  
 }
 
-message WebcastSubnotifyMessage {
+message WebcastSubNotifyMessage {
   SocialMessageHeader header = 1;
   User sender = 2;
   uint32 data1 = 4;
