@@ -10,5 +10,8 @@ namespace TikTokLiveSharp.Models.Protobuf.Objects.DataObjects
 
         [ProtoMember(2)]
         public ulong Timestamp { get; set; }
+
+        [ProtoMember(3)]
+        public ulong Timestamp2 { get; set; }
     }
 }

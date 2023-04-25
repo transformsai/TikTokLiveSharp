@@ -273,7 +273,7 @@ namespace TikTokLiveSharp.Client
         /// Closes & Stops Connection
         /// </summary>
         /// <returns>Task to await</returns>
-        protected override async System.Threading.Tasks.Task Disconnect()
+        protected override async Task Disconnect()
         {
             await base.Disconnect();
             if (ShouldLog(LogLevel.Information))
@@ -294,7 +294,7 @@ namespace TikTokLiveSharp.Client
         {
             if (ShouldLog(LogLevel.Information))
                 Debug.Log($"Handling {webcastResponse.Messages.Count} Messages in Response");
-            foreach (var message in webcastResponse.Messages)
+            foreach (Message message in webcastResponse.Messages)
             {
                 try
                 {
@@ -302,7 +302,7 @@ namespace TikTokLiveSharp.Client
                 }
                 catch (Exception e)
                 {
-                    WebcastMessageException exc = new WebcastMessageException("Error whilst Handling Message. Stopping Client.", e);
+                    WebcastMessageException exc = new WebcastMessageException($"Error whilst Handling Message. Stopping Client.{Environment.NewLine}Final Message: {Convert.ToBase64String(message.Binary)}", e);
                     if (ShouldLog(LogLevel.Error))
                         Debug.LogException(exc);
                     CallOnException(exc);
@@ -736,8 +736,8 @@ namespace TikTokLiveSharp.Client
                             RunEvent(OnEnvelope, new Envelope(envelopeMessage));
                         }
                         return;
-                    case nameof(WebcastSubnotifyMessage):
-                        WebcastSubnotifyMessage subNotifyMessage = Serializer.Deserialize<WebcastSubnotifyMessage>(stream);
+                    case nameof(WebcastSubNotifyMessage):
+                        WebcastSubNotifyMessage subNotifyMessage = Serializer.Deserialize<WebcastSubNotifyMessage>(stream);
                         if (subNotifyMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
