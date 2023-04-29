@@ -117,6 +117,9 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages
 
         [ProtoMember(32)]
         public DataContainer Data10 { get; set; }
+
+        [ProtoMember(34)]
+        public uint Data11 { get; set; }
     }
 
     [ProtoContract]

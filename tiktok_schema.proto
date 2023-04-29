@@ -388,7 +388,7 @@ message Ranking {
   string type = 1;
   string label = 2;
   TikTokColor color = 3;
-  ValueLabel details = 4;
+  repeated ValueLabel details = 4;
 }
 
 message TikTokColor {
@@ -609,6 +609,14 @@ message WebcastEnvelopeMessage {
     uint32 data1 = 2;
     string username = 3;
     string id2 = 4;
+    uint32 data2 = 5;
+    uint32 data3 = 6;
+    uint64 timestamp1 = 7;
+    string id1string = 8;
+    Picture picture = 9;
+    string timestamp2string = 10;
+    string id2string = 11;
+    uint32 data4 = 12;
   }
 }
 
@@ -668,6 +676,7 @@ message WebcastGiftMessage {
   GiftDetails1 firstGift2 = 27;
   GiftDetails2 data9 = 31;
   DataContainer data10 = 32;
+  uint32 data11 = 34;
   
   message GiftData1 {
     string data1 = 1;
@@ -711,10 +720,27 @@ message WebcastHourlyRankMessage {
   
   message RankContainer {
     uint32 data1 = 1;
-    uint32 data2 = 2;
+    RankingData rankingdata = 2;
+    uint32 data2 = 3;
     Ranking rankings = 4;
+    RankingData2 rankingdata2 = 5;
     uint32 data3 = 6;
     uint32 data4 = 7;
+
+    message RankingData {
+      uint32 data1 = 1;
+      Ranking rankdata = 2;
+      string data2 = 3;
+    }
+
+    message RankingData2 {
+      uint32 data1 = 1;
+      uint32 data2 = 2;
+      Ranking rankdata = 3;
+      string data3 = 4;
+      uint32 data4 = 5;
+      uint32 data5 = 6;
+    }
   }
 }
 
@@ -737,7 +763,8 @@ message WebcastLikeMessage {
   uint64 totalLikes = 3;
   User sender = 5; // Sender of Like(s)
   LikeDataContainer likeData = 8; // Not always filled. The one in Header IS filled.
-  
+  uint32 data1 = 9;  
+
   message LikeDataContainer {
     uint64 data1 = 1;
     LikeData likeData = 2;
@@ -1041,9 +1068,10 @@ message WebcastRankUpdateMessage {
     Ranking rankData = 3;
     RankColor color = 4;
     uint64 data3 = 6;
-    RankColor2 color2 = 7;
-    uint32 data4 = 8;
-    uint32 data5 = 9;
+    string data4 = 7;
+    uint32 data5 = 8;
+    uint32 data6 = 9;
+    uint64 data7 = 10;
     
     message RankColor {
       string color = 4;
@@ -1171,6 +1199,11 @@ message HeaderData {
   string messageType = 1;
   string details = 2;
   TikTokColor color = 3;
+
+  // Not entirely parsed yet.
+  // Not exactly the same data as user (e.g. the Picture in #25 is encased in another object, and stored at pos 1 in that object).
+  // Some objects only hold images, some only hold other data. These aren't exactly users, but their format is fairly close.
+  // repeated User additionaldata = 4;
 }
 
 message ControlData {

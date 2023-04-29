@@ -34,6 +34,9 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages
         /// </summary>
         [ProtoMember(8)]
         public LikeDataContainer LikeData { get; set; }
+
+        [ProtoMember(9)]
+        public uint Data1 { get; set; }
     }
 
     [ProtoContract]

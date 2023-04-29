@@ -1,4 +1,5 @@
 using ProtoBuf;
+using System.Collections.Generic;
 using System.ComponentModel;
 using TikTokLiveSharp.Models.Protobuf.Objects;
 using TikTokLiveSharp.Models.Protobuf.Objects.DataObjects;
@@ -83,6 +84,10 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages.Headers
 
         [ProtoMember(3)]
         public TikTokColor Color { get; set; }
+
+        // Not exactly the same data as user (e.g. the Picture in #25 is encased in another object, and stored at pos 1 in that object).
+       // [ProtoMember(4)]
+       // public List<User> AdditionalData { get; set; } = new List<User>();
     }
 
     [ProtoContract]
