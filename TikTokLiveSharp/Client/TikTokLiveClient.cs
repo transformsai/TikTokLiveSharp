@@ -330,7 +330,7 @@ namespace TikTokLiveSharp.Client
                 {
                     #region ConnectionEvents
                     case nameof(WebcastControlMessage):
-                        WebcastControlMessage controlMessage = Serializer.Deserialize<WebcastControlMessage>(stream);
+                        WebcastControlMessage controlMessage = Deserialize<WebcastControlMessage>(stream);
                         if (controlMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -358,7 +358,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(SystemMessage):
-                        SystemMessage systemMessage = Serializer.Deserialize<SystemMessage>(stream);
+                        SystemMessage systemMessage = Deserialize<SystemMessage>(stream);
                         if (systemMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -372,7 +372,7 @@ namespace TikTokLiveSharp.Client
 
                     #region RoomStatus
                     case nameof(WebcastLiveIntroMessage):
-                        WebcastLiveIntroMessage introMessage = Serializer.Deserialize<WebcastLiveIntroMessage>(stream);
+                        WebcastLiveIntroMessage introMessage = Deserialize<WebcastLiveIntroMessage>(stream);
                         if (introMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -383,7 +383,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastRoomUserSeqMessage):
-                        WebcastRoomUserSeqMessage userSeqMessage = Serializer.Deserialize<WebcastRoomUserSeqMessage>(stream);
+                        WebcastRoomUserSeqMessage userSeqMessage = Deserialize<WebcastRoomUserSeqMessage>(stream);
                         if (userSeqMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -395,7 +395,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(Models.Protobuf.Messages.RoomMessage):
-                        Models.Protobuf.Messages.RoomMessage roomMessage = Serializer.Deserialize<Models.Protobuf.Messages.RoomMessage>(stream);
+                        Models.Protobuf.Messages.RoomMessage roomMessage = Deserialize<Models.Protobuf.Messages.RoomMessage>(stream);
                         if (roomMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -406,7 +406,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastRoomMessage):
-                        WebcastRoomMessage webcastRoomMessage = Serializer.Deserialize<WebcastRoomMessage>(stream);
+                        WebcastRoomMessage webcastRoomMessage = Deserialize<WebcastRoomMessage>(stream);
                         if (webcastRoomMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -417,7 +417,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastCaptionMessage):
-                        WebcastCaptionMessage captionMessage = Serializer.Deserialize<WebcastCaptionMessage>(stream);
+                        WebcastCaptionMessage captionMessage = Deserialize<WebcastCaptionMessage>(stream);
                         if (captionMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -431,7 +431,7 @@ namespace TikTokLiveSharp.Client
 
                     #region User-Interaction
                     case nameof(WebcastChatMessage):
-                        WebcastChatMessage chatMessage = Serializer.Deserialize<WebcastChatMessage>(stream);
+                        WebcastChatMessage chatMessage = Deserialize<WebcastChatMessage>(stream);
                         if (chatMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -442,7 +442,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastLikeMessage):
-                        WebcastLikeMessage likeMessage = Serializer.Deserialize<WebcastLikeMessage>(stream);
+                        WebcastLikeMessage likeMessage = Deserialize<WebcastLikeMessage>(stream);
                         if (likeMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -453,7 +453,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastGiftMessage):
-                        WebcastGiftMessage giftMessage = Serializer.Deserialize<WebcastGiftMessage>(stream);
+                        WebcastGiftMessage giftMessage = Deserialize<WebcastGiftMessage>(stream);
                         if (giftMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -464,7 +464,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastSocialMessage):
-                        WebcastSocialMessage socialMessage = Serializer.Deserialize<WebcastSocialMessage>(stream);
+                        WebcastSocialMessage socialMessage = Deserialize<WebcastSocialMessage>(stream);
                         if (socialMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -473,7 +473,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastMemberMessage):
-                        WebcastMemberMessage memberMessage = Serializer.Deserialize<WebcastMemberMessage>(stream);
+                        WebcastMemberMessage memberMessage = Deserialize<WebcastMemberMessage>(stream);
                         if (memberMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -486,7 +486,7 @@ namespace TikTokLiveSharp.Client
 
                     #region Host-Interaction
                     case nameof(WebcastPollMessage):
-                        WebcastPollMessage pollMessage = Serializer.Deserialize<WebcastPollMessage>(stream);
+                        WebcastPollMessage pollMessage = Deserialize<WebcastPollMessage>(stream);
                         if (pollMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -497,7 +497,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastRoomPinMessage):
-                        WebcastRoomPinMessage pinMessage = Serializer.Deserialize<WebcastRoomPinMessage>(stream);
+                        WebcastRoomPinMessage pinMessage = Deserialize<WebcastRoomPinMessage>(stream);
                         if (pinMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -508,7 +508,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastGoalUpdateMessage):
-                        WebcastGoalUpdateMessage goalUpdateMessage = Serializer.Deserialize<WebcastGoalUpdateMessage>(stream);
+                        WebcastGoalUpdateMessage goalUpdateMessage = Deserialize<WebcastGoalUpdateMessage>(stream);
                         if (goalUpdateMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -522,7 +522,7 @@ namespace TikTokLiveSharp.Client
 
                     #region LinkMic
                     case nameof(WebcastLinkMicBattle):
-                        WebcastLinkMicBattle linkMicBattleMessage = Serializer.Deserialize<WebcastLinkMicBattle>(stream);
+                        WebcastLinkMicBattle linkMicBattleMessage = Deserialize<WebcastLinkMicBattle>(stream);
                         if (linkMicBattleMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -533,7 +533,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastLinkMicArmies):
-                        WebcastLinkMicArmies linkMicArmiesMessage = Serializer.Deserialize<WebcastLinkMicArmies>(stream);
+                        WebcastLinkMicArmies linkMicArmiesMessage = Deserialize<WebcastLinkMicArmies>(stream);
                         if (linkMicArmiesMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -544,7 +544,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(Models.Protobuf.Messages.LinkMicMethod):
-                        Models.Protobuf.Messages.LinkMicMethod linkMicMethodMessage = Serializer.Deserialize<Models.Protobuf.Messages.LinkMicMethod>(stream);
+                        Models.Protobuf.Messages.LinkMicMethod linkMicMethodMessage = Deserialize<Models.Protobuf.Messages.LinkMicMethod>(stream);
                         if (linkMicMethodMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -555,7 +555,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(Models.Protobuf.Messages.WebcastLinkMicMethod):
-                        Models.Protobuf.Messages.WebcastLinkMicMethod webcastLinkMicMethodMessage = Serializer.Deserialize<Models.Protobuf.Messages.WebcastLinkMicMethod>(stream);
+                        Models.Protobuf.Messages.WebcastLinkMicMethod webcastLinkMicMethodMessage = Deserialize<Models.Protobuf.Messages.WebcastLinkMicMethod>(stream);
                         if (webcastLinkMicMethodMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -566,7 +566,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastLinkMicFanTicketMethod):
-                        WebcastLinkMicFanTicketMethod webcastFanTicketMessage = Serializer.Deserialize<WebcastLinkMicFanTicketMethod>(stream);
+                        WebcastLinkMicFanTicketMethod webcastFanTicketMessage = Deserialize<WebcastLinkMicFanTicketMethod>(stream);
                         if (webcastFanTicketMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -616,7 +616,7 @@ namespace TikTokLiveSharp.Client
 
                     #region Others
                     case nameof(WebcastInRoomBannerMessage):
-                        WebcastInRoomBannerMessage webcastInRoomBannerMessage = Serializer.Deserialize<WebcastInRoomBannerMessage>(stream);
+                        WebcastInRoomBannerMessage webcastInRoomBannerMessage = Deserialize<WebcastInRoomBannerMessage>(stream);
                         if (webcastInRoomBannerMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -627,7 +627,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastMsgDetectMessage):
-                        WebcastMsgDetectMessage detectMessage = Serializer.Deserialize<WebcastMsgDetectMessage>(stream);
+                        WebcastMsgDetectMessage detectMessage = Deserialize<WebcastMsgDetectMessage>(stream);
                         if (detectMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -638,7 +638,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastBarrageMessage):
-                        WebcastBarrageMessage barrageMessage = Serializer.Deserialize<WebcastBarrageMessage>(stream);
+                        WebcastBarrageMessage barrageMessage = Deserialize<WebcastBarrageMessage>(stream);
                         if (barrageMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -649,7 +649,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastUnauthorizedMemberMessage):
-                        WebcastUnauthorizedMemberMessage unauthorizedMemberMessage = Serializer.Deserialize<WebcastUnauthorizedMemberMessage>(stream);
+                        WebcastUnauthorizedMemberMessage unauthorizedMemberMessage = Deserialize<WebcastUnauthorizedMemberMessage>(stream);
                         if (unauthorizedMemberMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -660,7 +660,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastLinkMessage):
-                        WebcastLinkMessage linkMessage = Serializer.Deserialize<WebcastLinkMessage>(stream);
+                        WebcastLinkMessage linkMessage = Deserialize<WebcastLinkMessage>(stream);
                         if (linkMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -671,7 +671,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastLinkLayerMessage):
-                        WebcastLinkLayerMessage linkLayerMessage = Serializer.Deserialize<WebcastLinkLayerMessage>(stream);
+                        WebcastLinkLayerMessage linkLayerMessage = Deserialize<WebcastLinkLayerMessage>(stream);
                         if (linkLayerMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -682,7 +682,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastGiftBroadcastMessage):
-                        WebcastGiftBroadcastMessage webcastGiftBroadcast = Serializer.Deserialize<WebcastGiftBroadcastMessage>(stream);
+                        WebcastGiftBroadcastMessage webcastGiftBroadcast = Deserialize<WebcastGiftBroadcastMessage>(stream);
                         if (webcastGiftBroadcast != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -693,7 +693,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastOecLiveShoppingMessage):
-                        WebcastOecLiveShoppingMessage oecLiveShoppingMessage = Serializer.Deserialize<WebcastOecLiveShoppingMessage>(stream);
+                        WebcastOecLiveShoppingMessage oecLiveShoppingMessage = Deserialize<WebcastOecLiveShoppingMessage>(stream);
                         if (oecLiveShoppingMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -704,7 +704,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastImDeleteMessage):
-                        WebcastImDeleteMessage imDeleteMessage = Serializer.Deserialize<WebcastImDeleteMessage>(stream);
+                        WebcastImDeleteMessage imDeleteMessage = Deserialize<WebcastImDeleteMessage>(stream);
                         if (imDeleteMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -715,7 +715,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastQuestionNewMessage):
-                        WebcastQuestionNewMessage newQuestionMessage = Serializer.Deserialize<WebcastQuestionNewMessage>(stream);
+                        WebcastQuestionNewMessage newQuestionMessage = Deserialize<WebcastQuestionNewMessage>(stream);
                         if (newQuestionMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -726,7 +726,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastEnvelopeMessage):
-                        WebcastEnvelopeMessage envelopeMessage = Serializer.Deserialize<WebcastEnvelopeMessage>(stream);
+                        WebcastEnvelopeMessage envelopeMessage = Deserialize<WebcastEnvelopeMessage>(stream);
                         if (envelopeMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -737,7 +737,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastSubNotifyMessage):
-                        WebcastSubNotifyMessage subNotifyMessage = Serializer.Deserialize<WebcastSubNotifyMessage>(stream);
+                        WebcastSubNotifyMessage subNotifyMessage = Deserialize<WebcastSubNotifyMessage>(stream);
                         if (subNotifyMessage != null)
                         {
                             if (settings.CheckForUnparsedData)
@@ -748,7 +748,7 @@ namespace TikTokLiveSharp.Client
                         }
                         return;
                     case nameof(WebcastEmoteChatMessage):
-                        WebcastEmoteChatMessage emoteMessage = Serializer.Deserialize<WebcastEmoteChatMessage>(stream);
+                        WebcastEmoteChatMessage emoteMessage = Deserialize<WebcastEmoteChatMessage>(stream);
                         if (emoteMessage != null)
                         {
                             if (settings.CheckForUnparsedData)

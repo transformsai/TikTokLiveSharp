@@ -1,4 +1,5 @@
 using TikTokLiveSharp.Events.MessageData.Objects;
+using TikTokLiveUnity.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -94,12 +95,15 @@ namespace TikTokLiveUnity.Example
         /// <param name="picture">Data for Image</param>
         private void RequestImage(Image img, Picture picture)
         {
-            if (TikTokLiveManager.Exists)
-                TikTokLiveManager.Instance.RequestSprite(picture, spr =>
-                {
-                    if (img != null)
-                        img.sprite = spr;
-                });
+  //          Dispatcher.RunOnMainThread(() =>
+  //          {
+  //              if (TikTokLiveManager.Exists)
+  //                  TikTokLiveManager.Instance.RequestSprite(picture, spr =>
+  //                  {
+  //                      if (img != null)
+  //                          img.sprite = spr;
+  //                  });
+  //          });
         }
         #endregion
     }

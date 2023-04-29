@@ -41,13 +41,17 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages
         public ulong Data3 { get; set; }
 
         [ProtoMember(7)]
-        public RankColor2 Color2 { get; set; }
+        [DefaultValue("")]
+        public string Data4 { get; set; } = "";
 
         [ProtoMember(8)]
-        public uint Data4 { get; set; }
+        public uint Data5 { get; set; }
 
         [ProtoMember(9)]
-        public uint Data5 { get; set; }
+        public uint Data6 { get; set; }
+
+        [ProtoMember(10)]
+        public ulong Data7 { get; set; }
     }
 
     [ProtoContract]

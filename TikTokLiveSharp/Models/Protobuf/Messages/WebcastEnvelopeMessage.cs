@@ -41,5 +41,32 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages
         [ProtoMember(4)]
         [DefaultValue("")]
         public string Id2 { get; set; } = "";
+
+        [ProtoMember(5)]
+        public uint Data2 { get; set; }
+
+        [ProtoMember(6)]
+        public uint Data3 { get; set; }
+
+        [ProtoMember(7)]
+        public ulong Timestamp1 { get; set; }
+
+        [ProtoMember(8)]
+        [DefaultValue("")]
+        public string Id1String { get; set; } = "";
+
+        [ProtoMember(9)]
+        public Picture Picture { get; set; }
+
+        [ProtoMember(10)]
+        [DefaultValue("")]
+        public string Timestamp2String { get; set; } = "";
+
+        [ProtoMember(11)]
+        [DefaultValue("")]
+        public string Id2String { get; set; } = "";
+
+        [ProtoMember(12)]
+        public uint Data4 { get; set; }
     }
 }
