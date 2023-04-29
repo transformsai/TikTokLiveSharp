@@ -1,4 +1,5 @@
 using ProtoBuf;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace TikTokLiveSharp.Models.Protobuf.Objects
@@ -18,6 +19,6 @@ namespace TikTokLiveSharp.Models.Protobuf.Objects
         public TikTokColor Color { get; set; }
 
         [ProtoMember(4)]
-        public ValueLabel Details { get; set; }
+        public List<ValueLabel> Details { get; set; } = new List<ValueLabel>();
     }
 }

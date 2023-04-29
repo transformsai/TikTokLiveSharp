@@ -2,6 +2,7 @@ using System.Collections;
 using TikTokLiveSharp.Client;
 using TikTokLiveSharp.Events.MessageData.Messages;
 using TikTokLiveSharp.Events.MessageData.Objects;
+using TikTokLiveUnity.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -203,11 +204,14 @@ namespace TikTokLiveUnity.Example
         /// <param name="picture">Data for Image</param>
         private void RequestImage(Image img, Picture picture)
         {
-            mgr.RequestSprite(picture, spr =>
-            {
-                if (img != null)
-                    img.sprite = spr;
-            });
+ //           Dispatcher.RunOnMainThread(() =>
+ //           {
+ //               mgr.RequestSprite(picture, spr =>
+ //               {
+ //                   if (img != null)
+ //                       img.sprite = spr;
+ //               });
+ //           });
         }
         /// <summary>
         /// Updates Status-Panel based on ConnectionState
