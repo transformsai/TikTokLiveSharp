@@ -1,3 +1,4 @@
+using System.Linq;
 using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Events.MessageData.Messages
@@ -18,7 +19,7 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
             var rankData = msg?.Data?.Rankings;
             EventType = rankData?.Type;
             Label = rankData?.Label;
-            Rank = rankData?.Details?.Label;
+            Rank = rankData?.Details?.FirstOrDefault()?.Label;
             Color = rankData?.Color?.Color;
         }
 
@@ -28,7 +29,7 @@ namespace TikTokLiveSharp.Events.MessageData.Messages
             var rankData = msg?.Data?.RankData;
             EventType = rankData?.Type;
             Label = rankData?.Label;
-            Rank = rankData?.Details?.Label;
+            Rank = rankData?.Details?.FirstOrDefault()?.Label;
             Color = rankData?.Color?.Color;
         }
     }
