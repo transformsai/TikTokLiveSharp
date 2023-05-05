@@ -6,12 +6,24 @@
     <Authors>Frank van Hoof</Authors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/sebheron/tiktoklivesharp</PackageProjectUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseExpression></PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <NeutralLanguage>en</NeutralLanguage>
     <PackageTags>TikTok;Live</PackageTags>
     <Description>Port of TikTokLive client for C#</Description>
     <Company>Frank van Hoof</Company>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <StartupObject />
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIconUrl />
+    <Copyright>2023 Frank van Hoof</Copyright>
+    <RepositoryUrl>https://github.com/frankvHoof93/TikTokLiveSharp</RepositoryUrl>
+    <RepositoryType>Library</RepositoryType>
+    <PackageId>TikTokLive_Sharp</PackageId>
+    <PackageReleaseNotes />
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -196,6 +208,18 @@
     <None Remove="Models\TikTokGift.cs.meta" />
     <None Remove="TikTokLiveSharp.asmdef" />
     <None Remove="TikTokLiveSharp.asmdef.meta" />
+    <None Include="..\icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

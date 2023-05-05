@@ -49,6 +49,9 @@ Setup of the Unity Library can be found [here](Setup_Unity.MD)
 ### How can I help?
 As the TikTokLive-Libraries all use reverse engineering to create their own Protobuf-Schema, much is still unknown about many of the Event-Types and Data-Values. If you think you can contribute, please join the Discord-server or create an issue.
 
+### Do you have a donation-link?
+Donations to me personally can be done via [BuyMeACoffee](https://www.buymeacoffee.com/frankvanhoof)
+
 ### Downloading the Source
 This repo is set up in a way so that both TikTokLiveSharp and TikTokLiveUnity can use the exact same main repo. It uses GitIgnore-files in order to separate out these files to the correct subset for each version.
 To reduce main to the subset for your version, combine the [Base.gitignore](Base,gitignore) with the file for the Library (either [TikTokLiveSharp](TikTokLiveSharp.gitignore) or [TikTokLiveUnity](TikTokLiveUnity.gitignore) and apply the result to the base [GitIgnore](.gitignore).
