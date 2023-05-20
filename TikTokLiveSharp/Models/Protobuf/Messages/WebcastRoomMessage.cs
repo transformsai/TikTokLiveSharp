@@ -1,6 +1,7 @@
 using ProtoBuf;
 using System.ComponentModel;
 using TikTokLiveSharp.Models.Protobuf.Messages.Headers;
+using TikTokLiveSharp.Models.Protobuf.Objects;
 
 namespace TikTokLiveSharp.Models.Protobuf.Messages
 {
@@ -16,5 +17,12 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages
         [ProtoMember(2)]
         [DefaultValue("")]
         public string Data { get; set; } = "";
+
+        [ProtoMember(5)]
+        public Picture Picture { get; set; }
+
+        [ProtoMember(6)]
+        [DefaultValue("")]
+        public string Data2 { get; set; } = "";
     }
 }

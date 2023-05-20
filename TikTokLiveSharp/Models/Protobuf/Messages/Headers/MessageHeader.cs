@@ -85,9 +85,8 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages.Headers
         [ProtoMember(3)]
         public TikTokColor Color { get; set; }
 
-        // Not exactly the same data as user (e.g. the Picture in #25 is encased in another object, and stored at pos 1 in that object).
-       // [ProtoMember(4)]
-       // public List<User> AdditionalData { get; set; } = new List<User>();
+        [ProtoMember(4)]
+        public List<HeaderDataDetails> AdditionalData { get; set; } = new List<HeaderDataDetails>();
     }
 
     [ProtoContract]
@@ -98,5 +97,19 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages.Headers
 
         [ProtoMember(2)]
         public ulong ServerTime { get; set; }
+    }
+
+    [ProtoContract]
+    public partial class HeaderDataDetails : AProtoBase
+    {
+        [ProtoMember(1)]
+        public uint Data1 { get; set; }
+
+        [ProtoMember(11)] 
+        [DefaultValue("")] 
+        public string Data2 { get; set; } = "";
+
+        [ProtoMember(21)] 
+        public List<UserContainer> Users { get; set; } = new List<UserContainer>();
     }
 }

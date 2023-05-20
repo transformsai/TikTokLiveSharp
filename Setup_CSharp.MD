@@ -9,6 +9,9 @@ To resolve this, combine [Base.gitignore](Base.gitignore) & [TikTokLiveSharp.git
 Then overwrite the existing gitignore with this file.
 You can delete all files then discard that deletion to ensure no TikTokLiveUnity-assets remain.
 
+## Nuget-Package
+TikTokLiveSharp is now also available as a Nuget-Package under the name TikTokLive_Sharp.
+
 ## Building the Project
 Open [The Project](TikTokLiveSharp/TikTokLiveSharp.sln) in Visual Studio to build the project.
 The library should build without errors.

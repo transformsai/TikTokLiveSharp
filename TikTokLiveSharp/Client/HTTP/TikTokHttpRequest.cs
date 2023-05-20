@@ -180,8 +180,10 @@ namespace TikTokLiveSharp.Client.HTTP
             var response = await client.SendAsync(request);
             request.Dispose();
             sent = true;
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                throw new HttpRequestException($"Request responded with 404 NOT_FOUND");
             if (!response.IsSuccessStatusCode) 
-                throw new HttpRequestException("Request was unsuccessful");
+                throw new HttpRequestException($"Request was unsuccessful [{(int)response.StatusCode}]");
             var ct = response.Content.Headers?.ContentType;
             if (ct?.CharSet != null)
                 ct.CharSet = ct.CharSet.Replace("\"", "");

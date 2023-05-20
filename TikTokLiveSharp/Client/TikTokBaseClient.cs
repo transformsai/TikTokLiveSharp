@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
@@ -18,7 +19,6 @@ using TikTokLiveSharp.Errors.Connections;
 using TikTokLiveSharp.Errors.FetchErrors;
 using TikTokLiveSharp.Errors.Messaging;
 using TikTokLiveSharp.Models.HTTP;
-using TikTokLiveSharp.Models.Protobuf.Messages;
 using TikTokLiveSharp.Models.Protobuf.Messages.Generic;
 
 namespace TikTokLiveSharp.Client
@@ -86,11 +86,7 @@ namespace TikTokLiveSharp.Client
         /// <summary>
         /// WebSocket-Client
         /// </summary>
-        protected TikTokWebSocket socketClient;
-        /// <summary>
-        /// Whether currently Polling the TikTokServer
-        /// </summary>
-        protected bool isPolling;
+        public TikTokWebSocket socketClient;
         #endregion
 
         #region Private
@@ -209,6 +205,75 @@ namespace TikTokLiveSharp.Client
         }
         #endregion
 
+        #region Static
+        /// <summary>
+        /// Checks if a User exists on TikTok by attempting to get their Profile-Page
+        /// </summary>
+        /// <param name="userId">@-ID for User</param>
+        /// <param name="timeOut">TimeOut for HTTP-Connection (set NULL for default)</param>
+        /// <param name="proxy">Proxy to use with HTTP-Client</param>
+        /// <returns>True if User has a Profile-Page on TikTok</returns>
+        public static async Task<bool> GetUserExists(string userId, TimeSpan? timeOut = null, RotatingProxy proxy = null)
+        {
+            if (!timeOut.HasValue)
+                timeOut = Constants.DEFAULT_SETTINGS.Timeout;
+            TikTokHTTPClient tempClient = new TikTokHTTPClient(timeOut.Value, proxy);
+            string html;
+            try
+            {
+                html = await tempClient.GetProfilePage(userId);
+            }
+            catch (HttpRequestException ex)
+            {
+                if (ex.Message.Contains("NOT_FOUND"))
+                    return false; // Profile returned 404.
+                FailedFetchRoomInfoException exc =
+                    new FailedFetchRoomInfoException(
+                        "Failed to fetch html from ProfilePage, see stacktrace for more info.", ex);
+                Debug.LogException(exc);
+                return false;
+            }
+            catch (Exception e)
+            {
+                FailedFetchRoomInfoException exc =
+                    new FailedFetchRoomInfoException(
+                        "Failed to fetch html from ProfilePage, see stacktrace for more info.", e);
+                Debug.LogException(exc);
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if a User is currently streaming by looking for a RoomId on their Live-Page
+        /// </summary>
+        /// <param name="userId">@-ID for User</param>
+        /// <param name="timeOut">TimeOut for HTTP-Connection (set NULL for default)</param>
+        /// <param name="proxy">Proxy to use with HTTP-Client</param>
+        /// <returns>True if User is currently streaming on TikTok</returns>
+        public static async Task<bool> GetUserStreaming(string userId, TimeSpan? timeOut = null, RotatingProxy proxy = null)
+        {
+            if (!timeOut.HasValue)
+                timeOut = Constants.DEFAULT_SETTINGS.Timeout;
+            TikTokHTTPClient tempClient = new TikTokHTTPClient(timeOut.Value, proxy);
+            string html;
+            try
+            {
+                html = await tempClient.GetLivestreamPage(userId);
+            }
+            catch (Exception e)
+            {
+                FailedFetchRoomInfoException exc = new FailedFetchRoomInfoException("Failed to fetch html from Livestream-Page, see stacktrace for more info.", e);
+                Debug.LogException(exc);
+                return false;
+            }
+            var first = Regex.Match(html, "room_id=([0-9]*)");
+            var second = Regex.Match(html, "\"roomId\":\"([0 - 9] *)\"");
+            string id = first.Groups[1]?.Value ?? second.Groups[1]?.Value ?? string.Empty;
+            return !string.IsNullOrEmpty(id);
+        }
+        #endregion
+
         #region Connect
         /// <summary>
         /// Creates Threads for & Runs Connection with TikTokServers
@@ -323,7 +388,7 @@ namespace TikTokLiveSharp.Client
             if (ShouldLog(LogLevel.Verbose))
                 Debug.Log("Fetch RoomInfo");
             JObject info = await FetchRoomInfo();
-            JToken status = info["data"]["status"];
+            JToken status = info["data"]?["status"];
             if (status == null || status.Value<int>() == 4)
                 throw new LiveNotFoundException("LiveStream for HostID could not be found. Is the Host online?");
             token.ThrowIfCancellationRequested();
@@ -434,7 +499,6 @@ namespace TikTokLiveSharp.Client
         /// <returns>Task to await</returns>
         protected virtual async Task Disconnect()
         {
-            isPolling = false;
             RoomInfo = null;
             Connecting = false;
             if (Connected)
