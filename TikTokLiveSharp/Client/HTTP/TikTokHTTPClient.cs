@@ -88,6 +88,17 @@ namespace TikTokLiveSharp.Client.HTTP
             return await get.ReadAsStringAsync();
         }
         /// <summary>
+        /// Gets HTML for Live-Page
+        /// </summary>
+        /// <param name="uniqueID">ID for Host</param>
+        /// <param name="signURL">Whether to sign URL using API</param>
+        /// <returns></returns>
+        internal async Task<string> GetProfilePage(string uniqueID, bool signURL = false)
+        {
+            var get = await GetRequest($"{Constants.TIKTOK_URL_WEB}@{uniqueID}", signURL: signURL);
+            return await get.ReadAsStringAsync();
+        }
+        /// <summary>
         /// Posts JSON-Object to WebCast-API
         /// </summary>
         /// <param name="path">Path to send to (sub-URL)</param>

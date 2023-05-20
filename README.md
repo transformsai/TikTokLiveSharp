@@ -1,4 +1,4 @@
-# TikTokLiveSharp / TikTokLiveUnity v0.9.0
+# TikTokLiveSharp / TikTokLiveUnity v0.9.4
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white&style=flat-square)](https://www.linkedin.com/in/frankvhoof93/ )
 ![Issues](https://img.shields.io/github/issues/frankvHoof93/TikTokLiveSharp)
