@@ -1,4 +1,4 @@
-# TikTokLiveSharp / TikTokLiveUnity v0.9.0
+# TikTokLiveSharp / TikTokLiveUnity v0.9.4
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white&style=flat-square)](https://www.linkedin.com/in/frankvhoof93/ )
 ![Issues](https://img.shields.io/github/issues/frankvHoof93/TikTokLiveSharp)
@@ -48,6 +48,9 @@ Setup of the Unity Library can be found [here](Setup_Unity.MD)
 ## Contributing
 ### How can I help?
 As the TikTokLive-Libraries all use reverse engineering to create their own Protobuf-Schema, much is still unknown about many of the Event-Types and Data-Values. If you think you can contribute, please join the Discord-server or create an issue.
+
+### Do you have a donation-link?
+Donations to me personally can be done via [BuyMeACoffee](https://www.buymeacoffee.com/frankvanhoof)
 
 ### Downloading the Source
 This repo is set up in a way so that both TikTokLiveSharp and TikTokLiveUnity can use the exact same main repo. It uses GitIgnore-files in order to separate out these files to the correct subset for each version.

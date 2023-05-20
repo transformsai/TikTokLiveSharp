@@ -254,19 +254,15 @@ namespace TikTokLiveUnity.Utils
         /// <param name="tex">Texture to Add</param>
         private void AddTextureToCache(string url, Texture2D tex)
         {
-            lock (textureCache)
-            {
-                if (textureCache.Count >= MAX_CACHE_SIZE)
-                    for (int i = 0; i < MAX_CACHE_SIZE / 4; i++) // Randomly dump 1/4 of cache
-                    {
-                        string tempURL = textureCache.Keys.ElementAt(UnityEngine.Random.Range(0, textureCache.Count));
-                        textureCache.Remove(tempURL);
-                        if (spriteCache.ContainsKey(tempURL))
-                            lock (spriteCache)
-                                spriteCache.Remove(tempURL);
-                    }
-                textureCache.Add(url, tex);
-            }
+            if (textureCache.Count >= MAX_CACHE_SIZE)
+                for (int i = 0; i < MAX_CACHE_SIZE / 4; i++) // Randomly dump 1/4 of cache
+                {
+                    string tempURL = textureCache.Keys.ElementAt(UnityEngine.Random.Range(0, textureCache.Count));
+                    textureCache.Remove(tempURL);
+                    if (spriteCache.ContainsKey(tempURL))
+                        spriteCache.Remove(tempURL);
+                }
+            textureCache.Add(url, tex);
         }
         #endregion
     }

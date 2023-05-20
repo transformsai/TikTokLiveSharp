@@ -63,11 +63,11 @@ namespace TikTokLiveUnity.Example
         /// </summary>
         private void OnDestroy()
         {
-            if (Gift != null)
-            {
-                Gift.OnAmountChanged -= AmountChanged;
-                Gift.OnStreakFinished -= StreakFinished;
-            }
+            gameObject.SetActive(false);
+            if (Gift == null)
+                return;
+            Gift.OnAmountChanged -= AmountChanged;
+            Gift.OnStreakFinished -= StreakFinished;
         }
         /// <summary>
         /// Updates Gift-Amount if Amount Changed
@@ -93,17 +93,17 @@ namespace TikTokLiveUnity.Example
         /// </summary>
         /// <param name="img">UI-Image used for display</param>
         /// <param name="picture">Data for Image</param>
-        private void RequestImage(Image img, Picture picture)
+        private static void RequestImage(Image img, Picture picture)
         {
-  //          Dispatcher.RunOnMainThread(() =>
-  //          {
-  //              if (TikTokLiveManager.Exists)
-  //                  TikTokLiveManager.Instance.RequestSprite(picture, spr =>
-  //                  {
-  //                      if (img != null)
-  //                          img.sprite = spr;
-  //                  });
-  //          });
+//            Dispatcher.RunOnMainThread(() =>
+//            {
+//                if (TikTokLiveManager.Exists)
+//                    TikTokLiveManager.Instance.RequestSprite(picture, spr =>
+//                    {
+//                        if (img != null && img.gameObject != null && img.gameObject.activeInHierarchy)
+//                            img.sprite = spr;
+//                    });
+//            });
         }
         #endregion
     }

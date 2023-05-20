@@ -1089,6 +1089,8 @@ message WebcastRankUpdateMessage {
 message WebcastRoomMessage {
   MessageHeader header = 1;
   string data = 2;
+  Picture picture = 5;
+  string data2 = 6;
 }
 
 // Host Pins comment to stream
@@ -1199,11 +1201,13 @@ message HeaderData {
   string messageType = 1;
   string details = 2;
   TikTokColor color = 3;
+  HeaderDataDetails additionalData = 4;
 
-  // Not entirely parsed yet.
-  // Not exactly the same data as user (e.g. the Picture in #25 is encased in another object, and stored at pos 1 in that object).
-  // Some objects only hold images, some only hold other data. These aren't exactly users, but their format is fairly close.
-  // repeated User additionaldata = 4;
+  message HeaderDataDetails {
+    uint32 data1 = 1;
+    string data1 = 11;
+    repeated UserContainer users = 21;
+  }
 }
 
 message ControlData {
