@@ -289,7 +289,7 @@ namespace TikTokLiveSharp.Client
         /// Handles each Message in Response
         /// </para>
         /// </summary>
-        /// <param name="webcastResponse">Repsonse to Handle</param>
+        /// <param name="webcastResponse">Response to Handle</param>
         protected override void HandleWebcastMessages(WebcastResponse webcastResponse)
         {
             if (ShouldLog(LogLevel.Information))
@@ -325,7 +325,7 @@ namespace TikTokLiveSharp.Client
                 Debug.Log($"Handling Message:{Environment.NewLine}{msg}");
             }
 
-            using (var stream = new MemoryStream(message.Binary))
+            using (MemoryStream stream = new MemoryStream(message.Binary))
                 switch (message.Type)
                 {
                     #region ConnectionEvents
@@ -350,7 +350,7 @@ namespace TikTokLiveSharp.Client
                                 default:
                                 case ControlAction.Unknown:
                                     if (ShouldLog(LogLevel.Warning))
-                                        Debug.LogWarning("Handling Unhandled ControlMessage!");
+                                        Debug.LogWarning($"Handling Unhandled ControlMessage!{Environment.NewLine}[{Convert.ToBase64String(message.Binary)}]");
                                     // Run Unhandled
                                     RunEvent(UnhandledEvent, message);
                                     return;
@@ -469,7 +469,7 @@ namespace TikTokLiveSharp.Client
                         {
                             if (settings.CheckForUnparsedData)
                                 CheckForUnparsedData(socialMessage);
-                            HandleSocialMessage(socialMessage);
+                            HandleSocialMessage(socialMessage, message.Binary);
                         }
                         return;
                     case nameof(WebcastMemberMessage):
@@ -478,10 +478,9 @@ namespace TikTokLiveSharp.Client
                         {
                             if (settings.CheckForUnparsedData)
                                 CheckForUnparsedData(memberMessage);
-                            HandleMemberMessage(memberMessage);
+                            HandleMemberMessage(memberMessage, message.Binary);
                         }
                         return;
-
                     #endregion
 
                     #region Host-Interaction
@@ -801,11 +800,8 @@ namespace TikTokLiveSharp.Client
             {
                 if (ShouldLog(LogLevel.Verbose))
                     Debug.Log($"GiftStreak Ended: [{giftId.Gift}] Amount[{message.Amount}]");
-                lock (activeGifts)
-                {
-                    activeGifts[giftId].FinishStreak();
-                    activeGifts.Remove(giftId);
-                }
+                activeGifts[giftId].FinishStreak();
+                activeGifts.Remove(giftId);
             }
             if (ShouldLog(LogLevel.Verbose))
                 Debug.Log($"Handling GiftMessage");
@@ -815,7 +811,7 @@ namespace TikTokLiveSharp.Client
         /// Handles a WebcastSocialMessage
         /// </summary>
         /// <param name="messageEvent">Message to Handle</param>
-        private void HandleSocialMessage(WebcastSocialMessage messageEvent)
+        private void HandleSocialMessage(WebcastSocialMessage messageEvent, byte[] message)
         {
             Match match = Regex.Match(messageEvent.Header.SocialData.Type, "pm_mt_guidance_viewer_([0-9]+)_share");
             if (match.Success)
@@ -850,7 +846,7 @@ namespace TikTokLiveSharp.Client
                     return;
                 default:
                     if (ShouldLog(LogLevel.Warning))
-                        Debug.LogWarning("Handling UnhandledSocialEvent!");
+                        Debug.LogWarning($"Handling UnhandledSocialEvent!{Environment.NewLine}[{Convert.ToBase64String(message)}]");
                     // Run Unhandled
                     RunEvent(UnhandledSocialEvent, messageEvent);
                     return;
@@ -860,7 +856,7 @@ namespace TikTokLiveSharp.Client
         /// Handles a WebcastMemberMessage
         /// </summary>
         /// <param name="msg">Message to Handle</param>
-        private void HandleMemberMessage(WebcastMemberMessage msg)
+        private void HandleMemberMessage(WebcastMemberMessage msg, byte[] message)
         {
             switch (msg.Action)
             {
@@ -880,7 +876,7 @@ namespace TikTokLiveSharp.Client
                 default:
                 case (int)MemberMessageAction.Unknown:
                     if (ShouldLog(LogLevel.Warning))
-                        Debug.LogWarning("Handling UnhandledMemberMessage!");
+                        Debug.LogWarning($"Handling UnhandledMemberMessage!{Environment.NewLine}[{Convert.ToBase64String(message)}]");
                     RunEvent(UnhandledMemberEvent, msg);
                     return;
             }
@@ -951,7 +947,8 @@ namespace TikTokLiveSharp.Client
             }
             catch (OverflowException e)
             {
-                WebcastMessageException exc = new WebcastMessageException("Error Deserializing Message", e);
+                byte[] byteData = stream.ToArray();
+                WebcastMessageException exc = new WebcastMessageException($"Error Deserializing Message. Base64 for Message: [{Convert.ToBase64String(byteData)}]", e);
                 if (ShouldLog(LogLevel.Error))
                     Debug.LogException(exc);
                 CallOnException(exc); // Inform user of Error
@@ -960,7 +957,8 @@ namespace TikTokLiveSharp.Client
             }
             catch (Exception ex)
             {
-                WebcastMessageException exc = new WebcastMessageException("Error Deserializing Message", ex);
+                byte[] byteData = stream.ToArray();
+                WebcastMessageException exc = new WebcastMessageException($"Error Deserializing Message. Base64 for Message: [{Convert.ToBase64String(byteData)}]", ex);
                 if (ShouldLog(LogLevel.Error))
                     Debug.LogException(exc);
                 CallOnException(exc); // Inform user of Error
@@ -972,6 +970,9 @@ namespace TikTokLiveSharp.Client
         #region Debug
         /// <summary>
         /// Searches Object for Unparsed Data
+        /// <para>
+        /// Uses Reflection to pull out the unparsed data. Should not be used in production
+        /// </para>
         /// </summary>
         /// <param name="msg">Object to Check</param>
         private void CheckForUnparsedData(AProtoBase msg)
@@ -981,7 +982,7 @@ namespace TikTokLiveSharp.Client
             if (msg._extension != null && msg._extension.GetLength() > 0)
             {
                 FieldInfo f = msg._extension.GetType().GetField("buffer", BindingFlags.Instance | BindingFlags.NonPublic);
-                byte[] foundMsg = (byte[])f.GetValue(msg._extension);
+                byte[] foundMsg = (byte[])f?.GetValue(msg._extension);
                 Debug.LogWarning($"Found unparsed Data in Message {msg.GetType()}");
                 Debug.Log($"Unparsed Data: {Environment.NewLine}{Convert.ToBase64String(foundMsg)}");
             }

@@ -6,10 +6,10 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using TikTokLiveSharp.Client;
+using TikTokLiveSharp.Client.Proxy;
 using TikTokLiveSharp.Events;
 using TikTokLiveSharp.Events.MessageData.Messages;
 using TikTokLiveSharp.Events.MessageData.Objects;
-using TikTokLiveSharp.Models.Protobuf;
 using TikTokLiveUnity.Utils;
 using UnityEngine;
 using UnityEngine.Events;
@@ -379,6 +379,28 @@ namespace TikTokLiveUnity
         #endregion
 
         #region Methods
+        #region Static
+        /// <summary>
+        /// Checks if a User exists on TikTok by attempting to get their Profile-Page
+        /// </summary>
+        /// <param name="userId">@-ID for User</param>
+        /// <param name="timeOut">TimeOut for HTTP-Connection (set NULL for default)</param>
+        /// <param name="proxy">Proxy to use with HTTP-Client</param>
+        /// <returns>True if User has a Profile-Page on TikTok</returns>
+        public static async Task<bool> GetUserExists(string userId, TimeSpan? timeOut = null,
+            RotatingProxy proxy = null) => await TikTokBaseClient.GetUserExists(userId, timeOut, proxy);
+
+        /// <summary>
+        /// Checks if a User is currently streaming by looking for a RoomId on their Live-Page
+        /// </summary>
+        /// <param name="userId">@-ID for User</param>
+        /// <param name="timeOut">TimeOut for HTTP-Connection (set NULL for default)</param>
+        /// <param name="proxy">Proxy to use with HTTP-Client</param>
+        /// <returns>True if User is currently streaming on TikTok</returns>
+        public static async Task<bool> GetUserStreaming(string userId, TimeSpan? timeOut = null,
+            RotatingProxy proxy = null) => await TikTokBaseClient.GetUserStreaming(userId, timeOut, proxy);
+        #endregion
+
         #region Public
         #region Connection
         /// <summary>

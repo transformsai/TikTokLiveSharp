@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading;
 using TikTokLiveSharp.Client;
 using TikTokLiveSharp.Events.MessageData.Messages;
 using TikTokLiveSharp.Events.MessageData.Objects;
@@ -111,15 +112,14 @@ namespace TikTokLiveUnity.Example
         private void OnDestroy()
         {
             btnConnect.onClick.RemoveListener(OnClick_Connect);
-            if (TikTokLiveManager.Exists)
-            {
-                mgr.OnConnected -= ConnectStatusChange;
-                mgr.OnDisconnected -= ConnectStatusChange;
-                mgr.OnJoin -= OnJoin;
-                mgr.OnLike -= OnLike;
-                mgr.OnComment -= OnComment;
-                mgr.OnGift -= OnGift;
-            }
+            if (!TikTokLiveManager.Exists)
+                return;
+            mgr.OnConnected -= ConnectStatusChange;
+            mgr.OnDisconnected -= ConnectStatusChange;
+            mgr.OnJoin -= OnJoin;
+            mgr.OnLike -= OnLike;
+            mgr.OnComment -= OnComment;
+            mgr.OnGift -= OnGift;
         }
         #endregion
 
@@ -133,7 +133,7 @@ namespace TikTokLiveUnity.Example
             bool connecting = mgr.Connecting;
             if (connected || connecting)
                 mgr.DisconnectFromLivestreamAsync();
-            else mgr.ConnectToStreamAsync(ifHostId.text, exc => Debug.LogException(exc));
+            else mgr.ConnectToStreamAsync(ifHostId.text, Debug.LogException);
             UpdateStatus();
             Invoke(nameof(UpdateStatus), .5f);
         }
@@ -164,7 +164,7 @@ namespace TikTokLiveUnity.Example
             txt.text = $"{join.User.UniqueId} Joined the stream";
             instance.transform.SetParent(scrJoin.content, false);
             instance.transform.localScale = Vector3.one;
-            instance.gameObject.SetActive(true);
+            instance.SetActive(true);
             Destroy(instance, 3f);
         }
         /// <summary>
@@ -179,7 +179,7 @@ namespace TikTokLiveUnity.Example
             txt.text = $"{like.Sender.UniqueId} {like.Count}x Liked the stream";
             instance.transform.SetParent(scrLike.content, false);
             instance.transform.localScale = Vector3.one;
-            instance.gameObject.SetActive(true);
+            instance.SetActive(true);
             Destroy(instance, 3f);
         }
         /// <summary>
@@ -194,7 +194,7 @@ namespace TikTokLiveUnity.Example
             txt.text = $"{comment.User.UniqueId} - {comment.Text}";
             instance.transform.SetParent(scrComment.content, false);
             instance.transform.localScale = Vector3.one;
-            instance.gameObject.SetActive(true);
+            instance.SetActive(true);
             Destroy(instance, 7.5f);
         }
         /// <summary>
@@ -204,14 +204,14 @@ namespace TikTokLiveUnity.Example
         /// <param name="picture">Data for Image</param>
         private void RequestImage(Image img, Picture picture)
         {
- //           Dispatcher.RunOnMainThread(() =>
- //           {
- //               mgr.RequestSprite(picture, spr =>
- //               {
- //                   if (img != null)
- //                       img.sprite = spr;
- //               });
- //           });
+  //          Dispatcher.RunOnMainThread(() =>
+  //          {
+  //              mgr.RequestSprite(picture, spr =>
+  //              {
+  //                  if (img != null && img.gameObject != null && img.gameObject.activeInHierarchy)
+  //                      img.sprite = spr;
+  //              });
+  //          });
         }
         /// <summary>
         /// Updates Status-Panel based on ConnectionState
