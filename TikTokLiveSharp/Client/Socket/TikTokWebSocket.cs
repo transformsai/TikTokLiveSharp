@@ -89,7 +89,7 @@ namespace TikTokLiveSharp.Client.Socket
         public async Task WriteMessage(ArraySegment<byte> arr)
         {
             token.ThrowIfCancellationRequested();
-            if (clientWebSocket == null || clientWebSocket.State != WebSocketState.Open)
+            if (clientWebSocket == null)
                 return; // Invalid socket (Connection was closed?)
             await clientWebSocket.SendAsync(arr, WebSocketMessageType.Binary, true, token);
         }
@@ -103,7 +103,7 @@ namespace TikTokLiveSharp.Client.Socket
             token.ThrowIfCancellationRequested();
             if (clientWebSocket == null)
                 return null; // Socket was Closed
-            var arr = new ArraySegment<byte>(buffer);
+            ArraySegment<byte> arr = new ArraySegment<byte>(buffer);
             WebSocketReceiveResult response = await clientWebSocket.ReceiveAsync(arr, token);
             if (response.MessageType == WebSocketMessageType.Binary)
                 return new TikTokWebSocketResponse(arr.Array, response.Count);
@@ -114,5 +114,10 @@ namespace TikTokLiveSharp.Client.Socket
         /// Is the websocket currently connected?
         /// </summary>
         public bool IsConnected => clientWebSocket != null && clientWebSocket.State == WebSocketState.Open;
+
+        /// <summary>
+        /// State for WebSocket
+        /// </summary>
+        public WebSocketState State => clientWebSocket.State;
     }
 }

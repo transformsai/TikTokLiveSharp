@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.5] - 2023-06-11
+
+### Added
+
+- Added checking for socket-state and recreation of SocketClient if it was aborted (by server?)
+
+### Fixed
+
+### Changed
+
+- Added Gift-Name to example-code
+
+### Removed
+
+- Removed Icon (in TTLUnity) only used for NuGet-Package
+
 ## [0.9.4] - 2023-05-20
 
 ### Added
