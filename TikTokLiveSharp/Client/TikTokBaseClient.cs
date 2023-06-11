@@ -102,6 +102,10 @@ namespace TikTokLiveSharp.Client
         /// Running Task(s) for this Client
         /// </summary>
         private Task runningTask, pollingTask;
+        /// <summary>
+        /// Url that socket is connected to
+        /// </summary>
+        private string connectedSocketUrl;
         #endregion
         #endregion
 
@@ -448,6 +452,7 @@ namespace TikTokLiveSharp.Client
                 if (ShouldLog(LogLevel.Verbose))
                     Debug.Log($"Creating Socket with URL {url}");
                 socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, token, settings.SocketBufferSize);
+                connectedSocketUrl = url;
                 await socketClient.Connect(url);
                 if (ShouldLog(LogLevel.Information))
                     Debug.Log($"Starting Socket-Threads");
@@ -458,6 +463,7 @@ namespace TikTokLiveSharp.Client
             {
                 if (ShouldLog(LogLevel.Error))
                     Debug.LogException(e);
+                connectedSocketUrl = null;
                 throw new FailedConnectionException("Failed to connect to the websocket", e);
             }
             if (settings.HandleExistingMessagesOnConnect)
@@ -501,6 +507,7 @@ namespace TikTokLiveSharp.Client
         {
             RoomInfo = null;
             Connecting = false;
+            connectedSocketUrl = null;
             if (Connected)
             {
                 if (ShouldLog(LogLevel.Information))
@@ -544,6 +551,8 @@ namespace TikTokLiveSharp.Client
             }
             else
             {
+                if (html.Contains("Please wait..."))
+                    return await FetchRoomId();
                 FailedFetchRoomInfoException exc = new FailedFetchRoomInfoException(html.Contains("\"og:url\"") ? "User might be offline" : "Your IP or country might be blocked by TikTok.");
                 if (ShouldLog(LogLevel.Error))
                     Debug.LogException(exc);
@@ -628,6 +637,8 @@ namespace TikTokLiveSharp.Client
             while (!token.IsCancellationRequested && socketClient.IsConnected)
             {
                 token.ThrowIfCancellationRequested();
+                await CheckSocketConnection(); // Check SocketConnection
+                token.ThrowIfCancellationRequested();
                 TikTokWebSocketResponse response = await socketClient.ReceiveMessage();
                 if (response == null) 
                     continue;
@@ -679,6 +690,8 @@ namespace TikTokLiveSharp.Client
             while (socketClient != null && socketClient.IsConnected)
             {
                 token.ThrowIfCancellationRequested();
+                await CheckSocketConnection(); // Check SocketConnection
+                token.ThrowIfCancellationRequested();
                 using (var messageStream = new MemoryStream())
                     await socketClient.WriteMessage(new ArraySegment<byte>(new byte[] { 58, 2, 104, 98 }));
                 await Task.Delay(10);
@@ -695,6 +708,8 @@ namespace TikTokLiveSharp.Client
             token.ThrowIfCancellationRequested();
             if (socketClient == null || !socketClient.IsConnected)
                 return; // Socket invalid (closed?)
+            await CheckSocketConnection(); // Check SocketConnection
+            token.ThrowIfCancellationRequested();
             using (var messageStream = new MemoryStream())
             {
                 Serializer.Serialize(messageStream, new WebcastWebsocketAck
@@ -731,5 +746,25 @@ namespace TikTokLiveSharp.Client
         /// </summary>
         /// <param name="webcastResponse">The current webcast response</param>
         protected abstract void HandleWebcastMessages(WebcastResponse webcastResponse);
+
+        /// <summary>
+        /// Checks if SocketConnection was Aborted, and reconnects if this was the case.
+        /// </summary>
+        /// <returns>Task to await</returns>
+        protected virtual async Task CheckSocketConnection()
+        {
+            if (socketClient == null)
+                return;
+            if (socketClient.State == WebSocketState.Aborted)
+            {
+                if (ShouldLog(LogLevel.Information))
+                    Debug.LogWarning("Reconnecting SocketClient");
+                // Disconnect existing Client
+                await socketClient.Disconnect();
+                // Reconnect with new SocketClient
+                socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, token, settings.SocketBufferSize);
+                await socketClient.Connect(connectedSocketUrl);
+            }
+        }
     }
 }
