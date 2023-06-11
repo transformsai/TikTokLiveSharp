@@ -53,7 +53,7 @@ namespace TikTokLiveUnity.Example
             Gift = gift;
             Gift.OnAmountChanged += AmountChanged;
             Gift.OnStreakFinished += StreakFinished;
-            txtUserName.text = $"{Gift.Sender.UniqueId} sent a Gift!";
+            txtUserName.text = $"{Gift.Sender.UniqueId} sent a {Gift.Gift.Name}!";
             txtAmount.text = $"{Gift.Amount}x";
             RequestImage(imgUserProfile, Gift.Sender.ProfilePicture);
             RequestImage(imgGiftIcon, Gift.Gift.Picture);
