@@ -95,7 +95,7 @@ namespace TikTokLiveSharp.Client.Socket
             {
                 token.ThrowIfCancellationRequested();
                 if (clientWebSocket == null)
-                    return; // Invalid socket (Connection was closed?)
+                    return;
                 await clientWebSocket.SendAsync(arr, WebSocketMessageType.Binary, true, token);
             }
             finally
