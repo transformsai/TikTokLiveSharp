@@ -86,14 +86,23 @@ namespace TikTokLiveSharp.Client.Socket
         /// </summary>
         /// <param name="arr">The bytes to write</param>
         /// <returns>Task to await</returns>
+        private SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
+        
         public async Task WriteMessage(ArraySegment<byte> arr)
         {
-            token.ThrowIfCancellationRequested();
-            if (clientWebSocket == null)
-                return; // Invalid socket (Connection was closed?)
-            await clientWebSocket.SendAsync(arr, WebSocketMessageType.Binary, true, token);
+            await semaphore.WaitAsync();
+            try
+            {
+                token.ThrowIfCancellationRequested();
+                if (clientWebSocket == null)
+                    return;
+                await clientWebSocket.SendAsync(arr, WebSocketMessageType.Binary, true, token);
+            }
+            finally
+            {
+                semaphore.Release();
+            }
         }
-
         /// <summary>
         /// Receives a message from websocket. Result is Response-Message from Socket
         /// </summary>
