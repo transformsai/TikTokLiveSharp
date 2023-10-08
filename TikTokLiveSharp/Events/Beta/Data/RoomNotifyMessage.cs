@@ -19,7 +19,7 @@ namespace TikTokLiveSharp.Events.Beta.Data
                 Type = data?.Type ?? string.Empty;
                 Label = data?.Label ?? string.Empty;
                 Text3 = data?.Text3;
-                Data4 = data?.Data4 is { Count: > 0 } ? data.Data4.Select(d => (GiftDetailsData)d).ToList().AsReadOnly() : new List<GiftDetailsData>(0).AsReadOnly();
+                Data4 = data?.Data4?.Count > 0 ? data.Data4.Select(d => (GiftDetailsData)d).ToList().AsReadOnly() : new List<GiftDetailsData>(0).AsReadOnly();
             }
 
             public static implicit operator NotifyData(Models.Protobuf.UnknownObjects.Data.RoomNotifyMessage.NotifyData data) => new NotifyData(data);

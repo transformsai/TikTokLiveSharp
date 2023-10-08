@@ -13,7 +13,7 @@ namespace TikTokLiveSharp.Events.Data
 
         private FanTicketRoomNoticeContent(Models.Protobuf.Messages.FanTicketRoomNoticeContent content)
         {
-            UserFanTickets = content?.UserFanTicketList is { Count: > 0 } ? content.UserFanTicketList.Select(t => (UserFanTicket)t).ToList().AsReadOnly() : new List<UserFanTicket>(0).AsReadOnly();
+            UserFanTickets = content?.UserFanTicketList?.Count > 0 ? content.UserFanTicketList.Select(t => (UserFanTicket)t).ToList().AsReadOnly() : new List<UserFanTicket>(0).AsReadOnly();
             TotalLinkMicFanTicket = content?.TotalLinkMicFanTicket ?? -1;
             MatchId = content?.MatchId ?? -1;
             EventTime = content?.EventTime ?? -1;

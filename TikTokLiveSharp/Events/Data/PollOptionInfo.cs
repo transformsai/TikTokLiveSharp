@@ -16,7 +16,7 @@ namespace TikTokLiveSharp.Events.Data
             Votes = info?.Votes ?? -1;
             DisplayContent = info?.DisplayContent ?? string.Empty;
             OptionIdx = info?.OptionIdx ?? -1;
-            VoteUsers = info?.VoteUserList is { Count: > 0 } ? info.VoteUserList.Select(u => (VoteUser)u).ToList().AsReadOnly() : new List<VoteUser>(0).AsReadOnly();
+            VoteUsers = info?.VoteUserList?.Count > 0 ? info.VoteUserList.Select(u => (VoteUser)u).ToList().AsReadOnly() : new List<VoteUser>(0).AsReadOnly();
         }
 
         public static implicit operator PollOptionInfo(Models.Protobuf.Messages.PollOptionInfo info) => new PollOptionInfo(info);

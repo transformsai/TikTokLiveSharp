@@ -37,10 +37,10 @@ namespace TikTokLiveSharp.Events.Objects
             Size = assetStruct?.Size ?? -1;
             LokiContent = assetStruct?.LokiContent;
             DownloadType = assetStruct?.DownloadType ?? -1;
-            ModelRequirements = assetStruct?.ModelRequirementsList is { Count: > 0 } ? new List<string>(assetStruct.ModelRequirementsList).AsReadOnly() : new List<string>(0).AsReadOnly();
+            ModelRequirements = assetStruct?.ModelRequirementsList?.Count > 0 ? new List<string>(assetStruct.ModelRequirementsList).AsReadOnly() : new List<string>(0).AsReadOnly();
             ResourceByteVc1Url = assetStruct?.ResourceByteVc1Url;
             ByteVc1Md5 = assetStruct?.ByteVc1Md5 ?? string.Empty;
-            VideoResources = assetStruct?.VideoResourceList is { Count: > 0 } ? assetStruct.VideoResourceList.Select(r => (VideoResource)r).ToList().AsReadOnly() : new List<VideoResource>(0).AsReadOnly();
+            VideoResources = assetStruct?.VideoResourceList?.Count > 0 ? assetStruct.VideoResourceList.Select(r => (VideoResource)r).ToList().AsReadOnly() : new List<VideoResource>(0).AsReadOnly();
             FaceRecognitionArchive = assetStruct?.FaceRecognitionArchiveMeta;
             LynxUrlSettingsKey = assetStruct?.LynxUrlSettingsKey ?? string.Empty;
             DowngradeResourceType = assetStruct?.DowngradeResourceType ?? -1;

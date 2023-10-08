@@ -9,7 +9,7 @@ namespace TikTokLiveSharp.Events.Objects
 
         private SpotlightInfo(Models.Protobuf.Objects.SpotlightInfo info)
         {
-            Items = info?.ItemList is { Count: > 0 } ? info.ItemList.Select(i => (SpotlightItem)i).ToList().AsReadOnly() : new List<SpotlightItem>(0).AsReadOnly();
+            Items = info?.ItemList?.Count > 0 ? info.ItemList.Select(i => (SpotlightItem)i).ToList().AsReadOnly() : new List<SpotlightItem>(0).AsReadOnly();
         }
 
         public static implicit operator SpotlightInfo(Models.Protobuf.Objects.SpotlightInfo info) => new SpotlightInfo(info);

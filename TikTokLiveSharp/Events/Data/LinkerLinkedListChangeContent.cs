@@ -9,7 +9,7 @@ namespace TikTokLiveSharp.Events.Data
 
         private LinkerLinkedListChangeContent(Models.Protobuf.Messages.LinkerLinkedListChangeContent content)
         {
-            LinkedUsers = content?.LinkedUsersList is { Count: > 0 } ? content.LinkedUsersList.Select(u => (ListUser)u).ToList().AsReadOnly() : new List<ListUser>(0).AsReadOnly();
+            LinkedUsers = content?.LinkedUsersList?.Count > 0 ? content.LinkedUsersList.Select(u => (ListUser)u).ToList().AsReadOnly() : new List<ListUser>(0).AsReadOnly();
         }
 
         public static implicit operator LinkerLinkedListChangeContent(Models.Protobuf.Messages.LinkerLinkedListChangeContent content) => new LinkerLinkedListChangeContent(content);

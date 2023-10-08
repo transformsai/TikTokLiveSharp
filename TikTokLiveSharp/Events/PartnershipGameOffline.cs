@@ -36,7 +36,7 @@ namespace TikTokLiveSharp.Events
         internal PartnershipGameOffline(Models.Protobuf.Messages.PartnershipGameOfflineMessage msg)
             : base(msg?.Header)
         {
-            OfflineGames = msg?.OfflineGameList is { Count: > 0 } ? msg.OfflineGameList.Select(info => (OfflineGameInfo)info).ToList().AsReadOnly() : new List<OfflineGameInfo>(0).AsReadOnly();
+            OfflineGames = msg?.OfflineGameList?.Count > 0 ? msg.OfflineGameList.Select(info => (OfflineGameInfo)info).ToList().AsReadOnly() : new List<OfflineGameInfo>(0).AsReadOnly();
         }
     }
 }

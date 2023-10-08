@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 
+
+Initial full release of TikTokLiveSharp/TikTokLiveUnity
+
+### Note
+THIS IS A BREAKING UPDATE FOR USERS OF PREVIOUS VERSIONS OF THE LIBRARY.
+PROCEED IN UPDATING WITH CAUTION!
+
+Between the previous version to v1.0.0 a complete re-write was performed of
+the schema used when decoding messages from the TikTokLive-Server.
+This means that many Events & their underlying paramaters will have changed.
+When updating from previous versions to v1.0.0, you will need to re-write your
+code that hooks to these events.
+
+### Added
+
+- Added DisplayedGifts, which filters AvailableGifts down to those displayed for the room
+- Added the ability to connect by RoomId instead of HostId
+- Added the ability to skip checking the RoomInfo whilst connecting
+- Added usage of Custom Parameters for clients & Requests
+
+### Fixed
+
+- Proxy is now properly used for both HTTP- and Websocket-Connection
+- Lib now works properly on UWP-backend
+- Enabled Images in Example
+
+### Changed
+
+- Complete rewrite of TikTokLive-BackendData & Events
+
+
 ## [0.9.5] - 2023-06-11
 
 ### Added

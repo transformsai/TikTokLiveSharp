@@ -10,7 +10,7 @@ namespace TikTokLiveSharp.Events.Objects
 
         private NoteDetail(Models.Protobuf.Objects.NoteDetail noteDetail)
         {
-            Contents = noteDetail?.NoteContentList is { Count: > 0 } ? noteDetail.NoteContentList.Select(c => (NoteContent)c).ToList().AsReadOnly() : new List<NoteContent>(0).AsReadOnly();
+            Contents = noteDetail?.NoteContentList?.Count > 0 ? noteDetail.NoteContentList.Select(c => (NoteContent)c).ToList().AsReadOnly() : new List<NoteContent>(0).AsReadOnly();
             Version = noteDetail?.NoteVersion ?? -1;
         }
 

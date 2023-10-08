@@ -72,7 +72,7 @@ namespace TikTokLiveSharp.Events.Objects
 
         private Picture(Models.Protobuf.Objects.Image profileImage)
         {
-            Urls = profileImage?.Urls is { Count: > 0 } ? new List<string>(profileImage.Urls).AsReadOnly() : new List<string>(0).AsReadOnly();
+            Urls = profileImage?.Urls?.Count > 0 ? new List<string>(profileImage.Urls).AsReadOnly() : new List<string>(0).AsReadOnly();
             Uri = profileImage?.Uri ?? string.Empty;
             Height = profileImage?.Height ?? -1;
             Width = profileImage?.Width ?? -1;
@@ -87,8 +87,8 @@ namespace TikTokLiveSharp.Events.Objects
         {
             Urls = image?.Url_List?.AsReadOnly() ?? new List<string>(0).AsReadOnly();
             Uri = image?.Uri ?? string.Empty;
-            Height = image?.Height != null ? image.Height : -1;
-            Width = image?.Width != null ? image.Width : -1;
+            Height = image?.Height != null ? (long)image.Height : -1;
+            Width = image?.Width != null ? (long)image.Width : -1;
             Color = image?.Avg_Color ?? string.Empty;
             Type = image?.Image_Type ?? -1;
             OpenWebUrl = image?.Open_Web_Url ?? string.Empty;

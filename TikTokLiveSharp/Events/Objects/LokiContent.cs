@@ -26,7 +26,7 @@ namespace TikTokLiveSharp.Events.Objects
             BefViewRenderFps = lokiContent?.BefViewRenderFps ?? -1;
             BefViewFitMode = lokiContent?.BefViewFitMode ?? -1;
             ModelNames = lokiContent?.ModelNames ?? string.Empty;
-            Requirements = lokiContent?.RequirementsList is { Count: > 0 } ? new List<string>(lokiContent.RequirementsList).AsReadOnly() : new List<string>(0).AsReadOnly();
+            Requirements = lokiContent?.RequirementsList?.Count > 0 ? new List<string>(lokiContent.RequirementsList).AsReadOnly() : new List<string>(0).AsReadOnly();
         }
 
         public static implicit operator LokiContent(Models.Protobuf.Objects.LokiContent lokiContent) => new LokiContent(lokiContent);

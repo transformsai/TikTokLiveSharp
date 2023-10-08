@@ -15,7 +15,7 @@ namespace TikTokLiveSharp.Events.Objects
         private SubGoalRecommendInfo(Models.Protobuf.Objects.SubGoalRecommendInfo info)
         {
             Type = info?.Type ?? SubGoalType.SubGoalTypeUnknown;
-            ItemsList = info?.ItemsList is { Count: > 0 } ? info.ItemsList.Select(g => (SubGoal)g).ToList().AsReadOnly() : new List<SubGoal>(0).AsReadOnly();
+            ItemsList = info?.ItemsList?.Count > 0 ? info.ItemsList.Select(g => (SubGoal)g).ToList().AsReadOnly() : new List<SubGoal>(0).AsReadOnly();
             Description = info?.Description ?? string.Empty;
             SubscriptionRecExtra = info?.SubscriptionRecExtra;
             StreamGoalRecExtra = info?.StreamGoalRecExtra;

@@ -11,9 +11,9 @@ namespace TikTokLiveSharp.Events.Data
 
         private LinkerListChangeContent(Models.Protobuf.Messages.LinkerListChangeContent content)
         {
-            LinkedUsers = content?.LinkedUsersList is { Count: > 0 } ? content.LinkedUsersList.Select(u => (ListUser)u).ToList().AsReadOnly() : new List<ListUser>(0).AsReadOnly();
-            AppliedUsers = content?.AppliedUsersList is { Count: > 0 } ? content.AppliedUsersList.Select(u => (ListUser)u).ToList().AsReadOnly() : new List<ListUser>(0).AsReadOnly();
-            ConnectingUsers = content?.ConnectingUsersList is { Count: > 0 } ? content.ConnectingUsersList.Select(u => (ListUser)u).ToList().AsReadOnly() : new List<ListUser>(0).AsReadOnly();
+            LinkedUsers = content?.LinkedUsersList?.Count > 0 ? content.LinkedUsersList.Select(u => (ListUser)u).ToList().AsReadOnly() : new List<ListUser>(0).AsReadOnly();
+            AppliedUsers = content?.AppliedUsersList?.Count > 0 ? content.AppliedUsersList.Select(u => (ListUser)u).ToList().AsReadOnly() : new List<ListUser>(0).AsReadOnly();
+            ConnectingUsers = content?.ConnectingUsersList?.Count > 0 ? content.ConnectingUsersList.Select(u => (ListUser)u).ToList().AsReadOnly() : new List<ListUser>(0).AsReadOnly();
         }
 
         public static implicit operator LinkerListChangeContent(Models.Protobuf.Messages.LinkerListChangeContent content) => new LinkerListChangeContent(content);

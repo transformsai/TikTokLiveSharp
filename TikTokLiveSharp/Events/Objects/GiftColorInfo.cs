@@ -16,7 +16,7 @@ namespace TikTokLiveSharp.Events.Objects
         {
             ColorId = info?.ColorId ?? -1;
             ColorName = info?.ColorName ?? string.Empty;
-            ColorValues = info?.ColorValuesList is { Count: > 0 } ? new List<string>(info.ColorValuesList).AsReadOnly() : new List<string>(0).AsReadOnly();
+            ColorValues = info?.ColorValuesList?.Count > 0 ? new List<string>(info.ColorValuesList).AsReadOnly() : new List<string>(0).AsReadOnly();
             ColorImage = info?.ColorImage;
             GiftImage = info?.GiftImage;
             ColorEffectId = info?.ColorEffectId ?? -1;

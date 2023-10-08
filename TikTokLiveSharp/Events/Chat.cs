@@ -66,14 +66,14 @@ namespace TikTokLiveSharp.Events
             PublicAreaCommon = msg?.PublicAreaCommon;
             GiftImage = msg?.GiftImage;
             InputType = msg?.InputType ?? -1;
-            MentionedUsers = msg?.MentionedUsers is { Count: > 0 } ? msg.MentionedUsers.Select(u => (User)u).ToList().AsReadOnly() : new List<User>(0).AsReadOnly();
-            Emotes = msg?.EmotesList is { Count: > 0 } ? msg.EmotesList.OrderBy(e => e.Index).Select(e => (Emote)e.Emote).ToList().AsReadOnly() : new List<Emote>(0).AsReadOnly();
+            MentionedUsers = msg?.MentionedUsers?.Count > 0 ? msg.MentionedUsers.Select(u => (User)u).ToList().AsReadOnly() : new List<User>(0).AsReadOnly();
+            Emotes = msg?.EmotesList?.Count > 0 ? msg.EmotesList.OrderBy(e => e.Index).Select(e => (Emote)e.Emote).ToList().AsReadOnly() : new List<Emote>(0).AsReadOnly();
             ContentLanguage = msg?.ContentLanguage ?? string.Empty;
             MsgFilter = msg?.MsgFilter;
             QuickChatScene = msg?.QuickChatScene ?? -1;
             CommunityFlaggedStatus = msg?.CommunityFlaggedStatus ?? -1;
             UserIdentity = msg?.UserIdentity;
-            CommentQualityScores = msg?.CommentQualityScores is { Count: > 0 } ? msg.CommentQualityScores.Select(s => (CommentQualityScore)s).ToList().AsReadOnly() : new List<CommentQualityScore>(0).AsReadOnly();
+            CommentQualityScores = msg?.CommentQualityScores?.Count > 0 ? msg.CommentQualityScores.Select(s => (CommentQualityScore)s).ToList().AsReadOnly() : new List<CommentQualityScore>(0).AsReadOnly();
         }
     }
 }

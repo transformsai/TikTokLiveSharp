@@ -16,7 +16,7 @@ namespace TikTokLiveSharp.Events.Beta.Data
             Type = ranking?.Type ?? string.Empty;
             Label = ranking?.Label ?? string.Empty;
             Text = ranking?.Text;
-            Details = ranking?.Details is { Count: > 0 } ? ranking.Details.Select(v => (ValueLabel)v).ToList().AsReadOnly() : new List<ValueLabel>(0).AsReadOnly();
+            Details = ranking?.Details?.Count > 0 ? ranking.Details.Select(v => (ValueLabel)v).ToList().AsReadOnly() : new List<ValueLabel>(0).AsReadOnly();
         }
 
         public static implicit operator Ranking(Models.Protobuf.UnknownObjects.Data.Ranking ranking) => new Ranking(ranking);

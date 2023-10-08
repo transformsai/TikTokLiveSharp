@@ -10,7 +10,7 @@ namespace TikTokLiveSharp.Events.Objects
 
         private GiftIMPriority(Models.Protobuf.Objects.GiftIMPriority imPriority)
         {
-            QueueSizes = imPriority?.QueueSizesList is { Count: > 0 } ? new List<long>(imPriority.QueueSizesList).AsReadOnly() : new List<long>(0).AsReadOnly();
+            QueueSizes = imPriority?.QueueSizesList?.Count > 0 ? new List<long>(imPriority.QueueSizesList).AsReadOnly() : new List<long>(0).AsReadOnly();
             SelfQueuePriority = imPriority?.SelfQueuePriority ?? -1;
             Priority = imPriority?.Priority ?? -1;
         }

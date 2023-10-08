@@ -13,7 +13,7 @@ namespace TikTokLiveSharp.Events.Linkmic
         {
             ErrCode = linkBaseResp?.ErrCode ?? -1;
             ErrMsg = linkBaseResp?.ErrMsg ?? string.Empty;
-            Extra = linkBaseResp?.ExtraMap is { Count: > 0 } ? new ReadOnlyDictionary<string, byte[]>(linkBaseResp.ExtraMap) : new ReadOnlyDictionary<string, byte[]>(new Dictionary<string, byte[]>(0));
+            Extra = linkBaseResp?.ExtraMap?.Count > 0 ? new ReadOnlyDictionary<string, byte[]>(linkBaseResp.ExtraMap) : new ReadOnlyDictionary<string, byte[]>(new Dictionary<string, byte[]>(0));
         }
 
         public static implicit operator LinkBaseResp(Models.Protobuf.LinkmicCommon.LinkBaseResp linkBaseResp) => new LinkBaseResp(linkBaseResp);

@@ -12,10 +12,10 @@ namespace TikTokLiveSharp.Events.Linkmic
 
         private AllListUser(Models.Protobuf.LinkmicCommon.AllListUser user)
         {
-            LinkedList = user?.LinkedList is { Count: > 0 } ? user.LinkedList.Select(u => (LinkLayerListUser)u).ToList().AsReadOnly() : new List<LinkLayerListUser>(0).AsReadOnly();
-            AppliedList = user?.AppliedList is { Count: > 0 } ? user.AppliedList.Select(u => (LinkLayerListUser)u).ToList().AsReadOnly() : new List<LinkLayerListUser>(0).AsReadOnly();
-            InvitedList = user?.InvitedList is { Count: > 0 } ? user.InvitedList.Select(u => (LinkLayerListUser)u).ToList().AsReadOnly() : new List<LinkLayerListUser>(0).AsReadOnly();
-            ReadyList = user?.ReadyList is { Count: > 0 } ? user.ReadyList.Select(u => (LinkLayerListUser)u).ToList().AsReadOnly() : new List<LinkLayerListUser>(0).AsReadOnly();
+            LinkedList = user?.LinkedList?.Count > 0 ? user.LinkedList.Select(u => (LinkLayerListUser)u).ToList().AsReadOnly() : new List<LinkLayerListUser>(0).AsReadOnly();
+            AppliedList = user?.AppliedList?.Count > 0 ? user.AppliedList.Select(u => (LinkLayerListUser)u).ToList().AsReadOnly() : new List<LinkLayerListUser>(0).AsReadOnly();
+            InvitedList = user?.InvitedList?.Count > 0 ? user.InvitedList.Select(u => (LinkLayerListUser)u).ToList().AsReadOnly() : new List<LinkLayerListUser>(0).AsReadOnly();
+            ReadyList = user?.ReadyList?.Count > 0 ? user.ReadyList.Select(u => (LinkLayerListUser)u).ToList().AsReadOnly() : new List<LinkLayerListUser>(0).AsReadOnly();
         }
 
         public static implicit operator AllListUser(Models.Protobuf.LinkmicCommon.AllListUser user) => new AllListUser(user);

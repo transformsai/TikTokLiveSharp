@@ -19,7 +19,7 @@ namespace TikTokLiveSharp.Events.Objects
             LastAuditStatus = entrance?.LastAuditStatus ?? AuditStatus.AuditStatusUnknown;
             LastBenefitId = entrance?.LastBenefitId ?? -1;
             Figures = entrance?.Figures ?? -1;
-            EnabledPerksList = entrance?.EnabledPerksList is { Count: > 0 } ? entrance.EnabledPerksList.Select(p => (Perk)p).ToList().AsReadOnly() : new List<Perk>(0).AsReadOnly();
+            EnabledPerksList = entrance?.EnabledPerksList?.Count > 0 ? entrance.EnabledPerksList.Select(p => (Perk)p).ToList().AsReadOnly() : new List<Perk>(0).AsReadOnly();
             MaxPerksCount = entrance?.MaxPerksCnt ?? -1;
         }
 

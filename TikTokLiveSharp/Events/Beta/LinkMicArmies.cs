@@ -25,7 +25,7 @@ namespace TikTokLiveSharp.Events.Beta
             : base(msg?.Header)
         {
             Id = msg?.Id ?? 0;
-            Data3 = msg?.Data3 is { Count: > 0 } ? msg.Data3.Select(i => (LinkMicArmiesItems)i).ToList().AsReadOnly() : new List<LinkMicArmiesItems>(0).AsReadOnly();
+            Data3 = msg?.Data3?.Count > 0 ? msg.Data3.Select(i => (LinkMicArmiesItems)i).ToList().AsReadOnly() : new List<LinkMicArmiesItems>(0).AsReadOnly();
             Id2 = msg?.Id2 ?? 0;
             Timestamp5 = msg?.Timestamp5 ?? 0;
             Timestamp6 = msg?.Timestamp6 ?? 0;

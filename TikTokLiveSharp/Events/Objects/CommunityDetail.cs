@@ -11,7 +11,7 @@ namespace TikTokLiveSharp.Events.Objects
 
         private CommunityDetail(Models.Protobuf.Objects.CommunityDetail communityDetail)
         {
-            CommunityContent = communityDetail?.CommunityContentList is { Count: > 0 } ? communityDetail.CommunityContentList.Select(c => (CommunityContent)c).ToList().AsReadOnly() : new List<CommunityContent>(0).AsReadOnly();
+            CommunityContent = communityDetail?.CommunityContentList?.Count > 0 ? communityDetail.CommunityContentList.Select(c => (CommunityContent)c).ToList().AsReadOnly() : new List<CommunityContent>(0).AsReadOnly();
             AuditStatus = communityDetail?.AuditStatus ?? AuditStatus.AuditStatusUnknown;
         }
 

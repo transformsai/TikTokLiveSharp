@@ -15,7 +15,7 @@ namespace TikTokLiveSharp.Events.Objects
             Capacity = info?.Capacity ?? -1;
             IsPrimaryBox = info?.IsPrimaryBox ?? false;
             SchemeUrl = info?.SchemeUrl ?? string.Empty;
-            GiftInfosInBox = info?.GiftInfosInBoxList is { Count: > 0 } ? info.GiftInfosInBoxList.Select(i => (GiftInfoInBox)i).ToList().AsReadOnly() : new List<GiftInfoInBox>(0).AsReadOnly();
+            GiftInfosInBox = info?.GiftInfosInBoxList?.Count > 0 ? info.GiftInfosInBoxList.Select(i => (GiftInfoInBox)i).ToList().AsReadOnly() : new List<GiftInfoInBox>(0).AsReadOnly();
         }
 
         public static implicit operator GiftBoxInfo(Models.Protobuf.Objects.GiftBoxInfo info) => new GiftBoxInfo(info);

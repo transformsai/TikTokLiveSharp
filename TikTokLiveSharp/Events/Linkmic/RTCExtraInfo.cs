@@ -19,7 +19,7 @@ namespace TikTokLiveSharp.Events.Linkmic
         private RTCExtraInfo(Models.Protobuf.LinkmicCommon.RTCExtraInfo rtcExtraInfo)
         {
             LiveRTCEngineConfig = rtcExtraInfo?.LiveRTCEngineConfig;
-            LiveRTCVideoParamList = rtcExtraInfo?.LiveRTCVideoParamList is { Count: > 0 } ? rtcExtraInfo.LiveRTCVideoParamList.Select(p => (RTCLiveVideoParam)p).ToList().AsReadOnly() : new List<RTCLiveVideoParam>(0).AsReadOnly();
+            LiveRTCVideoParamList = rtcExtraInfo?.LiveRTCVideoParamList?.Count > 0 ? rtcExtraInfo.LiveRTCVideoParamList.Select(p => (RTCLiveVideoParam)p).ToList().AsReadOnly() : new List<RTCLiveVideoParam>(0).AsReadOnly();
             RTCBitrateMap = rtcExtraInfo?.RTCBitrateMap;
             RTCFps = rtcExtraInfo?.RTCFps ?? -1;
             RTCMixBase = rtcExtraInfo?.RTCMixBase;

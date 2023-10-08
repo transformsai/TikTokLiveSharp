@@ -33,8 +33,8 @@ namespace TikTokLiveSharp.Events
             NumberOfViewers = msg?.Total ?? -1;
             Popularity = msg?.Popularity ?? -1;
             TotalUsers = msg?.TotalUser ?? -1;
-            TopViewers = msg?.RanksList is { Count: > 0 } ? msg.RanksList.OrderBy(u => u.Rank).Select(u => (TopViewer)u).ToList() : new List<TopViewer>(0);
-            Seats = msg?.SeatsList is { Count: > 0 } ? msg.SeatsList.OrderBy(u => u.Rank).Select(u => (TopViewer)u).ToList() : new List<TopViewer>(0);
+            TopViewers = msg?.RanksList?.Count > 0 ? msg.RanksList.OrderBy(u => u.Rank).Select(u => (TopViewer)u).ToList() : new List<TopViewer>(0);
+            Seats = msg?.SeatsList?.Count > 0 ? msg.SeatsList.OrderBy(u => u.Rank).Select(u => (TopViewer)u).ToList() : new List<TopViewer>(0);
             PopStr = msg?.PopStr ?? string.Empty;
             Anonymous = msg?.Anonymous ?? -1;
         }

@@ -13,7 +13,7 @@ namespace TikTokLiveSharp.Events.Data
 
         private LinkerEnterContent(Models.Protobuf.Messages.LinkerEnterContent content)
         {
-            LinkedUsers = content?.LinkedUsersList is { Count: > 0 } ? content.LinkedUsersList.Select(u => (ListUser)u).ToList().AsReadOnly() : new List<ListUser>(0).AsReadOnly();
+            LinkedUsers = content?.LinkedUsersList?.Count > 0 ? content.LinkedUsersList.Select(u => (ListUser)u).ToList().AsReadOnly() : new List<ListUser>(0).AsReadOnly();
             HostMultiLiveEnum = content?.AnchorMultiLiveEnum ?? LinkmicMultiLiveEnum.Default;
             HostSettingInfo = content?.AnchorSettingInfo;
         }

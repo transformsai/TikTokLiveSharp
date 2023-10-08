@@ -9,7 +9,7 @@ namespace TikTokLiveSharp.Events.Objects
 
         private UserAttrResponse(Models.Protobuf.Objects.UserAttrResponse response)
         {
-            Values = response?.Values is { Count: > 0 } ? new ReadOnlyDictionary<long, long>(response.Values) : new ReadOnlyDictionary<long, long>(new Dictionary<long, long>(0));
+            Values = response?.Values?.Count > 0 ? new ReadOnlyDictionary<long, long>(response.Values) : new ReadOnlyDictionary<long, long>(new Dictionary<long, long>(0));
         }
 
         public static implicit operator UserAttrResponse(Models.Protobuf.Objects.UserAttrResponse response) => new UserAttrResponse(response);

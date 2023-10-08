@@ -31,8 +31,6 @@ namespace TikTokLiveSharp.Events
         internal Join(Models.Protobuf.Messages.MemberMessage msg)
             : base(msg?.Header)
         {
-            if (msg is not { Action: (long)MemberMessageAction.Joined })
-                throw new ArgumentException("Is not a JoinMessage", nameof(msg));
             User = msg?.User;
             Operator = msg?.Operator;
             ViewerCount = msg?.MemberCount ?? -1;

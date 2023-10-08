@@ -16,7 +16,7 @@ namespace TikTokLiveSharp.Events.Data
         {
             StartTime = content?.StartTime ?? -1;
             EndTime = content?.EndTime ?? -1;
-            Options = content?.OptionList is { Count: > 0 } ? content.OptionList.Select(i => (PollOptionInfo)i).ToList().AsReadOnly() : new List<PollOptionInfo>(0).AsReadOnly();
+            Options = content?.OptionList?.Count > 0 ? content.OptionList.Select(i => (PollOptionInfo)i).ToList().AsReadOnly() : new List<PollOptionInfo>(0).AsReadOnly();
             Title = content?.Title ?? string.Empty;
             Operator = content?.Operator;
         }

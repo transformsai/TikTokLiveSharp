@@ -13,7 +13,7 @@ namespace TikTokLiveSharp.Events.Data
 
         private CancelJoinGroupContent(Models.Protobuf.Messages.CancelJoinGroupContent content)
         {
-            LeaverList = content?.LeaverList is { Count: > 0 } ? content.LeaverList.Select(p => (GroupPlayer)p).ToList().AsReadOnly() : new List<GroupPlayer>(0).AsReadOnly();
+            LeaverList = content?.LeaverList?.Count > 0 ? content.LeaverList.Select(p => (GroupPlayer)p).ToList().AsReadOnly() : new List<GroupPlayer>(0).AsReadOnly();
             Operator = content?.Operator;
             Type = content?.Type ?? ListChangeType.List_Leave;
         }

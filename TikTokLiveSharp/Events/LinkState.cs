@@ -25,7 +25,7 @@ namespace TikTokLiveSharp.Events
             Version = msg?.Version ?? -1;
             NeedAck = msg?.NeedAck ?? -1;
             Layout = msg?.Layout;
-            UserStates = msg?.UserStatesList is { Count: > 0 } ? msg.UserStatesList.Select(u => (LinkUserState)u).ToList().AsReadOnly() : new List<LinkUserState>(0).AsReadOnly();
+            UserStates = msg?.UserStatesList?.Count > 0 ? msg.UserStatesList.Select(u => (LinkUserState)u).ToList().AsReadOnly() : new List<LinkUserState>(0).AsReadOnly();
             LinkStateClientSendTime = msg?.ClientSendTime ?? -1;
             StateType = msg?.StateType ?? StateType.State_Invalid;
             Background = msg?.Background;

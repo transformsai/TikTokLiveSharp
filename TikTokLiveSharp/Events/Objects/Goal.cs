@@ -27,14 +27,14 @@ namespace TikTokLiveSharp.Events.Objects
             Id = goal?.Id ?? -1;
             Type = goal?.Type ?? GoalType.GoalTypeUnknown;
             Status = goal?.Status ?? GoalStatus.GoalStatusUnknown;
-            SubGoals = goal?.SubGoalsList is { Count: > 0 } ? goal.SubGoalsList.Select(g => (SubGoal)g).ToList().AsReadOnly() : new List<SubGoal>(0).AsReadOnly();
+            SubGoals = goal?.SubGoalsList?.Count > 0 ? goal.SubGoalsList.Select(g => (SubGoal)g).ToList().AsReadOnly() : new List<SubGoal>(0).AsReadOnly();
             Description = goal?.Description ?? string.Empty;
             AuditStatus = goal?.AuditStatus ?? -1;
             CycleType = goal?.CycleType ?? CycleType.CycleTypeUnknown;
             StartTime = goal?.StartTime ?? -1;
             ExpireTime = goal?.ExpireTime ?? -1;
             RealFinishTime = goal?.RealFinishTime ?? -1;
-            Contributors = goal?.ContributorsList is { Count: > 0 } ? goal.ContributorsList.Select(c => (GoalContributor)c).ToList().AsReadOnly() : new List<GoalContributor>(0).AsReadOnly();
+            Contributors = goal?.ContributorsList?.Count > 0 ? goal.ContributorsList.Select(c => (GoalContributor)c).ToList().AsReadOnly() : new List<GoalContributor>(0).AsReadOnly();
             ContributorsLength = goal?.ContributorsLength ?? 0;
             IdString = goal?.IdStr ?? string.Empty;
             AuditDescription = goal?.AuditDescription ?? string.Empty;

@@ -11,7 +11,7 @@ namespace TikTokLiveSharp.Events.Objects
 
         private VoteResponseData(Models.Protobuf.Objects.VoteResponseData response)
         {
-            Options = response?.OptionList is { Count: > 0 } ? response.OptionList.Select(o => (PollOptionInfo)o).ToList().AsReadOnly() : new List<PollOptionInfo>(0).AsReadOnly();
+            Options = response?.OptionList?.Count > 0 ? response.OptionList.Select(o => (PollOptionInfo)o).ToList().AsReadOnly() : new List<PollOptionInfo>(0).AsReadOnly();
         }
 
         public static implicit operator VoteResponseData(Models.Protobuf.Objects.VoteResponseData response) => new VoteResponseData(response);

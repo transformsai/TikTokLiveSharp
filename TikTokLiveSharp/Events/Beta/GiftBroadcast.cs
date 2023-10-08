@@ -22,7 +22,7 @@ namespace TikTokLiveSharp.Events.Beta
                     {
                         Data1 = data?.Data1 ?? 0;
                         Data2 = data?.Data2 ?? 0;
-                        Urls = data?.Urls is { Count: > 0 } ? data.Urls.AsReadOnly() : new List<string>(0).AsReadOnly();
+                        Urls = data?.Urls?.Count > 0 ? data.Urls.AsReadOnly() : new List<string>(0).AsReadOnly();
                     }
 
                     public static implicit operator GiftBroadcastImageData(Models.Protobuf.UnknownObjects.GiftBroadcastMessage.GiftBroadcastData.GiftBroadCastImageDataContainer.GiftBroadcastImageData data) => new GiftBroadcastImageData(data);

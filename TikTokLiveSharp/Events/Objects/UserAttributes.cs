@@ -17,7 +17,7 @@ namespace TikTokLiveSharp.Events.Objects
             IsAdmin = attributes?.IsAdmin ?? false;
             IsSuperAdmin = attributes?.IsSuperAdmin ?? false;
             MuteDuration = attributes?.MuteDuration ?? -1;
-            AdminPermissions = attributes?.AdminPermissionsMap is { Count: > 0 }
+            AdminPermissions = attributes?.AdminPermissionsMap?.Count > 0
                 ? new ReadOnlyDictionary<int, int>(new Dictionary<int, int>(attributes.AdminPermissionsMap))
                 : new ReadOnlyDictionary<int, int>(new Dictionary<int, int>(0));
         }

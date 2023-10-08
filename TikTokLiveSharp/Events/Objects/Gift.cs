@@ -20,7 +20,7 @@ namespace TikTokLiveSharp.Events.Objects
                 DisplayText = banner?.DisplayText;
                 LeftIcon = banner?.LeftIcon;
                 SchemaUrl = banner?.SchemaUrl ?? string.Empty;
-                BgColorValues = banner?.BgColorValuesList is { Count: > 0 } ? new List<string>(banner.BgColorValuesList).AsReadOnly() : new List<string>(0).AsReadOnly();
+                BgColorValues = banner?.BgColorValuesList?.Count > 0 ? new List<string>(banner.BgColorValuesList).AsReadOnly() : new List<string>(0).AsReadOnly();
                 BannerLynxUrl = banner?.BannerLynxUrl ?? string.Empty;
             }
 
@@ -48,7 +48,7 @@ namespace TikTokLiveSharp.Events.Objects
                 DisplayText = banner?.DisplayText ?? string.Empty;
                 LeftIcon = banner?.LeftIcon;
                 SchemaUrl = banner?.SchemaUrl ?? string.Empty;
-                BgColorValues = banner?.BgColorValuesList is { Count: > 0 } ? new List<string>(banner.BgColorValuesList).AsReadOnly() : new List<string>(0).AsReadOnly();
+                BgColorValues = banner?.BgColorValuesList?.Count > 0 ? new List<string>(banner.BgColorValuesList).AsReadOnly() : new List<string>(0).AsReadOnly();
                 Round = banner?.Round ?? -1;
             }
 
@@ -80,7 +80,7 @@ namespace TikTokLiveSharp.Events.Objects
             private GiftRandomEffectInfo(Models.Protobuf.Objects.GiftStruct.GiftRandomEffectInfo info)
             {
                 RandomGiftPanelBanner = info?.RandomGiftPanelBanner;
-                EffectIdsList = info?.EffectIdsList is { Count: > 0 } ? new List<long>(info.EffectIdsList).AsReadOnly() : new List<long>(0).AsReadOnly();
+                EffectIdsList = info?.EffectIdsList?.Count > 0 ? new List<long>(info.EffectIdsList).AsReadOnly() : new List<long>(0).AsReadOnly();
                 HostKey = info?.HostKey ?? string.Empty;
                 AudienceKey = info?.AudienceKey ?? string.Empty;
                 RandomGiftBubble = info?.RandomGiftBubble;
@@ -152,13 +152,13 @@ namespace TikTokLiveSharp.Events.Objects
             IsBoxGift = giftStruct?.IsBoxGift ?? false;
             CanPutInGiftBox = giftStruct?.CanPutInGiftBox ?? false;
             GiftBoxInfo = giftStruct?.GiftBoxInfo;
-            TrackerParams = giftStruct?.TrackerParamsMap is { Count: > 0 } ? new ReadOnlyDictionary<string, string>(giftStruct.TrackerParamsMap) : new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(0));
+            TrackerParams = giftStruct?.TrackerParamsMap?.Count > 0 ? new ReadOnlyDictionary<string, string>(giftStruct.TrackerParamsMap) : new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(0));
             LockInfo = giftStruct?.LockInfo;
-            ColorInfos = giftStruct?.ColorInfosList is { Count: > 0 } ? giftStruct.ColorInfosList.Select(c => (GiftColorInfo)c).ToList().AsReadOnly() : new List<GiftColorInfo>(0).AsReadOnly();
+            ColorInfos = giftStruct?.ColorInfosList?.Count > 0 ? giftStruct.ColorInfosList.Select(c => (GiftColorInfo)c).ToList().AsReadOnly() : new List<GiftColorInfo>(0).AsReadOnly();
             GiftRankRecommendInfo = giftStruct?.GiftRankRecommendInfo;
             RandomEffectInfo = giftStruct?.RandomEffectInfo;
             GiftSubType = giftStruct?.GiftSubType ?? 0;
-            GiftVerticalScenarios = giftStruct?.GiftVerticalScenariosList is { Count: > 0 } ? new List<int>(giftStruct.GiftVerticalScenariosList).AsReadOnly() : new List<int>(0).AsReadOnly();
+            GiftVerticalScenarios = giftStruct?.GiftVerticalScenariosList?.Count > 0 ? new List<int>(giftStruct.GiftVerticalScenariosList).AsReadOnly() : new List<int>(0).AsReadOnly();
         }
 
         public static implicit operator Gift(Models.Protobuf.Objects.GiftStruct giftStruct) => new Gift(giftStruct);

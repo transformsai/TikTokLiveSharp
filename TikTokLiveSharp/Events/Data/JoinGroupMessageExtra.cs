@@ -60,7 +60,7 @@ namespace TikTokLiveSharp.Events.Data
         {
             SourceType = extra?.SourceType ?? -1;
             Extra = extra?.Extra;
-            OtherUsers = extra?.OtherUsersList is { Count: > 0 } ? extra.OtherUsersList.Select(r => (RivalExtra)r).ToList().AsReadOnly() : new List<RivalExtra>(0).AsReadOnly();
+            OtherUsers = extra?.OtherUsersList?.Count > 0 ? extra.OtherUsersList.Select(r => (RivalExtra)r).ToList().AsReadOnly() : new List<RivalExtra>(0).AsReadOnly();
         }
 
         public static implicit operator JoinGroupMessageExtra(Models.Protobuf.Messages.JoinGroupMessageExtra extra) => new JoinGroupMessageExtra(extra);

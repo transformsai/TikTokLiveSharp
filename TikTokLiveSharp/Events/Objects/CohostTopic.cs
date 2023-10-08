@@ -21,7 +21,7 @@ namespace TikTokLiveSharp.Events.Objects
             Liked = topic?.Liked ?? false;
             TotalHeat = topic?.TotalHeat ?? -1;
             TotalRivals = topic?.TotalRivals ?? -1;
-            RivalAvatars = topic?.RivalsAvatarList is { Count: > 0 } ? topic.RivalsAvatarList.Select(i => (Picture)i).ToList().AsReadOnly() : new List<Picture>(0).AsReadOnly();
+            RivalAvatars = topic?.RivalsAvatarList?.Count > 0 ? topic.RivalsAvatarList.Select(i => (Picture)i).ToList().AsReadOnly() : new List<Picture>(0).AsReadOnly();
         }
 
         public static implicit operator CohostTopic(Models.Protobuf.Objects.CohostTopic topic) => new CohostTopic(topic);

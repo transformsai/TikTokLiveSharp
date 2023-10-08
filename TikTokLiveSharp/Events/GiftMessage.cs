@@ -171,7 +171,7 @@ namespace TikTokLiveSharp.Events
             OrderId = msg?.OrderId ?? string.Empty;
             GiftsInBox = msg?.GiftsInBox;
             MsgFilter = msg?.MsgFilter;
-            LynxExtras = msg?.LynxExtraList is { Count: > 0 } ? msg.LynxExtraList.Select(l => (LynxGiftExtra)l).ToList().AsReadOnly() : new List<LynxGiftExtra>(0).AsReadOnly();
+            LynxExtras = msg?.LynxExtraList?.Count > 0 ? msg.LynxExtraList.Select(l => (LynxGiftExtra)l).ToList().AsReadOnly() : new List<LynxGiftExtra>(0).AsReadOnly();
             UserIdentity = msg?.UserIdentity;
             MatchInfo = msg?.MatchInfo;
             LinkmicGiftExpressionStrategy = msg?.LinkmicGiftExpressionStrategy ?? LinkmicGiftExpressionStrategy.ControlV1;

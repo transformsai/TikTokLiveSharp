@@ -38,7 +38,7 @@ namespace TikTokLiveSharp.Events.Objects
 
             private SecondDegreeRelationContent(Models.Protobuf.Objects.TagV2.SecondDegreeRelationContent content)
             {
-                RelatedUsers = content?.RelatedUsersList is { Count: > 0 } ? content.RelatedUsersList.Select(u => (UserInfo)u).ToList().AsReadOnly() : new List<UserInfo>(0).AsReadOnly();
+                RelatedUsers = content?.RelatedUsersList?.Count > 0 ? content.RelatedUsersList.Select(u => (UserInfo)u).ToList().AsReadOnly() : new List<UserInfo>(0).AsReadOnly();
                 RelatedUserCount = content?.TotalRelatedUserCnt ?? -1;
             }
 

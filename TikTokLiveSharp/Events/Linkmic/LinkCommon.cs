@@ -17,7 +17,7 @@ namespace TikTokLiveSharp.Events.Linkmic
             Source = linkCommon?.Source ?? string.Empty;
             AppId = linkCommon?.AppId ?? -1;
             LiveId = linkCommon?.LiveId ?? -1;
-            Extra = linkCommon?.ExtraMap is { Count: > 0 } ? new ReadOnlyDictionary<string, string>(linkCommon.ExtraMap) : new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(0));
+            Extra = linkCommon?.ExtraMap?.Count > 0 ? new ReadOnlyDictionary<string, string>(linkCommon.ExtraMap) : new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(0));
         }
 
         public static implicit operator LinkCommon(Models.Protobuf.LinkmicCommon.LinkCommon linkCommon) => new LinkCommon(linkCommon);

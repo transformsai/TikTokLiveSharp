@@ -72,7 +72,7 @@ namespace TikTokLiveSharp.Events
             MsgProcessFilterV = header?.MsgProcessFilterV ?? string.Empty;
             FromIdc = header?.FromIdc ?? string.Empty;
             ToIdc = header?.ToIdc ?? string.Empty;
-            FilterMsgTags = header?.FilterMsgTagsList is { Count: > 0 } ? new List<string>(header.FilterMsgTagsList).AsReadOnly() : new List<string>(0).AsReadOnly();
+            FilterMsgTags = header?.FilterMsgTagsList?.Count > 0 ? new List<string>(header.FilterMsgTagsList).AsReadOnly() : new List<string>(0).AsReadOnly();
             SEI = header?.SEI;
             DependRootId = header?.DependRootId;
             DependId = header?.DependId;

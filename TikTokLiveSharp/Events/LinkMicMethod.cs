@@ -49,7 +49,7 @@ namespace TikTokLiveSharp.Events
 
             private ContributorList(Models.Protobuf.Messages.LinkMicMethod.ContributorList list)
             {
-                Contributors = list?.Contributor_List is { Count: > 0 } ? list.Contributor_List.Select(c => (Contributor)c).ToList().AsReadOnly() : new List<Contributor>(0).AsReadOnly();
+                Contributors = list?.Contributor_List?.Count > 0 ? list.Contributor_List.Select(c => (Contributor)c).ToList().AsReadOnly() : new List<Contributor>(0).AsReadOnly();
             }
 
             public static implicit operator ContributorList(Models.Protobuf.Messages.LinkMicMethod.ContributorList list) => new ContributorList(list);
@@ -140,12 +140,12 @@ namespace TikTokLiveSharp.Events
             Answer = msg?.Answer ?? -1;
             StartTime = msg?.StartTime ?? -1;
             Duration = msg?.Duration ?? -1;
-            UserScoresList = msg?.UserScoresList is { Count: > 0 } ? msg.UserScoresList.Select(u => (UserScores)u).ToList().AsReadOnly() : new List<UserScores>(0).AsReadOnly();
+            UserScoresList = msg?.UserScoresList?.Count > 0 ? msg.UserScoresList.Select(u => (UserScores)u).ToList().AsReadOnly() : new List<UserScores>(0).AsReadOnly();
             MatchType = msg?.MatchType ?? -1;
             Win = msg?.Win ?? false;
             Prompts = msg?.Prompts ?? string.Empty;
             ToUserId = msg?.ToUserId ?? -1;
-            Contributors = msg?.ContributorsMap is { Count: > 0 } ? new ReadOnlyDictionary<long, ContributorList>(msg.ContributorsMap.ToDictionary(k => k.Key, k => (ContributorList)k.Value)) : new ReadOnlyDictionary<long, ContributorList>(new Dictionary<long, ContributorList>(0));
+            Contributors = msg?.ContributorsMap?.Count > 0 ? new ReadOnlyDictionary<long, ContributorList>(msg.ContributorsMap.ToDictionary(k => k.Key, k => (ContributorList)k.Value)) : new ReadOnlyDictionary<long, ContributorList>(new Dictionary<long, ContributorList>(0));
             LinkmicLayout = msg?.LinkmicLayout ?? -1;
             FromUserId = msg?.FromUserId ?? -1;
             Tips = msg?.Tips ?? string.Empty;
@@ -168,7 +168,7 @@ namespace TikTokLiveSharp.Events
             SecInviteUid = msg?.SecInviteUid ?? -1;
             Scene = msg?.Scene ?? -1;
             SecApplyUid = msg?.SecApplyUid ?? -1;
-            LinkedUsers = msg?.LinkedUsersList is { Count: > 0 } ? msg.LinkedUsersList.Select(u => (User)u).ToList().AsReadOnly() : new List<User>(0).AsReadOnly();
+            LinkedUsers = msg?.LinkedUsersList?.Count > 0 ? msg.LinkedUsersList.Select(u => (User)u).ToList().AsReadOnly() : new List<User>(0).AsReadOnly();
             SecFromUserId = msg?.SecFromUserId ?? string.Empty;
             ReplyType = msg?.ReplyType ?? LinkMicMethodMessageType.Type_None;
             ReplyPrompts = msg?.ReplyPrompts ?? string.Empty;

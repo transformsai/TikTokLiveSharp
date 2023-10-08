@@ -12,7 +12,7 @@ namespace TikTokLiveSharp.Events
             : base(msg?.Header)
         {
             Scene = msg?.MessageScene ?? string.Empty;
-            NotifyList = msg?.MessageEntityList is { Count: > 0 } ? msg.MessageEntityList.Select(e => new Notify(e.Notify)).ToList().AsReadOnly() : new List<Notify>(0).AsReadOnly();
+            NotifyList = msg?.MessageEntityList?.Count > 0 ? msg.MessageEntityList.Select(e => new Notify(e.Notify)).ToList().AsReadOnly() : new List<Notify>(0).AsReadOnly();
         }
     }
 }

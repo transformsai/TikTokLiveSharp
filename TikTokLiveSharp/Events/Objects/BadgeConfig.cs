@@ -11,7 +11,7 @@ namespace TikTokLiveSharp.Events.Objects
         private BadgeConfig(Models.Protobuf.Objects.BadgeConfig badgeConfig)
         {
             Badge_Limit = badgeConfig?.BadgeLmt;
-            OriginBadgeImages = badgeConfig?.OriginBadgeImgList is { Count: > 0 } ? badgeConfig.OriginBadgeImgList.Select(b => (OriginBadgeInfo)b).ToList().AsReadOnly() : new List<OriginBadgeInfo>(0).AsReadOnly();
+            OriginBadgeImages = badgeConfig?.OriginBadgeImgList?.Count > 0 ? badgeConfig.OriginBadgeImgList.Select(b => (OriginBadgeInfo)b).ToList().AsReadOnly() : new List<OriginBadgeInfo>(0).AsReadOnly();
         }
 
         public static implicit operator BadgeConfig(Models.Protobuf.Objects.BadgeConfig badgeConfig) => new BadgeConfig(badgeConfig);

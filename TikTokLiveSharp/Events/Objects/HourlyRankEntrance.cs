@@ -20,7 +20,7 @@ namespace TikTokLiveSharp.Events.Objects
         private HourlyRankEntrance(Models.Protobuf.Objects.HourlyRankEntrance rankEntrance)
         {
             ShowEntrance = rankEntrance?.ShowEntrance ?? false;
-            Slides = rankEntrance?.SlidesList is { Count: > 0 } ? rankEntrance.SlidesList.Select(p => (HourlyRankSlidePage)p).ToList().AsReadOnly() : new List<HourlyRankSlidePage>(0).AsReadOnly();
+            Slides = rankEntrance?.SlidesList?.Count > 0 ? rankEntrance.SlidesList.Select(p => (HourlyRankSlidePage)p).ToList().AsReadOnly() : new List<HourlyRankSlidePage>(0).AsReadOnly();
             Countdown = rankEntrance?.Countdown ?? -1;
             DefaultContent = rankEntrance?.DefaultContent;
             SprintPrompt = rankEntrance?.SprintPrompt;

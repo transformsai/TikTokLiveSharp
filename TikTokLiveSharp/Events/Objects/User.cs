@@ -78,7 +78,7 @@ namespace TikTokLiveSharp.Events.Objects
                 Level = payGrade?.Level ?? -1;
                 NextIcon = payGrade?.NextIcon;
                 GradeDescription = payGrade?.GradeDescribe ?? string.Empty;
-                GradeIcons = payGrade?.GradeIconList is { Count: > 0 } ? payGrade.GradeIconList.Select(i => (GradeIcon)i).ToList().AsReadOnly() : new List<GradeIcon>(0).AsReadOnly();
+                GradeIcons = payGrade?.GradeIconList?.Count > 0 ? payGrade.GradeIconList.Select(i => (GradeIcon)i).ToList().AsReadOnly() : new List<GradeIcon>(0).AsReadOnly();
                 ScreenChatType = payGrade?.ScreenChatType ?? -1;
                 ImIcon = payGrade?.ImIcon;
                 ImIconWithLevel = payGrade?.ImIconWithLevel;
@@ -126,7 +126,7 @@ namespace TikTokLiveSharp.Events.Objects
 
                     private UserBadge(Models.Protobuf.Objects.User.FansClub.FansClubData.UserBadge badge)
                     {
-                        Icons = badge?.IconsMap is { Count: > 0 } ? badge.IconsMap.ToDictionary(k => k.Key, k => (Picture)k.Value) : new Dictionary<int, Picture>(0);
+                        Icons = badge?.IconsMap?.Count > 0 ? badge.IconsMap.ToDictionary(k => k.Key, k => (Picture)k.Value) : new Dictionary<int, Picture>(0);
                         Title = badge?.Title ?? string.Empty;
                     }
 
@@ -147,7 +147,7 @@ namespace TikTokLiveSharp.Events.Objects
                     Level = data?.Level ?? -1;
                     FansClubStatus = data?.FansClubStatus != null ? (UserFansClubStatus)data.FansClubStatus : UserFansClubStatus.NotJoined;
                     Badge = data?.Badge;
-                    AvailableGiftIds = data?.AvailableGiftIdsList is { Count: > 0 } ? new List<long>(data.AvailableGiftIdsList).AsReadOnly() : new List<long>(0).AsReadOnly();
+                    AvailableGiftIds = data?.AvailableGiftIdsList?.Count > 0 ? new List<long>(data.AvailableGiftIdsList).AsReadOnly() : new List<long>(0).AsReadOnly();
                     HostId = data?.AnchorId ?? -1;
                 }
 
@@ -160,7 +160,7 @@ namespace TikTokLiveSharp.Events.Objects
             private FansClub(Models.Protobuf.Objects.User.FansClub club)
             {
                 Data = club?.Data;
-                PreferData = club?.PreferDataMap is { Count: > 0 } ? new ReadOnlyDictionary<int, FansClubData>(club.PreferDataMap.ToDictionary(k => k.Key, k => (FansClubData)k.Value)) : new ReadOnlyDictionary<int, FansClubData>(new Dictionary<int, FansClubData>(0));
+                PreferData = club?.PreferDataMap?.Count > 0 ? new ReadOnlyDictionary<int, FansClubData>(club.PreferDataMap.ToDictionary(k => k.Key, k => (FansClubData)k.Value)) : new ReadOnlyDictionary<int, FansClubData>(new Dictionary<int, FansClubData>(0));
             }
 
             public static implicit operator FansClub(Models.Protobuf.Objects.User.FansClub club) => new FansClub(club);
@@ -199,8 +199,8 @@ namespace TikTokLiveSharp.Events.Objects
 
             private OwnRoom(Models.Protobuf.Objects.User.OwnRoom room)
             {
-                RoomIds = room?.RoomIdsList is { Count: > 0 } ? new List<long>(room.RoomIdsList).AsReadOnly() : new List<long>(0).AsReadOnly();
-                RoomIdStrings = room?.RoomIdsStrList is { Count: > 0 } ? new List<string>(room.RoomIdsStrList).AsReadOnly() : new List<string>(0).AsReadOnly();
+                RoomIds = room?.RoomIdsList?.Count > 0 ? new List<long>(room.RoomIdsList).AsReadOnly() : new List<long>(0).AsReadOnly();
+                RoomIdStrings = room?.RoomIdsStrList?.Count > 0 ? new List<string>(room.RoomIdsStrList).AsReadOnly() : new List<string>(0).AsReadOnly();
             }
 
             public static implicit operator OwnRoom(Models.Protobuf.Objects.User.OwnRoom room) => new OwnRoom(room);
@@ -471,9 +471,9 @@ namespace TikTokLiveSharp.Events.Objects
                                 Width = img?.Width ?? -1;
                                 Minetype = img?.Minetype ?? string.Empty;
                                 ThumbUri = img?.ThumbUri ?? string.Empty;
-                                ThumbUriList = img?.ThumbUriList is { Count: > 0 } ? new List<string>(img.ThumbUriList) : new List<string>(0);
+                                ThumbUriList = img?.ThumbUriList?.Count > 0 ? new List<string>(img.ThumbUriList) : new List<string>(0);
                                 Uri = img?.Uri ?? string.Empty;
-                                UrlList = img?.UrlList is { Count: > 0 } ? new List<string>(img.UrlList) : new List<string>(0);
+                                UrlList = img?.UrlList?.Count > 0 ? new List<string>(img.UrlList) : new List<string>(0);
                                 Color = img?.Color ?? string.Empty;
                             }
 
@@ -781,7 +781,7 @@ namespace TikTokLiveSharp.Events.Objects
             ModifyTime = user?.ModifyTime ?? -1;
             Secret = user?.Secret ?? -1;
             ShareQRCodeUri = user?.ShareQRCodeUri ?? string.Empty;
-            BadgeImages = user?.BadgeImageList is { Count: > 0 } ? user.BadgeImageList.Select(p => (Picture)p).ToList().AsReadOnly() : new List<Picture>(0).AsReadOnly();
+            BadgeImages = user?.BadgeImageList?.Count > 0 ? user.BadgeImageList.Select(p => (Picture)p).ToList().AsReadOnly() : new List<Picture>(0).AsReadOnly();
             Follow_Info = user?.Follow_Info;
             Pay_Grade = user?.Pay_Grade;
             Fans_Club = user?.Fans_Club;
@@ -789,8 +789,8 @@ namespace TikTokLiveSharp.Events.Objects
             SpecialId = user?.SpecialId ?? string.Empty;
             AvatarBorder = user?.AvatarBorder;
             Medal = user?.Medal;
-            RealtimeIconsList = user?.RealtimeIconsList is { Count: > 0 } ? user.RealtimeIconsList.Select(i => (Picture)i).ToList().AsReadOnly() : new List<Picture>(0).AsReadOnly();
-            NewRealTimeIconsList = user?.NewRealtimeIconsList is { Count: > 0 } ? user.NewRealtimeIconsList.Select(i => (Picture)i).ToList().AsReadOnly() : new List<Picture>(0).AsReadOnly();
+            RealtimeIconsList = user?.RealtimeIconsList?.Count > 0 ? user.RealtimeIconsList.Select(i => (Picture)i).ToList().AsReadOnly() : new List<Picture>(0).AsReadOnly();
+            NewRealTimeIconsList = user?.NewRealtimeIconsList?.Count > 0 ? user.NewRealtimeIconsList.Select(i => (Picture)i).ToList().AsReadOnly() : new List<Picture>(0).AsReadOnly();
             TopVipNo = user?.TopVipNo ?? -1;
             User_Attr = user?.User_Attr;
             Own_Room = user?.Own_Room;
@@ -804,20 +804,20 @@ namespace TikTokLiveSharp.Events.Objects
             WebcastHostLevel = user?.WebcastAnchorLevel;
             VerifiedContent = user?.VerifiedContent ?? string.Empty;
             Author_Stats = user?.Author_Stats;
-            TopFansList = user?.TopFansList is { Count: > 0 } ? user.TopFansList.Select(u => (User)u).ToList().AsReadOnly() : new List<User>(0).AsReadOnly();
+            TopFansList = user?.TopFansList?.Count > 0 ? user.TopFansList.Select(u => (User)u).ToList().AsReadOnly() : new List<User>(0).AsReadOnly();
             SecUid = user?.SecUid ?? string.Empty;
             UserRole = user?.UserRole ?? -1;
             ActivityReward = user?.ActivityReward;
             PersonalCard = user?.PersonalCard;
             Authentication_Info = user?.Authentication_Info;
-            MediaBadgeImages = user?.MediaBadgeImageList is { Count: > 0 } ? user.MediaBadgeImageList.Select(i => (Picture)i).ToList().AsReadOnly() : new List<Picture>(0).AsReadOnly();
+            MediaBadgeImages = user?.MediaBadgeImageList?.Count > 0 ? user.MediaBadgeImageList.Select(i => (Picture)i).ToList().AsReadOnly() : new List<Picture>(0).AsReadOnly();
             UserVipInfo = user?.UserVipInfo;
-            CommerceWebcastConfigIds = user?.CommerceWebcastConfigIdsList is { Count: > 0 } ? new List<long>(user.CommerceWebcastConfigIdsList).AsReadOnly() : new List<long>(0).AsReadOnly();
-            Borders = user?.BorderList is { Count: > 0 } ? user.BorderList.Select(b => (Border)b).ToList().AsReadOnly() : new List<Border>(0).AsReadOnly();
+            CommerceWebcastConfigIds = user?.CommerceWebcastConfigIdsList?.Count > 0 ? new List<long>(user.CommerceWebcastConfigIdsList).AsReadOnly() : new List<long>(0).AsReadOnly();
+            Borders = user?.BorderList?.Count > 0 ? user.BorderList.Select(b => (Border)b).ToList().AsReadOnly() : new List<Border>(0).AsReadOnly();
             ComboBadge_Info = user?.ComboBadge_Info;
             Subscribe_Info = user?.Subscribe_Info;
-            Badges = user?.BadgeList is { Count: > 0 } ? user.BadgeList.Select(b => (Badge)b).ToList().AsReadOnly() : new List<Badge>(0).AsReadOnly();
-            MintTypeLabels = user?.MintTypeLabelList is { Count: > 0 } ? new List<long>(user.MintTypeLabelList).AsReadOnly() : new List<long>(0).AsReadOnly();
+            Badges = user?.BadgeList?.Count > 0 ? user.BadgeList.Select(b => (Badge)b).ToList().AsReadOnly() : new List<Badge>(0).AsReadOnly();
+            MintTypeLabels = user?.MintTypeLabelList?.Count > 0 ? new List<long>(user.MintTypeLabelList).AsReadOnly() : new List<long>(0).AsReadOnly();
             FansClub_Info = user?.FansClub_Info;
             AllowFindByContacts = user?.AllowFindByContacts ?? false;
             AllowOthersDownloadVideo = user?.AllowOthersDownloadVideo ?? false;
@@ -857,7 +857,7 @@ namespace TikTokLiveSharp.Events.Objects
             Stats = user?.Stats;
             VerifiedReason = user?.VerifiedReason ?? string.Empty;
             WithCarManagementPermission = user?.WithCarManagementPermission ?? false;
-            UpcomingEvents = user?.UpcomingEventList is { Count: > 0 } ? user.UpcomingEventList.Select(i => (LiveEventInfo)i).ToList().AsReadOnly() : new List<LiveEventInfo>(0).AsReadOnly();
+            UpcomingEvents = user?.UpcomingEventList?.Count > 0 ? user.UpcomingEventList.Select(i => (LiveEventInfo)i).ToList().AsReadOnly() : new List<LiveEventInfo>(0).AsReadOnly();
             ScmLabel = user?.ScmLabel ?? string.Empty;
             Ecommerce_Entrance = user?.Ecommerce_Entrance;
             IsBlock = user?.IsBlock ?? false;

@@ -80,7 +80,7 @@ namespace TikTokLiveSharp.Events.Objects
             Layout = extra?.Layout ?? -1;
             Tips = extra?.Tips ?? string.Empty;
             Extra = extra?.Extra;
-            OtherUsers = extra?.OtherUsersList is { Count: > 0 } ? extra.OtherUsersList.Select(u => (InviterRivalExtra)u).ToList().AsReadOnly() : new List<InviterRivalExtra>(0).AsReadOnly();
+            OtherUsers = extra?.OtherUsersList?.Count > 0 ? extra.OtherUsersList.Select(u => (InviterRivalExtra)u).ToList().AsReadOnly() : new List<InviterRivalExtra>(0).AsReadOnly();
             TopicInfo = extra?.TopicInfo;
         }
 

@@ -38,6 +38,7 @@ namespace TikTokLiveSharp.Client.Config
             Timeout = DEFAULT_TIMEOUT,
             PollingInterval = DEFAULT_POLLTIME,
             ClientLanguage = "en-US",
+            EnableCompression = true,
             SkipRoomInfo = false,
             HandleExistingMessagesOnConnect = true,
             DownloadGiftInfo = true,
@@ -97,8 +98,10 @@ namespace TikTokLiveSharp.Client.Config
             { "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36" },
             { "Referer", "https://www.tiktok.com/" },
             { "Origin", "https://www.tiktok.com" },
-            { "Accept-Language", "en-US,en; q=0.8" },
-            { "Accept-Encoding", "gzip, deflate, br" }
+            { "Accept-Language", "en-US,en; q=0.8" }
+            
         });
+
+        public static readonly KeyValuePair<string, string> COMPRESSION_HEADER = new KeyValuePair<string, string>( "Accept-Encoding", "gzip, deflate, br" );
     }
 }

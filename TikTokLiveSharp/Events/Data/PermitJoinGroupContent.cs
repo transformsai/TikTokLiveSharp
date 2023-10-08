@@ -18,7 +18,7 @@ namespace TikTokLiveSharp.Events.Data
             Approver = content?.Approver;
             AgreeStatus = content?.AgreeStatus ?? AgreeStatus.Agree_Unknown;
             Type = content?.Type ?? JoinType.Join_Type_Unknown;
-            GroupExtInfos = content?.GroupExtInfoList is { Count: > 0 } ? content.GroupExtInfoList.Select(i => (RTCExtraInfo)i).ToList().AsReadOnly() : new List<RTCExtraInfo>(0).AsReadOnly();
+            GroupExtInfos = content?.GroupExtInfoList?.Count > 0 ? content.GroupExtInfoList.Select(i => (RTCExtraInfo)i).ToList().AsReadOnly() : new List<RTCExtraInfo>(0).AsReadOnly();
             GroupUser = content?.GroupUser;
         }
 

@@ -39,13 +39,13 @@ namespace TikTokLiveSharp.Events.Data
             LinkerSetting = content?.LinkerSetting;
             FromUser = content?.FromUser;
             ToUser = content?.ToUser;
-            RtcExtInfos = content?.RtcExtInfoMap is { Count: > 0 } ? new ReadOnlyDictionary<long, string>(content.RtcExtInfoMap) : new ReadOnlyDictionary<long, string>(new Dictionary<long, string>(0));
+            RtcExtInfos = content?.RtcExtInfoMap?.Count > 0 ? new ReadOnlyDictionary<long, string>(content.RtcExtInfoMap) : new ReadOnlyDictionary<long, string>(new Dictionary<long, string>(0));
             InviteeMicIdxUpdateInfo = content?.InviteeMicIdxUpdateInfo;
-            ApplierMicIdxInfoMap = content?.ApplierMicIdxInfoMap is { Count: > 0 } ? new ReadOnlyDictionary<long, long>(content.ApplierMicIdxInfoMap) : new ReadOnlyDictionary<long, long>(new Dictionary<long, long>(0));
+            ApplierMicIdxInfoMap = content?.ApplierMicIdxInfoMap?.Count > 0 ? new ReadOnlyDictionary<long, long>(content.ApplierMicIdxInfoMap) : new ReadOnlyDictionary<long, long>(new Dictionary<long, long>(0));
             HostMultiLiveEnum = content?.AnchorMultiLiveEnum ?? LinkmicMultiLiveEnum.Default;
             HostSettingInfo = content?.AnchorSettingInfo;
             ActionId = content?.ActionId ?? -1;
-            LinkedUsers = content?.LinkedUsersList is { Count: > 0 } ? content.LinkedUsersList.Select(u => (LinkmicUserInfo)u).ToList().AsReadOnly() : new List<LinkmicUserInfo>(0).AsReadOnly();
+            LinkedUsers = content?.LinkedUsersList?.Count > 0 ? content.LinkedUsersList.Select(u => (LinkmicUserInfo)u).ToList().AsReadOnly() : new List<LinkmicUserInfo>(0).AsReadOnly();
             SourceType = content?.SourceType ?? -1;
         }
 

@@ -42,18 +42,18 @@ namespace TikTokLiveSharp.Events.Data
             ToLinkmicIdString = content?.ToLinkmicIdStr ?? string.Empty;
             FromUser = content?.FromUser;
             RequiredMicIdx = content?.RequiredMicIdx ?? -1;
-            RtcExtInfo = content?.RtcExtInfoMap is { Count: > 0 } ? new ReadOnlyDictionary<long, string>(content.RtcExtInfoMap) : new ReadOnlyDictionary<long, string>(new Dictionary<long, string>(0));
+            RtcExtInfo = content?.RtcExtInfoMap?.Count > 0 ? new ReadOnlyDictionary<long, string>(content.RtcExtInfoMap) : new ReadOnlyDictionary<long, string>(new Dictionary<long, string>(0));
             HostMultiLiveEnum = content?.AnchorMultiLiveEnum ?? LinkmicMultiLiveEnum.Default;
             HostSettingInfo = content?.AnchorSettingInfo;
             InviterLinkmicIdString = content?.InviterLinkmicIdStr ?? string.Empty;
             FromTopHostInfo = content?.FromTopHostInfo;
             ActionId = content?.ActionId ?? -1;
-            LinkedUsers = content?.LinkedUsersList is { Count: > 0 } ? content.LinkedUsersList.Select(u => (LinkmicUserInfo)u).ToList().AsReadOnly() : new List<LinkmicUserInfo>(0).AsReadOnly();
+            LinkedUsers = content?.LinkedUsersList?.Count > 0 ? content.LinkedUsersList.Select(u => (LinkmicUserInfo)u).ToList().AsReadOnly() : new List<LinkmicUserInfo>(0).AsReadOnly();
             Dialog = content?.Dialog;
             PunishInfo = content?.PunishInfo;
             FromRoomAgeRestricted = content?.FromRoomAgeRestricted ?? -1;
             FromTag = content?.FromTag;
-            AbTestSettings = content?.AbTestSettingList is { Count: > 0 } ? content.AbTestSettingList.Select(s => (CohostABTestSetting)s).ToList().AsReadOnly() : new List<CohostABTestSetting>(0).AsReadOnly();
+            AbTestSettings = content?.AbTestSettingList?.Count > 0 ? content.AbTestSettingList.Select(s => (CohostABTestSetting)s).ToList().AsReadOnly() : new List<CohostABTestSetting>(0).AsReadOnly();
             LinkerInviteMsgExtra = content?.LinkerInviteMsgExtra;
         }
 

@@ -45,9 +45,9 @@ namespace TikTokLiveSharp.Events.Objects
             ShowName = tag?.ShowName ?? string.Empty;
             ShortName = tag?.ShortName ?? string.Empty;
             FullName = tag?.FullName ?? string.Empty;
-            HashtagIds = tag?.HashtagIdList is { Count: > 0 } ? new List<long>(tag.HashtagIdList).AsReadOnly() : new List<long>(0).AsReadOnly();
-            Hashtags = tag?.HashtagList is { Count: > 0 } ? tag.HashtagList.Select(t => (Hashtag)t).ToList().AsReadOnly() : new List<Hashtag>(0).AsReadOnly();
-            GameCategories = tag?.GameCategoryList is { Count: > 0 } ? tag.GameCategoryList.Select(t => (GameTagCategory)t).ToList().AsReadOnly() : new List<GameTagCategory>(0).AsReadOnly();
+            HashtagIds = tag?.HashtagIdList?.Count > 0 ? new List<long>(tag.HashtagIdList).AsReadOnly() : new List<long>(0).AsReadOnly();
+            Hashtags = tag?.HashtagList?.Count > 0 ? tag.HashtagList.Select(t => (Hashtag)t).ToList().AsReadOnly() : new List<Hashtag>(0).AsReadOnly();
+            GameCategories = tag?.GameCategoryList?.Count > 0 ? tag.GameCategoryList.Select(t => (GameTagCategory)t).ToList().AsReadOnly() : new List<GameTagCategory>(0).AsReadOnly();
             Landscape = tag?.Landscape ?? -1;
             PackageName = tag?.PackageName ?? string.Empty;
             BundleId = tag?.BundleId ?? string.Empty;

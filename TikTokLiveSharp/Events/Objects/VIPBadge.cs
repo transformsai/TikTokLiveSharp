@@ -10,7 +10,7 @@ namespace TikTokLiveSharp.Events.Objects
 
         private VIPBadge(Models.Protobuf.Objects.VIPBadge badge)
         {
-            IconsMap = badge?.IconsMap is { Count: > 0 } ? new ReadOnlyDictionary<long, Picture>(badge.IconsMap.Select(i => new KeyValuePair<long,Picture>(i.Key, i.Value)).ToDictionary(i => i.Key, i => i.Value)) : new ReadOnlyDictionary<long, Picture>(new Dictionary<long, Picture>(0));
+            IconsMap = badge?.IconsMap?.Count > 0 ? new ReadOnlyDictionary<long, Picture>(badge.IconsMap.Select(i => new KeyValuePair<long,Picture>(i.Key, i.Value)).ToDictionary(i => i.Key, i => i.Value)) : new ReadOnlyDictionary<long, Picture>(new Dictionary<long, Picture>(0));
         }
 
         public static implicit operator VIPBadge(Models.Protobuf.Objects.VIPBadge badge) => new VIPBadge(badge);

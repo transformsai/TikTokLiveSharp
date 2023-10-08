@@ -13,7 +13,7 @@ namespace TikTokLiveSharp.Events.Data
         {
             FromUserId = content?.FromUserId ?? -1;
             ToUserId = content?.ToUserId ?? -1;
-            UpdateInfo = content?.UpdateInfoMap is { Count: > 0 } ? new ReadOnlyDictionary<string, string>(content?.UpdateInfoMap) : new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(0));
+            UpdateInfo = content?.UpdateInfoMap?.Count > 0 ? new ReadOnlyDictionary<string, string>(content?.UpdateInfoMap) : new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(0));
         }
 
         public static implicit operator LinkerUpdateUserContent(Models.Protobuf.Messages.LinkerUpdateUserContent content) => new LinkerUpdateUserContent(content);

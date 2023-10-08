@@ -15,7 +15,7 @@ namespace TikTokLiveSharp.Events
             : base(msg?.Header)
         {
             User = msg?.User;
-            Emotes = msg?.EmoteList is { Count: > 0 } ? msg.EmoteList.Select(e => (Emote)e).ToList().AsReadOnly() : new List<Emote>(0).AsReadOnly();
+            Emotes = msg?.EmoteList?.Count > 0 ? msg.EmoteList.Select(e => (Emote)e).ToList().AsReadOnly() : new List<Emote>(0).AsReadOnly();
             MsgFilter = msg?.MsgFilter;
             UserIdentity = msg?.UserIdentity;
         }

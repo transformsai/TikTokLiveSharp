@@ -15,7 +15,7 @@ namespace TikTokLiveSharp.Events.Objects
             Id = summary?.Id ?? -1;
             Title = summary?.Title ?? string.Empty;
             Schema = summary?.Schema ?? string.Empty;
-            ShowList = summary?.ShowList is { Count: > 0 } ? summary.ShowList.Select(i => (ShowInfo)i).ToList().AsReadOnly() : new List<ShowInfo>(0).AsReadOnly();
+            ShowList = summary?.ShowList?.Count > 0 ? summary.ShowList.Select(i => (ShowInfo)i).ToList().AsReadOnly() : new List<ShowInfo>(0).AsReadOnly();
         }
 
         public static implicit operator TopFrameSummary(Models.Protobuf.Objects.TopFrameSummary summary) => new TopFrameSummary(summary);

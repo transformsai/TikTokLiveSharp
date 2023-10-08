@@ -9,7 +9,7 @@ namespace TikTokLiveSharp.Events.Objects
 
         private PrivateEmoteDetail(Models.Protobuf.Objects.PrivateEmoteDetail detail)
         {
-            Emotes = detail?.EmoteList is { Count: > 0 } ? detail.EmoteList.Select(e => (Emote)e).ToList().AsReadOnly() : new List<Emote>(0).AsReadOnly();
+            Emotes = detail?.EmoteList?.Count > 0 ? detail.EmoteList.Select(e => (Emote)e).ToList().AsReadOnly() : new List<Emote>(0).AsReadOnly();
         }
 
         public static implicit operator PrivateEmoteDetail(Models.Protobuf.Objects.PrivateEmoteDetail detail) => new PrivateEmoteDetail(detail);

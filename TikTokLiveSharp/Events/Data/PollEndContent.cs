@@ -13,7 +13,7 @@ namespace TikTokLiveSharp.Events.Data
         private PollEndContent(Models.Protobuf.Messages.PollEndContent content)
         {
             EndType = content?.EndType ?? -1;
-            Options = content?.OptionList is { Count: > 0 } ? content.OptionList.Select(i => (PollOptionInfo)i).ToList().AsReadOnly() : new List<PollOptionInfo>(0).AsReadOnly();
+            Options = content?.OptionList?.Count > 0 ? content.OptionList.Select(i => (PollOptionInfo)i).ToList().AsReadOnly() : new List<PollOptionInfo>(0).AsReadOnly();
             Operator = content?.Operator;
         }
 

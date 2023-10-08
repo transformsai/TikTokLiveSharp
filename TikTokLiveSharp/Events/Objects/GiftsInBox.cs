@@ -9,7 +9,7 @@ namespace TikTokLiveSharp.Events.Objects
 
         private GiftsInBox(Models.Protobuf.Objects.GiftsInBox giftsInBox)
         {
-            GiftsInfoInBox = giftsInBox?.GiftsInfoInBoxList is { Count: > 0 } ? giftsInBox.GiftsInfoInBoxList.Select(g => (GiftInfoInBox)g).ToList().AsReadOnly() : new List<GiftInfoInBox>(0).AsReadOnly();
+            GiftsInfoInBox = giftsInBox?.GiftsInfoInBoxList?.Count > 0 ? giftsInBox.GiftsInfoInBoxList.Select(g => (GiftInfoInBox)g).ToList().AsReadOnly() : new List<GiftInfoInBox>(0).AsReadOnly();
         }
 
         public static implicit operator GiftsInBox(Models.Protobuf.Objects.GiftsInBox giftsInBox) => new GiftsInBox(giftsInBox);

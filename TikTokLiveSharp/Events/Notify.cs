@@ -18,7 +18,7 @@ namespace TikTokLiveSharp.Events
             {
                 Width = background?.Width ?? -1;
                 Height = background?.Height ?? -1;
-                Urls = background?.UrlList is { Count: > 0 } ? background.UrlList.AsReadOnly() : new List<string>(0).AsReadOnly();
+                Urls = background?.UrlList?.Count > 0 ? background.UrlList.AsReadOnly() : new List<string>(0).AsReadOnly();
                 Uri = background?.Uri ?? string.Empty;
             }
 
@@ -46,7 +46,7 @@ namespace TikTokLiveSharp.Events
 
             private ContentList(Models.Protobuf.Messages.NotifyMessage.ContentList contentList)
             {
-                Contents = contentList?.ContentsList is { Count: > 0 } ? contentList.ContentsList.Select(c => (Content)c).ToList().AsReadOnly() : null;
+                Contents = contentList?.ContentsList?.Count > 0 ? contentList.ContentsList.Select(c => (Content)c).ToList().AsReadOnly() : null;
                 HighLightColor = contentList?.HighLightColor ?? string.Empty;
             }
 
@@ -92,7 +92,7 @@ namespace TikTokLiveSharp.Events
             User = msg?.User;
             ExtraData = msg?.ExtraData;
             NotifyClass = msg?.NotifyClass ?? -1;
-            FlexSettingList = msg?.FlexSettingList is { Count: > 0 } ? msg.FlexSettingList.AsReadOnly() : new List<long>(0).AsReadOnly();
+            FlexSettingList = msg?.FlexSettingList?.Count > 0 ? msg.FlexSettingList.AsReadOnly() : new List<long>(0).AsReadOnly();
             Source = msg?.Source ?? string.Empty;
             FromUserId = msg?.FromUserId ?? -1;
             PrivilegeLogExtra = msg?.PrivilegeLogExtra;

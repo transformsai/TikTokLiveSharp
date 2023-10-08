@@ -12,7 +12,7 @@ namespace TikTokLiveSharp.Events.Objects
         {
             Key = badgeText?.Key ?? string.Empty;
             DefaultPattern = badgeText?.DefaultPattern ?? string.Empty;
-            Pieces = badgeText?.PiecesList is { Count: > 0 } ? new List<string>(badgeText.PiecesList).AsReadOnly() : new List<string>(0).AsReadOnly();
+            Pieces = badgeText?.PiecesList?.Count > 0 ? new List<string>(badgeText.PiecesList).AsReadOnly() : new List<string>(0).AsReadOnly();
         }
 
         public static implicit operator BadgeText(Models.Protobuf.Objects.BadgeText badgeText) => new BadgeText(badgeText);

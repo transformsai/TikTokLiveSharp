@@ -33,7 +33,7 @@ namespace TikTokLiveSharp.Events.Objects
             TargetRoomId = info?.TargetRoomId ?? -1;
             CountDownTime = info?.CountDownTime ?? -1;
             ShowFeedback = info?.ShowFeedback ?? false;
-            FeedbackOptionsList = info?.FeedbackOptionsList is { Count: > 0 } ? info.FeedbackOptionsList.Select(pfo => (PerceptionFeedbackOption)pfo).ToList().AsReadOnly() : new List<PerceptionFeedbackOption>(0).AsReadOnly();
+            FeedbackOptionsList = info?.FeedbackOptionsList?.Count > 0 ? info.FeedbackOptionsList.Select(pfo => (PerceptionFeedbackOption)pfo).ToList().AsReadOnly() : new List<PerceptionFeedbackOption>(0).AsReadOnly();
             PolicyTip = info?.PolicyTip ?? -1;
         }
 

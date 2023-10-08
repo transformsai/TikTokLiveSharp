@@ -27,6 +27,14 @@ namespace TikTokLiveSharp.Client.Config
         public float PollingInterval;
 
         /// <summary>
+        /// Enable Compression for Http-Responses
+        /// </summary>
+#if UNITY
+        [UnityEngine.Tooltip("Enable Compression for Http-Responses")]
+#endif
+        public bool EnableCompression;
+
+        /// <summary>
         /// Proxy for Connections
         /// </summary>
 #if UNITY

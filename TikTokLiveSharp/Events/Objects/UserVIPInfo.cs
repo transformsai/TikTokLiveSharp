@@ -37,7 +37,7 @@ namespace TikTokLiveSharp.Events.Objects
             TotalConsume = vipInfo?.TotalConsume ?? -1;
             TargetConsume = vipInfo?.TargetConsume ?? -1;
             Badge = vipInfo?.Badge;
-            Privileges = vipInfo?.PrivilegesMap is { Count: > 0 } ? new ReadOnlyDictionary<long, bool>(vipInfo.PrivilegesMap) : new ReadOnlyDictionary<long, bool>(new Dictionary<long, bool>(0));
+            Privileges = vipInfo?.PrivilegesMap?.Count > 0 ? new ReadOnlyDictionary<long, bool>(vipInfo.PrivilegesMap) : new ReadOnlyDictionary<long, bool>(new Dictionary<long, bool>(0));
         }
 
         public static implicit operator UserVIPInfo(Models.Protobuf.Objects.UserVIPInfo vipInfo) => new UserVIPInfo(vipInfo);

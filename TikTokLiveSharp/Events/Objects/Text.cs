@@ -21,7 +21,7 @@ namespace TikTokLiveSharp.Events.Objects
             Key = text?.Key ?? string.Empty;
             Pattern = text?.DefaultPattern ?? string.Empty;
             Format = text?.DefaultFormat;
-            Pieces = text?.PiecesList is { Count: > 0 } ? text.PiecesList.Select(t => (TextPiece)t).ToList().AsReadOnly() : new List<TextPiece>(0).AsReadOnly();
+            Pieces = text?.PiecesList?.Count > 0 ? text.PiecesList.Select(t => (TextPiece)t).ToList().AsReadOnly() : new List<TextPiece>(0).AsReadOnly();
         }
 
         public static implicit operator Text(Models.Protobuf.Objects.Text text) => new Text(text);

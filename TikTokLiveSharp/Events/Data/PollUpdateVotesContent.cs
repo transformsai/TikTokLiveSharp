@@ -9,7 +9,7 @@ namespace TikTokLiveSharp.Events.Data
 
         private PollUpdateVotesContent(Models.Protobuf.Messages.PollUpdateVotesContent content)
         {
-            Options = content?.OptionList is { Count: > 0 } ? content.OptionList.Select(i => (PollOptionInfo)i).ToList().AsReadOnly() : new List<PollOptionInfo>(0).AsReadOnly();
+            Options = content?.OptionList?.Count > 0 ? content.OptionList.Select(i => (PollOptionInfo)i).ToList().AsReadOnly() : new List<PollOptionInfo>(0).AsReadOnly();
         }
 
         public static implicit operator PollUpdateVotesContent(Models.Protobuf.Messages.PollUpdateVotesContent content) => new PollUpdateVotesContent(content);

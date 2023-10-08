@@ -11,7 +11,7 @@ namespace TikTokLiveSharp.Events.Objects
 
         private EmoteDetail(Models.Protobuf.Objects.EmoteDetail detail)
         {
-            Emotes = detail?.EmoteList is { Count: > 0 } ? detail.EmoteList.Select(e => (Emote)e).ToList().AsReadOnly() : new List<Emote>(0).AsReadOnly();
+            Emotes = detail?.EmoteList?.Count > 0 ? detail.EmoteList.Select(e => (Emote)e).ToList().AsReadOnly() : new List<Emote>(0).AsReadOnly();
             Exist = detail?.Exist ?? false;
             EmoteVersion = detail?.EmoteVersion ?? -1;
         }

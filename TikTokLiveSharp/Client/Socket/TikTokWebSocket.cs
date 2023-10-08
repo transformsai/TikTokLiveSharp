@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
@@ -19,7 +20,7 @@ namespace TikTokLiveSharp.Client.Socket
         /// <summary>
         /// Is the websocket currently connected?
         /// </summary>
-        public bool IsConnected => clientWebSocket is { State: WebSocketState.Open };
+        public bool IsConnected => clientWebSocket != null && clientWebSocket.State == WebSocketState.Open;
 
         /// <summary>
         /// State for WebSocket
@@ -149,13 +150,9 @@ namespace TikTokLiveSharp.Client.Socket
                 ArraySegment<byte> arr = new ArraySegment<byte>(readBuffer);
                 WebSocketReceiveResult response = await clientWebSocket.ReceiveAsync(arr, token);
                 if (response.MessageType != WebSocketMessageType.Binary || arr.Array == null)
-                {
                     valid = false;
-                }
                 else
-                {
-                    message.AddRange(arr[..response.Count]);
-                }
+                    message.AddRange(arr.Take(response.Count));
                 endOfMessage = response.EndOfMessage;
             }
             token.ThrowIfCancellationRequested();

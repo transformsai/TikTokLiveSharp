@@ -36,7 +36,7 @@ namespace TikTokLiveSharp.Events.Objects
             IsPaidEvent = evtInfo?.IsPaidEvent ?? false;
             TicketAmount = evtInfo?.TicketAmount ?? -1;
             PayMethod = evtInfo?.PayMethod != null ? (EventPayMethod)evtInfo.PayMethod : EventPayMethod.Invalid;
-            WalletPkgMap = evtInfo?.WalletPkgDictMap is { Count: > 0 } ? new ReadOnlyDictionary<string, WalletPackage>(evtInfo.WalletPkgDictMap.ToDictionary(s => s.Key, p => (WalletPackage)p.Value)) : new ReadOnlyDictionary<string, WalletPackage>(new Dictionary<string, WalletPackage>(0));
+            WalletPkgMap = evtInfo?.WalletPkgDictMap?.Count > 0 ? new ReadOnlyDictionary<string, WalletPackage>(evtInfo.WalletPkgDictMap.ToDictionary(s => s.Key, p => (WalletPackage)p.Value)) : new ReadOnlyDictionary<string, WalletPackage>(new Dictionary<string, WalletPackage>(0));
         }
 
         public static implicit operator LiveEventInfo(Models.Protobuf.Objects.LiveEventInfo evtInfo) => new LiveEventInfo(evtInfo);

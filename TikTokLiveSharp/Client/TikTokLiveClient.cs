@@ -282,6 +282,7 @@ namespace TikTokLiveSharp.Client
             float? timeout = null,
             float? pollingInterval = null,
             string roomId = "",
+            bool enableCompression = true,
             bool skipRoomInfo = false,
             Dictionary<string, object> clientParams = null,
             bool processInitialData = true,
@@ -298,6 +299,7 @@ namespace TikTokLiveSharp.Client
                 pollingInterval,
                 roomId,
                 skipRoomInfo,
+                enableCompression,
                 clientParams,
                 processInitialData,
                 enableExtendedGiftInfo,
@@ -392,9 +394,7 @@ namespace TikTokLiveSharp.Client
 
             string method = message.Method;
             if (method.StartsWith("Webcast"))
-            {
-                method = method[7..];
-            }
+                method = method.Substring(7);
 
             using (MemoryStream stream = new MemoryStream(message.Payload))
                 switch (method)

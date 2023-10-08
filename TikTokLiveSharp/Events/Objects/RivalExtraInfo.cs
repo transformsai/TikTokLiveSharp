@@ -65,7 +65,7 @@ namespace TikTokLiveSharp.Events.Objects
 
             private LinkerInfo(Models.Protobuf.Objects.RivalExtraInfo.LinkerInfo info)
             {
-                LinkedUsers = info?.LinkedUsersList is { Count: > 0 } ? info.LinkedUsersList.Select(u => (UserInfo)u).ToList().AsReadOnly() : new List<UserInfo>(0).AsReadOnly();
+                LinkedUsers = info?.LinkedUsersList?.Count > 0 ? info.LinkedUsersList.Select(u => (UserInfo)u).ToList().AsReadOnly() : new List<UserInfo>(0).AsReadOnly();
             }
 
             public static implicit operator LinkerInfo(Models.Protobuf.Objects.RivalExtraInfo.LinkerInfo info) => new LinkerInfo(info);

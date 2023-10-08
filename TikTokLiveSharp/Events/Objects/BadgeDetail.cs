@@ -15,7 +15,7 @@ namespace TikTokLiveSharp.Events.Objects
         private BadgeDetail(Models.Protobuf.Objects.BadgeDetail badgeDetail)
         {
             BadgeData = badgeDetail?.Badge;
-            Previews = badgeDetail?.PreviewList is { Count: > 0 } ? badgeDetail.PreviewList.Select(p => (BadgePreview)p).ToList().AsReadOnly() : new List<BadgePreview>(0).AsReadOnly();
+            Previews = badgeDetail?.PreviewList?.Count > 0 ? badgeDetail.PreviewList.Select(p => (BadgePreview)p).ToList().AsReadOnly() : new List<BadgePreview>(0).AsReadOnly();
             AbbreviationAuditStatus = badgeDetail?.BadgeAbbrAuditStatus ?? AuditStatus.AuditStatusUnknown;
             DescriptionAuditStatus = badgeDetail?.BadgeDescAuditStatus ?? AuditStatus.AuditStatusUnknown;
             Exist = badgeDetail?.Exist ?? false;

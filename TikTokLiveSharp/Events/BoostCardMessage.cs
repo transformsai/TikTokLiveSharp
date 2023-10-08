@@ -11,7 +11,7 @@ namespace TikTokLiveSharp.Events
         internal BoostCardMessage(Models.Protobuf.Messages.BoostCardMessage msg)
             : base(msg?.Header)
         {
-            CardsList = msg?.CardsList is { Count: > 0 } ? msg.CardsList.Select(c => (BoostCard)c).ToList().AsReadOnly() : new List<BoostCard>(0).AsReadOnly();
+            CardsList = msg?.CardsList?.Count > 0 ? msg.CardsList.Select(c => (BoostCard)c).ToList().AsReadOnly() : new List<BoostCard>(0).AsReadOnly();
         }
     }
 }

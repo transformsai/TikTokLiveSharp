@@ -13,7 +13,7 @@ namespace TikTokLiveSharp.Events.Objects
         {
             TotalCountString = info?.TotalCountStr ?? string.Empty;
             TotalCount = info?.TotalCount ?? -1;
-            SOVBriefInfoList = info?.SOVBriefInfoList is { Count: > 0 } ? info.SOVBriefInfoList.Select(i => (SOVBriefInfo)i).ToList().AsReadOnly() : new List<SOVBriefInfo>(0).AsReadOnly();
+            SOVBriefInfoList = info?.SOVBriefInfoList?.Count > 0 ? info.SOVBriefInfoList.Select(i => (SOVBriefInfo)i).ToList().AsReadOnly() : new List<SOVBriefInfo>(0).AsReadOnly();
         }
 
         public static implicit operator SubOnlyVideosBriefInfo(Models.Protobuf.Objects.SubOnlyVideosBriefInfo info) => new SubOnlyVideosBriefInfo(info);

@@ -14,7 +14,7 @@ namespace TikTokLiveSharp.Events.Objects
         {
             ShowStartTime = info?.ShowStartTime ?? -1;
             ShowEndTime = info?.ShowEndTime ?? -1;
-            Anchors = info?.Anchors is { Count: > 0 } ? info.Anchors.Select(u => (User)u).ToList().AsReadOnly() : new List<User>(0).AsReadOnly();
+            Anchors = info?.Anchors?.Count > 0 ? info.Anchors.Select(u => (User)u).ToList().AsReadOnly() : new List<User>(0).AsReadOnly();
             ShowIntroduction = info?.ShowIntroduction ?? string.Empty;
         }
 

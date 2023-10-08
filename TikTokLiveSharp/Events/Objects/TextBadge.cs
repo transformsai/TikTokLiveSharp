@@ -15,7 +15,7 @@ namespace TikTokLiveSharp.Events.Objects
             DisplayType = badge?.DisplayType ?? BadgeDisplayType.BadgeDisplayType_Unknown;
             Key = badge?.Key ?? string.Empty;
             DefaultPattern = badge?.DefaultPattern ?? string.Empty;
-            Pieces = badge?.PiecesList is { Count: > 0 } ? new List<string>(badge.PiecesList).AsReadOnly() : new List<string>(0).AsReadOnly();
+            Pieces = badge?.PiecesList?.Count > 0 ? new List<string>(badge.PiecesList).AsReadOnly() : new List<string>(0).AsReadOnly();
         }
 
         public static implicit operator TextBadge(Models.Protobuf.Objects.TextBadge badge) => new TextBadge(badge);

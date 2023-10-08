@@ -126,10 +126,10 @@ namespace TikTokLiveSharp.Events.Beta
             Id = msg?.Id ?? 0;
             Data3 = msg?.Data3;
             Data4 = msg?.Data4 ?? 0;
-            Data5 = msg?.Data5 is { Count: > 0 } ? msg.Data5.Select(d => (LinkMicBattleDetails)d).ToList().AsReadOnly() : new List<LinkMicBattleDetails>(0).AsReadOnly();
-            Teams1 = msg?.Teams1 is { Count: > 0 } ? msg.Teams1.Select(d => (LinkMicBattleTeam)d).ToList().AsReadOnly() : new List<LinkMicBattleTeam>(0).AsReadOnly();
-            Teams2 = msg?.Teams2 is { Count: > 0 } ? msg.Teams2.Select(d => (LinkMicBattleTeam)d).ToList().AsReadOnly() : new List<LinkMicBattleTeam>(0).AsReadOnly();
-            TeamData = msg?.TeamData is { Count: > 0 } ? msg.TeamData.Select(d => (LinkMicBattleTeamData)d).ToList().AsReadOnly() : new List<LinkMicBattleTeamData>(0).AsReadOnly();
+            Data5 = msg?.Data5?.Count > 0 ? msg.Data5.Select(d => (LinkMicBattleDetails)d).ToList().AsReadOnly() : new List<LinkMicBattleDetails>(0).AsReadOnly();
+            Teams1 = msg?.Teams1?.Count > 0 ? msg.Teams1.Select(d => (LinkMicBattleTeam)d).ToList().AsReadOnly() : new List<LinkMicBattleTeam>(0).AsReadOnly();
+            Teams2 = msg?.Teams2?.Count > 0 ? msg.Teams2.Select(d => (LinkMicBattleTeam)d).ToList().AsReadOnly() : new List<LinkMicBattleTeam>(0).AsReadOnly();
+            TeamData = msg?.TeamData?.Count > 0 ? msg.TeamData.Select(d => (LinkMicBattleTeamData)d).ToList().AsReadOnly() : new List<LinkMicBattleTeamData>(0).AsReadOnly();
             Id2 = msg?.Id2 ?? 0;
         }
     }

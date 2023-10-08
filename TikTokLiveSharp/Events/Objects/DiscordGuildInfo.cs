@@ -20,7 +20,7 @@ namespace TikTokLiveSharp.Events.Objects
             GuildIcon = info?.GuildIcon ?? string.Empty;
             OwnerId = info?.OwnerIdStr ?? string.Empty;
             ReconnectUrl = info?.ReconnectUrl ?? string.Empty;
-            Roles = info?.RolesList is { Count: > 0 } ? info.RolesList.Select(r => (DiscordRoleInfo)r).ToList().AsReadOnly() : new List<DiscordRoleInfo>(0).AsReadOnly();
+            Roles = info?.RolesList?.Count > 0 ? info.RolesList.Select(r => (DiscordRoleInfo)r).ToList().AsReadOnly() : new List<DiscordRoleInfo>(0).AsReadOnly();
             GuildIconImage = info?.GuildIconImage;
         }
 

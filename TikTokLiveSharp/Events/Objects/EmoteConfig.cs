@@ -11,7 +11,7 @@ namespace TikTokLiveSharp.Events.Objects
         private EmoteConfig(Models.Protobuf.Objects.EmoteConfig config)
         {
             EmoteCountLimit = config?.EmoteCntLmt ?? -1;
-            DefaultEmotes = config?.DefaultEmoteList is { Count: > 0 } ? config.DefaultEmoteList.Select(e => (Emote)e).ToList().AsReadOnly() : new List<Emote>(0).AsReadOnly();
+            DefaultEmotes = config?.DefaultEmoteList?.Count > 0 ? config.DefaultEmoteList.Select(e => (Emote)e).ToList().AsReadOnly() : new List<Emote>(0).AsReadOnly();
         }
 
         public static implicit operator EmoteConfig(Models.Protobuf.Objects.EmoteConfig config) => new EmoteConfig(config);

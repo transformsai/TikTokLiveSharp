@@ -15,7 +15,7 @@ namespace TikTokLiveSharp.Events.Objects
             Id = extra?.Id ?? -1;
             Code = extra?.Code ?? -1;
             Type = extra?.Type ?? -1;
-            Params = extra?.ParamsList is { Count: > 0 } ? new List<string>(extra.ParamsList).AsReadOnly() : new List<string>(0).AsReadOnly();
+            Params = extra?.ParamsList?.Count > 0 ? new List<string>(extra.ParamsList).AsReadOnly() : new List<string>(0).AsReadOnly();
             Extra = extra?.Extra ?? string.Empty;
         }
 

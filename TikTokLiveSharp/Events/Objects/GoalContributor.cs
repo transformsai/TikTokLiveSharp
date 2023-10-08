@@ -25,7 +25,7 @@ namespace TikTokLiveSharp.Events.Objects
             UserIdString = contributor?.UserIdStr ?? string.Empty;
             InRoom = contributor?.InRoom ?? false;
             IsFriend = contributor?.IsFriend ?? false;
-            BadgeList = contributor?.BadgeList is { Count: > 0 } ? contributor.BadgeList.Select(b => (Badge)b).ToList().AsReadOnly() : new List<Badge>(0).AsReadOnly();
+            BadgeList = contributor?.BadgeList?.Count > 0 ? contributor.BadgeList.Select(b => (Badge)b).ToList().AsReadOnly() : new List<Badge>(0).AsReadOnly();
             FollowedByOwner = contributor?.FollowByOwner ?? false;
             IsFirstContribute = contributor?.IsFistContribute ?? false;
         }

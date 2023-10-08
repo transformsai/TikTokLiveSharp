@@ -11,7 +11,7 @@ namespace TikTokLiveSharp.Events.Beta.Data
         private LinkMicArmiesItems(Models.Protobuf.UnknownObjects.Data.LinkMicArmiesItems items)
         {
             HostUserId = items?.HostUserId ?? 0;
-            BattleGroups = items?.BattleGroups is { Count: > 0 } ? items.BattleGroups.Select(a => (LinkMicArmy)a).ToList().AsReadOnly() : new List<LinkMicArmy>(0).AsReadOnly();
+            BattleGroups = items?.BattleGroups?.Count > 0 ? items.BattleGroups.Select(a => (LinkMicArmy)a).ToList().AsReadOnly() : new List<LinkMicArmy>(0).AsReadOnly();
         }
 
         public static implicit operator LinkMicArmiesItems(Models.Protobuf.UnknownObjects.Data.LinkMicArmiesItems items) => new LinkMicArmiesItems(items);

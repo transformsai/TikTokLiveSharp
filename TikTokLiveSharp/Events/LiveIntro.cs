@@ -42,7 +42,7 @@ namespace TikTokLiveSharp.Events
             Host = msg?.Host;
             Content = msg?.Content ?? string.Empty;
             Language = msg?.Language ?? string.Empty;
-            Badges = msg?.Badges is { Count: > 0 } ? msg.Badges.Select(b => (Badge)b).ToList().AsReadOnly() : new List<Badge>(0).AsReadOnly();
+            Badges = msg?.Badges?.Count > 0 ? msg.Badges.Select(b => (Badge)b).ToList().AsReadOnly() : new List<Badge>(0).AsReadOnly();
             IntroMode = msg?.IntroMode ?? 0;
             AuditStatus = msg?.AuditStatus ?? AuditStatus.AuditStatusUnknown;
         }

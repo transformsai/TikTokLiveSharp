@@ -135,19 +135,24 @@ namespace TikTokLiveSharp.Client.HTTP
         /// </summary>
         /// <param name="url">The url to send the request to</param>
         /// <param name="useCookies">Whether to allow for Cookies on this HTTP-Request</param>
+        /// <param name="enableCompression">Enable Compression for Http-Response</param>
         /// <exception cref="ArgumentException">Throws exception if URL is invalid</exception>
-        public TikTokHttpRequest(string url, bool useCookies = true)
+        public TikTokHttpRequest(string url, bool enableCompression = true, bool useCookies = true)
         {
             if (!Uri.TryCreate(url, UriKind.Absolute, out Uri result)) 
                 throw new ArgumentException("Invalid Url", nameof(url));
-            CookieJar ??= new TikTokCookieJar();
-            handler ??= new HttpClientHandler
+            if (CookieJar == null)
+                CookieJar = new TikTokCookieJar();
+            if (handler == null)
             {
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-                Proxy = WebProxy,
-                UseProxy = WebProxy != null,
-                UseCookies = useCookies
-            };
+                handler = new HttpClientHandler
+                {
+                    AutomaticDecompression = enableCompression ? ~DecompressionMethods.None : DecompressionMethods.None,
+                    Proxy = WebProxy,
+                    UseProxy = WebProxy != null,
+                    UseCookies = useCookies
+                };
+            }
             if (client == null)
             {
                 client = new HttpClient(handler)
@@ -156,6 +161,8 @@ namespace TikTokLiveSharp.Client.HTTP
                 };
                 foreach (KeyValuePair<string, string> header in Constants.DEFAULT_REQUEST_HEADERS)
                     client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                if (enableCompression)
+                    client.DefaultRequestHeaders.Add(Constants.COMPRESSION_HEADER.Key, Constants.COMPRESSION_HEADER.Value);
                 if (!string.IsNullOrEmpty(clientLanguage))
                     client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(clientLanguage, 0.9));
             }
@@ -163,6 +170,7 @@ namespace TikTokLiveSharp.Client.HTTP
             {
                 RequestUri = result
             };
+            request.Headers.Host = result.Host;
             sent = false;
         }
         #endregion
@@ -191,7 +199,7 @@ namespace TikTokLiveSharp.Client.HTTP
             if (sent) 
                 throw new InvalidOperationException("Requests should not be reused");
             request.Method = HttpMethod.Post;
-            request.Content = data;
+            request.Content = data; 
             return await GetContent();
         }
 
@@ -217,11 +225,12 @@ namespace TikTokLiveSharp.Client.HTTP
         {
             if (query != null)
                 request.RequestUri = new Uri($"{request.RequestUri.AbsoluteUri}?{query}");
+            
             HttpResponseMessage response = await client.SendAsync(request);
             request.Dispose();
             sent = true;
             if (response.StatusCode == HttpStatusCode.NotFound)
-                throw new HttpRequestException($"Request responded with 404 NOT_FOUND");
+                throw new HttpRequestException("Request responded with 404 NOT_FOUND");
             if (!response.IsSuccessStatusCode) 
                 throw new HttpRequestException($"Request was unsuccessful [{(int)response.StatusCode}]");
             MediaTypeHeaderValue ct = response.Content.Headers?.ContentType;

@@ -10,8 +10,8 @@ namespace TikTokLiveSharp.Events
         internal ImDelete(Models.Protobuf.Messages.ImDeleteMessage msg)
             : base(msg?.Header)
         {
-            DeleteMessageIds = msg?.DeleteMsgIdsList is { Count: > 0 } ? new List<long>(msg.DeleteMsgIdsList).AsReadOnly() : new List<long>(0).AsReadOnly();
-            DeleteUserIds = msg?.DeleteUserIdsList is { Count: > 0 } ? new List<long>(msg.DeleteUserIdsList).AsReadOnly() : new List<long>(0).AsReadOnly();
+            DeleteMessageIds = msg?.DeleteMsgIdsList?.Count > 0 ? new List<long>(msg.DeleteMsgIdsList).AsReadOnly() : new List<long>(0).AsReadOnly();
+            DeleteUserIds = msg?.DeleteUserIdsList?.Count > 0 ? new List<long>(msg.DeleteUserIdsList).AsReadOnly() : new List<long>(0).AsReadOnly();
         }
     }
 }

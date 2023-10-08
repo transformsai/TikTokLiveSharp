@@ -12,7 +12,7 @@ namespace TikTokLiveSharp.Events.Objects
         private FaceRecognitionArchiveMeta(Models.Protobuf.Objects.FaceRecognitionArchiveMeta archive)
         {
             Version = archive?.Version ?? string.Empty;
-            Requirements = archive?.RequirementsList is { Count: > 0 } ? new List<string>(archive.RequirementsList).AsReadOnly() : new List<string>(0).AsReadOnly();
+            Requirements = archive?.RequirementsList?.Count > 0 ? new List<string>(archive.RequirementsList).AsReadOnly() : new List<string>(0).AsReadOnly();
             ModelNames = archive?.ModelNames ?? string.Empty;
             SdkExtra = archive?.SdkExtra ?? string.Empty;
         }

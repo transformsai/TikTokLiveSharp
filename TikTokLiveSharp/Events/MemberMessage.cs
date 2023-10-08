@@ -36,7 +36,7 @@ namespace TikTokLiveSharp.Events
                 StayTime = cfg?.StayTime ?? -1;
                 AnimAssetId = cfg?.AnimAssetId ?? -1;
                 Badge = cfg?.Badge;
-                FlexSettings = cfg?.FlexSettings is { Count: > 0 } ? new List<long>(cfg.FlexSettings).AsReadOnly() : new List<long>(0).AsReadOnly();
+                FlexSettings = cfg?.FlexSettings?.Count > 0 ? new List<long>(cfg.FlexSettings).AsReadOnly() : new List<long>(0).AsReadOnly();
             }
 
             public static implicit operator EffectConfig(Models.Protobuf.Messages.MemberMessage.EffectConfig cfg) => new EffectConfig(cfg);
@@ -108,7 +108,7 @@ namespace TikTokLiveSharp.Events
             ActionDuration = msg?.ActionDuration ?? -1;
             UserShareType = msg?.UserShareType ?? string.Empty;
             DisplayStyle = msg?.DisplayStyle ?? DisplayStyle.DisplayStyleNormal;
-            AdminPermissions = msg?.AdminPermissionsMap is { Count: > 0 } ? new ReadOnlyDictionary<int, int>(msg.AdminPermissionsMap) : new ReadOnlyDictionary<int, int>(new Dictionary<int, int>(0));
+            AdminPermissions = msg?.AdminPermissionsMap?.Count > 0 ? new ReadOnlyDictionary<int, int>(msg.AdminPermissionsMap) : new ReadOnlyDictionary<int, int>(new Dictionary<int, int>(0));
             KickSource = msg?.KickSource ?? -1;
             AllowPreviewTime = msg?.AllowPreviewTime ?? -1;
         }

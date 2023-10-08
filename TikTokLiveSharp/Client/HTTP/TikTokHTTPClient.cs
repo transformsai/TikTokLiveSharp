@@ -31,6 +31,10 @@ namespace TikTokLiveSharp.Client.HTTP
         /// Index for this Client
         /// </summary>
         private readonly int clientNum;
+        /// <summary>
+        /// Whether Compression is allowed for Responses
+        /// </summary>
+        private readonly bool compression;
         #endregion
 
         #region Constructors
@@ -40,12 +44,13 @@ namespace TikTokLiveSharp.Client.HTTP
         /// <param name="timeout">Timeout for Connection</param>
         /// <param name="proxyHandler">Proxy for Connection</param>
         /// <param name="clientLanguage">Accepted Language for Client (ISO-format)</param>
-        internal TikTokHttpClient(TimeSpan timeout, IWebProxy proxyHandler = null, string clientLanguage = null)
+        internal TikTokHttpClient(TimeSpan timeout, bool enableCompression = true, IWebProxy proxyHandler = null, string clientLanguage = null)
         {
             TikTokHttpRequest.Timeout = timeout;
             TikTokHttpRequest.WebProxy = proxyHandler;
             if (!string.IsNullOrEmpty(clientLanguage))
                 TikTokHttpRequest.ClientLanguage = clientLanguage;
+            compression = enableCompression;
             concurrentClients++;
             clientNum = concurrentClients;
         }
@@ -133,9 +138,9 @@ namespace TikTokLiveSharp.Client.HTTP
         /// <param name="url">URL for Request</param>
         /// <param name="parameters">Additional Parameters for Request</param>
         /// <returns>HTTP-Request</returns>
-        private static ITikTokHttpRequest BuildRequest(string url, IDictionary<string, object> parameters = null)
+        private static ITikTokHttpRequest BuildRequest(string url, bool enableCompression = true, IDictionary<string, object> parameters = null)
         {
-            return new TikTokHttpRequest(url).SetQueries(parameters);
+            return new TikTokHttpRequest(url, enableCompression).SetQueries(parameters);
         }
 
         /// <summary>
@@ -147,7 +152,7 @@ namespace TikTokLiveSharp.Client.HTTP
         /// <returns>Task to await</returns>
         private async Task<HttpContent> GetRequest(string url, IDictionary<string, object> parameters = null, bool signUrl = false)
         {
-            ITikTokHttpRequest request = BuildRequest(signUrl ? await GetSignedUrl(url, parameters) : url, signUrl ? null : parameters);
+            ITikTokHttpRequest request = BuildRequest(signUrl ? await GetSignedUrl(url, parameters) : url, compression, signUrl ? null : parameters);
             return await request.Get();
         }
 
@@ -160,7 +165,7 @@ namespace TikTokLiveSharp.Client.HTTP
         /// <returns>Task to await</returns>
         private async Task<HttpContent>PostRequest(string url, IDictionary<string, object> parameters = null, bool signUrl = false)
         {
-            ITikTokHttpRequest request = BuildRequest(signUrl ? await GetSignedUrl(url, parameters) : url, signUrl ? null : parameters);
+            ITikTokHttpRequest request = BuildRequest(signUrl ? await GetSignedUrl(url, parameters) : url, compression, signUrl ? null : parameters);
             return await request.Post(null);
         }
 
@@ -174,7 +179,7 @@ namespace TikTokLiveSharp.Client.HTTP
         /// <returns>Task to await</returns>
         private async Task<HttpContent> PostRequest(string url, string data, IDictionary<string, object> parameters = null, bool signUrl = false)
         {
-            ITikTokHttpRequest request = BuildRequest(signUrl ? await GetSignedUrl(url, parameters) : url, signUrl ? null : parameters);
+            ITikTokHttpRequest request = BuildRequest(signUrl ? await GetSignedUrl(url, parameters) : url, compression, signUrl ? null : parameters);
             return await request.Post(new StringContent(data, Encoding.UTF8));
         }
 

@@ -16,10 +16,10 @@ namespace TikTokLiveSharp.Events
             : base(msg?.Header)
         {
             UserId = msg?.UserId ?? -1;
-            ImageList = msg?.ImageList is { Count: > 0 } ? msg.ImageList.Select(i => (AlertImage)i).ToList().AsReadOnly() : new List<AlertImage>(0).AsReadOnly();
-            TextList = msg?.TextList is { Count: > 0 } ? msg.TextList.Select(t => (AlertText)t).ToList().AsReadOnly() : new List<AlertText>(0).AsReadOnly();
+            ImageList = msg?.ImageList?.Count > 0 ? msg.ImageList.Select(i => (AlertImage)i).ToList().AsReadOnly() : new List<AlertImage>(0).AsReadOnly();
+            TextList = msg?.TextList?.Count > 0 ? msg.TextList.Select(t => (AlertText)t).ToList().AsReadOnly() : new List<AlertText>(0).AsReadOnly();
             Scene = msg?.Scene ?? string.Empty;
-            AudioList = msg?.AudioList is { Count: > 0 } ? msg.AudioList.Select(a => (AlertAudio)a).ToList().AsReadOnly() : new List<AlertAudio>(0).AsReadOnly();
+            AudioList = msg?.AudioList?.Count > 0 ? msg.AudioList.Select(a => (AlertAudio)a).ToList().AsReadOnly() : new List<AlertAudio>(0).AsReadOnly();
         }
     }
 }

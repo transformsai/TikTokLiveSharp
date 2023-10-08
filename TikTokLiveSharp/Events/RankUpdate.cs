@@ -69,11 +69,11 @@ namespace TikTokLiveSharp.Events
         internal RankUpdate(Models.Protobuf.Messages.RankUpdateMessage msg)
             : base(msg?.Header)
         {
-            Updates = msg?.UpdatesList is { Count: > 0 } ? msg.UpdatesList.Select(u => (Update)u).ToList().AsReadOnly() : new List<Update>(0).AsReadOnly();
+            Updates = msg?.UpdatesList?.Count > 0 ? msg.UpdatesList.Select(u => (Update)u).ToList().AsReadOnly() : new List<Update>(0).AsReadOnly();
             GroupType = msg?.GroupType ?? -1;
             OpType = msg?.OpType ?? OpType.Op_Type_Default;
             Priority = msg?.Priority ?? -1;
-            Tabs = msg?.TabsList is { Count: > 0 } ? msg.TabsList.Select(t => (RankTabInfo)t).ToList().AsReadOnly() : new List<RankTabInfo>(0).AsReadOnly();
+            Tabs = msg?.TabsList?.Count > 0 ? msg.TabsList.Select(t => (RankTabInfo)t).ToList().AsReadOnly() : new List<RankTabInfo>(0).AsReadOnly();
             IsAnimationLoopPlay = msg?.IsAnimationLoopPlay ?? false;
             AnimationLoopForOff = msg?.AnimationLoopForOff ?? false;
         }

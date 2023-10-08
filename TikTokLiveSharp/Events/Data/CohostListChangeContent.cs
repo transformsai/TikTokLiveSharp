@@ -10,7 +10,7 @@ namespace TikTokLiveSharp.Events.Data
 
         private CohostListChangeContent(Models.Protobuf.Messages.CohostListChangeContent content)
         {
-            Users = content?.UsersList is { Count: > 0 } ? content.UsersList.Select(u => (CohostListUser)u).ToList().AsReadOnly() : new List<CohostListUser>(0).AsReadOnly();
+            Users = content?.UsersList?.Count > 0 ? content.UsersList.Select(u => (CohostListUser)u).ToList().AsReadOnly() : new List<CohostListUser>(0).AsReadOnly();
         }
 
         public static implicit operator CohostListChangeContent(Models.Protobuf.Messages.CohostListChangeContent content) => new CohostListChangeContent(content);
