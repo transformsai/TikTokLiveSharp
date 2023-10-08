@@ -1,8 +1,7 @@
 using System.Collections;
-using System.Threading;
 using TikTokLiveSharp.Client;
-using TikTokLiveSharp.Events.MessageData.Messages;
-using TikTokLiveSharp.Events.MessageData.Objects;
+using TikTokLiveSharp.Events;
+using TikTokLiveSharp.Events.Objects;
 using TikTokLiveUnity.Utils;
 using TMPro;
 using UnityEngine;
@@ -16,6 +15,11 @@ namespace TikTokLiveUnity.Example
     public class TikTokLiveExample : MonoBehaviour
     {
         #region Properties
+        [Header("Settings")]
+        [SerializeField]
+        [Tooltip("Duration for objects to exist")]
+        private float timeToLive = 3f;
+
         /// <summary>
         /// ScrollRect for Join-Texts
         /// </summary>
@@ -62,6 +66,12 @@ namespace TikTokLiveUnity.Example
         [Tooltip("InputField for Host to connect to")]
         private TMP_InputField ifHostId;
         /// <summary>
+        /// InputField for Host to connect to
+        /// </summary>
+        [SerializeField]
+        [Tooltip("InputField for Host to connect to")]
+        private TMP_InputField ifRoomId;
+        /// <summary>
         /// Connect-Button
         /// </summary>
         [SerializeField]
@@ -100,7 +110,7 @@ namespace TikTokLiveUnity.Example
             mgr.OnDisconnected += ConnectStatusChange;
             mgr.OnJoin += OnJoin;
             mgr.OnLike += OnLike;
-            mgr.OnComment += OnComment;
+            mgr.OnChatMessage += OnComment;
             mgr.OnGift += OnGift;
             for (int i = 0; i < 3; i++)
                 yield return null; // Wait 3 frames in case Auto-Connect is enabled
@@ -118,7 +128,7 @@ namespace TikTokLiveUnity.Example
             mgr.OnDisconnected -= ConnectStatusChange;
             mgr.OnJoin -= OnJoin;
             mgr.OnLike -= OnLike;
-            mgr.OnComment -= OnComment;
+            mgr.OnChatMessage -= OnComment;
             mgr.OnGift -= OnGift;
         }
         #endregion
@@ -133,7 +143,13 @@ namespace TikTokLiveUnity.Example
             bool connecting = mgr.Connecting;
             if (connected || connecting)
                 mgr.DisconnectFromLivestreamAsync();
-            else mgr.ConnectToStreamAsync(ifHostId.text, Debug.LogException);
+            else
+            {
+                if (!string.IsNullOrEmpty(ifRoomId.text))
+                    mgr.ConnectToRoomAsync(ifRoomId.text, Debug.LogException);
+                else
+                    mgr.ConnectToStreamAsync(ifHostId.text, Debug.LogException);
+            }
             UpdateStatus();
             Invoke(nameof(UpdateStatus), .5f);
         }
@@ -159,13 +175,13 @@ namespace TikTokLiveUnity.Example
         {
             GameObject instance = Instantiate(rowPrefab);
             Image img = instance.GetComponentInChildren<Image>();
-            RequestImage(img, join.User.ProfilePicture);
+            RequestImage(img, join.User.AvatarThumbnail);
             TMP_Text txt = instance.GetComponentInChildren<TMP_Text>();
             txt.text = $"{join.User.UniqueId} Joined the stream";
             instance.transform.SetParent(scrJoin.content, false);
             instance.transform.localScale = Vector3.one;
             instance.SetActive(true);
-            Destroy(instance, 3f);
+            Destroy(instance, timeToLive);
         }
         /// <summary>
         /// Handler for Like-Event
@@ -174,28 +190,28 @@ namespace TikTokLiveUnity.Example
         {
             GameObject instance = Instantiate(rowPrefab);
             Image img = instance.GetComponentInChildren<Image>();
-            RequestImage(img, like.Sender.ProfilePicture);
+            RequestImage(img, like.Sender.AvatarThumbnail);
             TMP_Text txt = instance.GetComponentInChildren<TMP_Text>();
             txt.text = $"{like.Sender.UniqueId} {like.Count}x Liked the stream";
             instance.transform.SetParent(scrLike.content, false);
             instance.transform.localScale = Vector3.one;
             instance.SetActive(true);
-            Destroy(instance, 3f);
+            Destroy(instance, timeToLive);
         }
         /// <summary>
         /// Handler for Comment-Event
         /// </summary>
-        private void OnComment(TikTokLiveClient sender, Comment comment)
+        private void OnComment(TikTokLiveClient sender, Chat comment)
         {
             GameObject instance = Instantiate(rowPrefab);
             Image img = instance.GetComponentInChildren<Image>();
-            RequestImage(img, comment.User.ProfilePicture);
+            RequestImage(img, comment.Sender.AvatarThumbnail);
             TMP_Text txt = instance.GetComponentInChildren<TMP_Text>();
-            txt.text = $"{comment.User.UniqueId} - {comment.Text}";
+            txt.text = $"{comment.Sender.UniqueId} - {comment.Message}";
             instance.transform.SetParent(scrComment.content, false);
             instance.transform.localScale = Vector3.one;
             instance.SetActive(true);
-            Destroy(instance, 7.5f);
+            Destroy(instance, timeToLive);
         }
         /// <summary>
         /// Requests Image from TikTokLive-Manager
@@ -204,14 +220,14 @@ namespace TikTokLiveUnity.Example
         /// <param name="picture">Data for Image</param>
         private void RequestImage(Image img, Picture picture)
         {
-  //          Dispatcher.RunOnMainThread(() =>
-  //          {
-  //              mgr.RequestSprite(picture, spr =>
-  //              {
-  //                  if (img != null && img.gameObject != null && img.gameObject.activeInHierarchy)
-  //                      img.sprite = spr;
-  //              });
-  //          });
+            Dispatcher.RunOnMainThread(() =>
+            {
+                mgr.RequestSprite(picture, spr =>
+                {
+                    if (img != null && img.gameObject != null && img.gameObject.activeInHierarchy)
+                        img.sprite = spr;
+                });
+            });
         }
         /// <summary>
         /// Updates Status-Panel based on ConnectionState
@@ -223,8 +239,9 @@ namespace TikTokLiveUnity.Example
             txtStatusTitle.text = connected ? "Connected to:" : connecting ? "Connecting to:" : "Connect to:";
             txtStatusHostId.gameObject.SetActive(connecting || connected);
             if (connected || connecting)
-                txtStatusHostId.text = mgr.HostName;
+                txtStatusHostId.text = string.IsNullOrWhiteSpace(mgr.HostName) ? mgr.RoomId : mgr.HostName;
             ifHostId.gameObject.SetActive(!connected && !connecting);
+            ifRoomId.gameObject.SetActive(!connected && !connecting);
             btnConnect.GetComponentInChildren<TMP_Text>().text = connected ? "Disconnect" : connecting ? "Cancel" : "Connect";
         }
         #endregion

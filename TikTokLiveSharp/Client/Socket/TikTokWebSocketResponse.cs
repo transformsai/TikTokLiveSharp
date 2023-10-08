@@ -6,6 +6,16 @@
     public class TikTokWebSocketResponse
     {
         /// <summary>
+        /// Array received from web socket
+        /// </summary>
+        public readonly byte[] Array;
+
+        /// <summary>
+        /// Size of valid Data-Length in Array
+        /// </summary>
+        public readonly int Count;
+
+        /// <summary>
         /// Creates a TikTok websocket response instance.
         /// </summary>
         /// <param name="array">Response array</param>
@@ -15,15 +25,5 @@
             Array = array;
             Count = count;
         }
-
-        /// <summary>
-        /// Array received from web socket
-        /// </summary>
-        public readonly byte[] Array;
-
-        /// <summary>
-        /// Size of valid Data-Length in Array
-        /// </summary>
-        public readonly int Count;
     }
 }

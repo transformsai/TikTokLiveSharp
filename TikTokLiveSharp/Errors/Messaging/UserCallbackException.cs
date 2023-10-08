@@ -9,7 +9,7 @@ namespace TikTokLiveSharp.Errors.Messaging
     /// written by a User of the Library. It envelopes the Exception thrown by the User's code.
     /// </para>
     /// </summary>
-    public class UserCallbackException : WebcastMessageException
+    public class UserCallbackException : HandleMessageException
     {
         public UserCallbackException(string message, Exception inner) : base(message, inner)
         { }

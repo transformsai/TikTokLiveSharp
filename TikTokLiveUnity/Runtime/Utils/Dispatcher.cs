@@ -20,19 +20,19 @@ namespace TikTokLiveUnity.Utils
         /// <summary>
         /// Singleton-Instance
         /// </summary>
-        private static Dispatcher _instance = null;
+        private static Dispatcher instance = null;
         /// <summary>
         /// Whether there is currently Work for the Main Thread
         /// </summary>
-        private static volatile bool _hasWork = false;
+        private static volatile bool hasWork = false;
         /// <summary>
         /// Backlog of Work for Simple Actions (No Parameters)
         /// </summary>
-        private static readonly List<Action> _simpleActionBacklog = new List<Action>();
+        private static readonly List<Action> simpleActionBacklog = new List<Action>();
         /// <summary>
         /// Backlog of Work for Complex Actions (With Object Parameters)
         /// </summary>
-        private static readonly Dictionary<Action<object[]>, object[]> _complexActionBacklog = new Dictionary<Action<object[]>, object[]>();
+        private static readonly Dictionary<Action<object[]>, object[]> complexActionBacklog = new Dictionary<Action<object[]>, object[]>();
         #endregion
 
         #region Methods
@@ -72,10 +72,10 @@ namespace TikTokLiveUnity.Utils
         /// <param name="action">Action to Invoke</param>
         public static void RunOnMainThread(Action action)
         {
-            lock (_simpleActionBacklog)
+            lock (simpleActionBacklog)
             {
-                _simpleActionBacklog.Add(action);
-                _hasWork = true;
+                simpleActionBacklog.Add(action);
+                hasWork = true;
             }
         }
 
@@ -86,10 +86,10 @@ namespace TikTokLiveUnity.Utils
         /// <param name="parameters">Parameters for Action</param>
         public static void RunOnMainThread(Action<object[]> action, params object[] parameters)
         {
-            lock (_complexActionBacklog)
+            lock (complexActionBacklog)
             {
-                _complexActionBacklog.Add(action, parameters);
-                _hasWork = true;
+                complexActionBacklog.Add(action, parameters);
+                hasWork = true;
             }
         }
         #endregion
@@ -100,7 +100,7 @@ namespace TikTokLiveUnity.Utils
         /// </summary>
         /// <param name="routine">Coroutine</param>
         /// <returns>Routine-Reference</returns>
-        public static Coroutine RunCoroutine(IEnumerator routine) => _instance.StartCoroutine(routine);
+        public static Coroutine RunCoroutine(IEnumerator routine) => instance.StartCoroutine(routine);
         /// <summary>
         /// Runs Coroutine on Main Thread from any Thread
         /// </summary>
@@ -115,10 +115,10 @@ namespace TikTokLiveUnity.Utils
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize()
         {
-            if (_instance == null)
+            if (instance == null)
             {
-                _instance = new GameObject("Dispatcher").AddComponent<Dispatcher>();
-                DontDestroyOnLoad(_instance.gameObject);
+                instance = new GameObject("Dispatcher").AddComponent<Dispatcher>();
+                DontDestroyOnLoad(instance.gameObject);
             }
         }
 
@@ -127,32 +127,31 @@ namespace TikTokLiveUnity.Utils
         /// </summary>
         private void Update()
         {
-            bool work = _hasWork;
-            if (work)
+            if (hasWork)
             {
-                if (_simpleActionBacklog.Count > 0)
+                if (simpleActionBacklog.Count > 0)
                 {
                     Action[] arrSimple = null;
-                    lock (_simpleActionBacklog)
+                    lock (simpleActionBacklog)
                     {
-                        arrSimple = _simpleActionBacklog.ToArray();
-                        _simpleActionBacklog.Clear();
+                        arrSimple = simpleActionBacklog.ToArray();
+                        simpleActionBacklog.Clear();
                     }
                     for (int i = 0; i < arrSimple.Length; i++)
                         arrSimple[i].Invoke();
                 }
-                if (_complexActionBacklog.Count > 0)
+                if (complexActionBacklog.Count > 0)
                 {
                     KeyValuePair<Action<object[]>, object[]>[] arrComplex = null;
-                    lock (_complexActionBacklog)
+                    lock (complexActionBacklog)
                     {
-                        arrComplex = _complexActionBacklog.ToArray();
-                        _complexActionBacklog.Clear();
+                        arrComplex = complexActionBacklog.ToArray();
+                        complexActionBacklog.Clear();
                     }
                     for (int i = 0; i < arrComplex.Length; i++)
                         arrComplex[i].Key.Invoke(arrComplex[i].Value);
                 }
-                _hasWork = false;
+                hasWork = false;
             }
         }
         #endregion

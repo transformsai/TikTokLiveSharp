@@ -3,21 +3,26 @@ using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using TikTokLiveSharp.Client.Proxy;
+using TikTokLiveSharp.Client.Config;
 using TikTokLiveSharp.Errors.Permissions;
-using TikTokLiveSharp.Models.Protobuf.Messages.Generic;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Client.HTTP
 {
     /// <summary>
     /// HTTP-Client for TikTok-WebPage & Signing-Page
     /// </summary>
-    internal sealed class TikTokHTTPClient
+    internal sealed class TikTokHttpClient
     {
         #region Properties
+        /// <summary>
+        /// TikTokLive-ClientName for Signing-Server
+        /// </summary>
+        private const string CLIENT_NAME = "ttlive-net";
         /// <summary>
         /// Number of Concurrent HTTP-Clients
         /// </summary>
@@ -25,7 +30,7 @@ namespace TikTokLiveSharp.Client.HTTP
         /// <summary>
         /// Index for this Client
         /// </summary>
-        private int clientNum;
+        private readonly int clientNum;
         #endregion
 
         #region Constructors
@@ -34,17 +39,21 @@ namespace TikTokLiveSharp.Client.HTTP
         /// </summary>
         /// <param name="timeout">Timeout for Connection</param>
         /// <param name="proxyHandler">Proxy for Connection</param>
-        internal TikTokHTTPClient(TimeSpan timeout, RotatingProxy proxyHandler = null)
+        /// <param name="clientLanguage">Accepted Language for Client (ISO-format)</param>
+        internal TikTokHttpClient(TimeSpan timeout, IWebProxy proxyHandler = null, string clientLanguage = null)
         {
             TikTokHttpRequest.Timeout = timeout;
             TikTokHttpRequest.WebProxy = proxyHandler;
+            if (!string.IsNullOrEmpty(clientLanguage))
+                TikTokHttpRequest.ClientLanguage = clientLanguage;
             concurrentClients++;
             clientNum = concurrentClients;
         }
+
         /// <summary>
         /// Destructor for a HTTPClient
         /// </summary>
-        ~TikTokHTTPClient()
+        ~TikTokHttpClient()
         {
             concurrentClients--;
         }
@@ -53,78 +62,106 @@ namespace TikTokLiveSharp.Client.HTTP
         #region Methods
         #region Internal
         /// <summary>
-        /// Gets WebcastResponse from WebCast-API
+        /// Gets Response from WebCast-API
         /// </summary>
         /// <param name="path">Path to send Request to</param>
         /// <param name="parameters">Additional Parameters for Request</param>
-        /// <param name="signURL">Whether to sign URL using API</param>
-        /// <returns>Task to Await. Result is WebcastResponse</returns>
-        internal async Task<WebcastResponse> GetDeserializedMessage(string path, Dictionary<string, object> parameters, bool signURL = false)
+        /// <param name="signUrl">Whether to sign URL using API</param>
+        /// <returns>Task to Await. Result is Response from WebCast-API</returns>
+        internal async Task<Response> GetDeserializedMessage(string path, IDictionary<string, object> parameters = null, bool signUrl = false)
         {
-            var get = await GetRequest(Constants.TIKTOK_URL_WEBCAST + path, parameters, signURL);
-            return Serializer.Deserialize<WebcastResponse>(await get.ReadAsStreamAsync());
+            HttpContent get = await GetRequest(Constants.TIKTOK_URL_WEBCAST + path, parameters, signUrl);
+            return Serializer.Deserialize<Response>(await get.ReadAsStreamAsync());
         }
+
         /// <summary>
         /// Gets JSON-Object from WebCast-API
         /// </summary>
         /// <param name="path">Path to send Request to</param>
         /// <param name="parameters">Additional Parameters for Request</param>
-        /// <param name="signURL">Whether to sign URL using API</param>
+        /// <param name="signUrl">Whether to sign URL using API</param>
         /// <returns>Task to Await. Result is JSON-Object</returns>
-        internal async Task<JObject> GetJObjectFromWebcastAPI(string path, Dictionary<string, object> parameters, bool signURL = false)
+        internal async Task<JObject> GetJObjectFromWebcastApi(string path, IDictionary<string, object> parameters = null, bool signUrl = false)
         {
-            var get = await GetRequest(Constants.TIKTOK_URL_WEBCAST + path, parameters, signURL);
+            HttpContent get = await GetRequest(Constants.TIKTOK_URL_WEBCAST + path, parameters, signUrl);
             return JObject.Parse(await get.ReadAsStringAsync());
         }
+
         /// <summary>
         /// Gets HTML for Live-Page
         /// </summary>
-        /// <param name="uniqueID">ID for Host</param>
-        /// <param name="signURL">Whether to sign URL using API</param>
-        /// <returns></returns>
-        internal async Task<string> GetLivestreamPage(string uniqueID, bool signURL = false)
+        /// <param name="uniqueId">ID for Host</param>
+        /// <param name="signUrl">Whether to sign URL using API</param>
+        /// <returns>Task to Await. Result is HTML for Live-Page</returns>
+        internal async Task<string> GetLivestreamPage(string uniqueId, IDictionary<string, object> parameters = null, bool signUrl = false)
         {
-            var get = await GetRequest($"{Constants.TIKTOK_URL_WEB}@{uniqueID}/live/", signURL: signURL);
+            HttpContent get = await GetRequest($"{Constants.TIKTOK_URL_WEB}@{uniqueId}/live/", parameters, signUrl);
             return await get.ReadAsStringAsync();
         }
+
         /// <summary>
         /// Gets HTML for Live-Page
         /// </summary>
-        /// <param name="uniqueID">ID for Host</param>
-        /// <param name="signURL">Whether to sign URL using API</param>
-        /// <returns></returns>
-        internal async Task<string> GetProfilePage(string uniqueID, bool signURL = false)
+        /// <param name="uniqueId">ID for Host</param>
+        /// <param name="signUrl">Whether to sign URL using API</param>
+        /// <returns>Task to Await. Result is HTML for Profile-Page</returns>
+        internal async Task<string> GetProfilePage(string uniqueId, IDictionary<string, object> parameters = null, bool signUrl = false)
         {
-            var get = await GetRequest($"{Constants.TIKTOK_URL_WEB}@{uniqueID}", signURL: signURL);
+            HttpContent get = await GetRequest($"{Constants.TIKTOK_URL_WEB}@{uniqueId}", parameters, signUrl);
             return await get.ReadAsStringAsync();
         }
+
         /// <summary>
         /// Posts JSON-Object to WebCast-API
         /// </summary>
         /// <param name="path">Path to send to (sub-URL)</param>
         /// <param name="parameters">Additional Parameters for Request</param>
         /// <param name="json">Object to Post</param>
-        /// <param name="signURL">Whether to sign URL using API</param>
+        /// <param name="signUrl">Whether to sign URL using API</param>
         /// <returns>Task to Await. Result is result of Post</returns>
-        internal async Task<JObject> PostJObjecttToWebcastAPI(string path, Dictionary<string, object> parameters, JObject json, bool signURL = false)
+        internal async Task<JObject> PostJObjectToWebcastApi(string path, IDictionary<string, object> parameters, JObject json, bool signUrl = false)
         {
-            var post = await PostRequest(Constants.TIKTOK_URL_WEBCAST + path, json.ToString(Newtonsoft.Json.Formatting.None), parameters, signURL);
+            HttpContent post = await PostRequest(Constants.TIKTOK_URL_WEBCAST + path, json.ToString(Newtonsoft.Json.Formatting.None), parameters, signUrl);
             return JObject.Parse(await post.ReadAsStringAsync());
         }
         #endregion
 
         #region Private
         /// <summary>
+        /// Creates HTTP-Request
+        /// </summary>
+        /// <param name="url">URL for Request</param>
+        /// <param name="parameters">Additional Parameters for Request</param>
+        /// <returns>HTTP-Request</returns>
+        private static ITikTokHttpRequest BuildRequest(string url, IDictionary<string, object> parameters = null)
+        {
+            return new TikTokHttpRequest(url).SetQueries(parameters);
+        }
+
+        /// <summary>
         /// Sends HTTP-GetRequest to URL
         /// </summary>
         /// <param name="url">URL to send to</param>
         /// <param name="parameters">Additional Parameters for Request</param>
-        /// <param name="signURL">Whether to Sign URL using API</param>
+        /// <param name="signUrl">Whether to Sign URL using API</param>
         /// <returns>Task to await</returns>
-        private async Task<HttpContent> GetRequest(string url, Dictionary<string, object> parameters = null, bool signURL = false)
+        private async Task<HttpContent> GetRequest(string url, IDictionary<string, object> parameters = null, bool signUrl = false)
         {
-            var request = BuildRequest(signURL ? await GetSignedUrl(url, parameters) : url, signURL ? null : parameters);
+            ITikTokHttpRequest request = BuildRequest(signUrl ? await GetSignedUrl(url, parameters) : url, signUrl ? null : parameters);
             return await request.Get();
+        }
+
+        /// <summary>
+        /// Sends HTTP-PostRequest to URL
+        /// </summary>
+        /// <param name="url">URL to send to</param>
+        /// <param name="parameters">Additional Parameters for Request</param>
+        /// <param name="signUrl">Whether to Sign URL using API</param>
+        /// <returns>Task to await</returns>
+        private async Task<HttpContent>PostRequest(string url, IDictionary<string, object> parameters = null, bool signUrl = false)
+        {
+            ITikTokHttpRequest request = BuildRequest(signUrl ? await GetSignedUrl(url, parameters) : url, signUrl ? null : parameters);
+            return await request.Post(null);
         }
 
         /// <summary>
@@ -133,23 +170,12 @@ namespace TikTokLiveSharp.Client.HTTP
         /// <param name="url">URL to send to</param>
         /// <param name="data">Data for Request</param>
         /// <param name="parameters">Additional Parameters for Request</param>
-        /// <param name="signURL">Whether to Sign URL using API</param>
+        /// <param name="signUrl">Whether to Sign URL using API</param>
         /// <returns>Task to await</returns>
-        private async Task<HttpContent> PostRequest(string url, string data, Dictionary<string, object> parameters = null, bool signURL = false)
+        private async Task<HttpContent> PostRequest(string url, string data, IDictionary<string, object> parameters = null, bool signUrl = false)
         {
-            var request = BuildRequest(signURL ? await GetSignedUrl(url, parameters) : url, signURL ? null : parameters);
+            ITikTokHttpRequest request = BuildRequest(signUrl ? await GetSignedUrl(url, parameters) : url, signUrl ? null : parameters);
             return await request.Post(new StringContent(data, Encoding.UTF8));
-        }
-
-        /// <summary>
-        /// Creates HTTP-Request
-        /// </summary>
-        /// <param name="url">URL for Request</param>
-        /// <param name="parameters">Additional Parameters for Request</param>
-        /// <returns>HTTP-Request</returns>
-        private ITikTokHttpRequest BuildRequest(string url, Dictionary<string, object> parameters = null)
-        {
-            return new TikTokHttpRequest(url).SetQueries(parameters);
         }
 
         /// <summary>
@@ -159,13 +185,13 @@ namespace TikTokLiveSharp.Client.HTTP
         /// <param name="parameters">Additional Parameters for Request</param>
         /// <returns>Task to await. Result is Signed URL</returns>
         /// <exception cref="InsufficientPermissionException"></exception>
-        private async Task<string> GetSignedUrl(string url, Dictionary<string, object> parameters = null)
+        private async Task<string> GetSignedUrl(string url, IDictionary<string, object> parameters = null)
         {
             string getParams = parameters != null ? $"?{string.Join("&", parameters.Select(x => $"{x.Key}={x.Value}"))}" : string.Empty;
-            ITikTokHttpRequest request = new TikTokHttpRequest(Constants.TIKTOK_SIGN_API)
+            ITikTokHttpRequest request = new TikTokHttpRequest(Constants.TIKTOK_SIGN_API, false)
                 .SetQueries(new Dictionary<string, object>()
                 {
-                    { "client", "ttlive-net" },
+                    { "client", CLIENT_NAME },
                     { "uuc", clientNum },
                     { "url", url + getParams }
                 });
@@ -173,16 +199,15 @@ namespace TikTokLiveSharp.Client.HTTP
             try
             {
                 JObject jObj = JObject.Parse(await content.ReadAsStringAsync());
-                string s2 = jObj["signedUrl"].Value<string>();
-                string signedUrl = jObj["signedUrl"].Value<string>();
-                string userAgent = jObj["User-Agent"].Value<string>();
+                string signedUrl = jObj["signedUrl"]?.Value<string>();
+                string userAgent = jObj["User-Agent"]?.Value<string>();
                 TikTokHttpRequest.CurrentHeaders.Remove("User-Agent");
                 TikTokHttpRequest.CurrentHeaders.Add("User-Agent", userAgent);
                 return signedUrl;
             }
             catch (Exception e)
             {
-                throw new InsufficientPermissionException("Insufficent values have been supplied for signing. Likely due to an update. Post an issue on GitHub.", e);
+                throw new InsufficientPermissionException("Insufficient values have been supplied for signing. Likely due to an update. Post an issue on GitHub or in the Discord.", e);
             }
         }
         #endregion

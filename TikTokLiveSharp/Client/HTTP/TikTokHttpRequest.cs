@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
+using TikTokLiveSharp.Client.Config;
 
 namespace TikTokLiveSharp.Client.HTTP
 {
@@ -14,77 +15,149 @@ namespace TikTokLiveSharp.Client.HTTP
     /// </summary>
     public class TikTokHttpRequest : ITikTokHttpRequest
     {
+        #region Properties
+        #region Static
+        #region Public
         /// <summary>
         /// Cookies for Requests
         /// </summary>
-        public static TikTokCookieJar CookieJar => cookieJar;
+        public static TikTokCookieJar CookieJar { get; private set; }
+
         /// <summary>
         /// (Default) Headers for Requests
         /// </summary>
         public static HttpRequestHeaders CurrentHeaders => client?.DefaultRequestHeaders;
 
         /// <summary>
-        /// Client used for Requests
+        /// AcceptLanguage-override for Requests
+        /// <para>
+        /// Quality for this is set to 0.9
+        /// </para>
+        /// </summary>
+        public static string ClientLanguage
+        {
+            get => clientLanguage;
+            set
+            {
+                if (string.Equals(clientLanguage, value))
+                    return;
+                if (client != null)
+                    throw new Exception("ClientLanguage cannot be set after client has been initialized.");
+                clientLanguage = value;
+            }
+        }
+
+        /// <summary>
+        /// Timeout used for HttpRequests
+        /// </summary>
+        public static TimeSpan Timeout
+        {
+            get => timeout;
+            set
+            {
+                if (timeout == value)
+                    return;
+                if (client != null)
+                    throw new Exception("Timeout cannot be set after client has been initialized.");
+                timeout = value;
+            }
+        }
+
+        /// <summary>
+        /// WebProxy used for HttpRequests
+        /// </summary>
+        public static IWebProxy WebProxy
+        {
+            get => webProxy;
+            set
+            {
+                if (webProxy == value)
+                    return;
+                if (client != null)
+                    throw new Exception("WebProxy cannot be set after client has been initialized.");
+                webProxy = value;
+            }
+        }
+        #endregion
+
+        #region Private
+        /// <summary>
+        /// Client used for HttpRequests
         /// </summary>
         private static HttpClient client;
+
         /// <summary>
         /// Handler for Request-Data
         /// </summary>
         private static HttpClientHandler handler;
-        /// <summary>
-        /// Cookies for Requests
-        /// </summary>
-        private static TikTokCookieJar cookieJar;
 
         /// <summary>
         /// Timeout for Requests
         /// </summary>
         private static TimeSpan timeout;
+
         /// <summary>
         /// Proxy for Requests
         /// </summary>
         private static IWebProxy webProxy;
 
         /// <summary>
+        /// AcceptLanguage-override for Requests
+        /// <para>
+        /// Quality for this is set to 0.9
+        /// </para>
+        /// </summary>
+        private static string clientLanguage;
+        #endregion
+        #endregion
+
+        #region Instance
+        /// <summary>
         /// Query for this Request
         /// </summary>
         private string query;
+
         /// <summary>
         /// HTTP-Message for this Request
         /// </summary>
         private readonly HttpRequestMessage request;
-        /// <summary>
-        /// Whether this Request has been sent to the TikTok-Server
-        /// </summary>
-        private bool sent;
 
         /// <summary>
-        /// Creates a TikTok http request instance.
+        /// Whether this Request has been sent off
         /// </summary>
-        /// <param name="url">The url to send to.</param>
-        /// <exception cref="ArgumentException">Throws exception if URL is invalid.</exception>
-        public TikTokHttpRequest(string url)
+        private bool sent;
+        #endregion
+        #endregion
+
+        #region Constructors
+        /// <summary>
+        /// Creates a TikTok HTTPRequest
+        /// </summary>
+        /// <param name="url">The url to send the request to</param>
+        /// <param name="useCookies">Whether to allow for Cookies on this HTTP-Request</param>
+        /// <exception cref="ArgumentException">Throws exception if URL is invalid</exception>
+        public TikTokHttpRequest(string url, bool useCookies = true)
         {
             if (!Uri.TryCreate(url, UriKind.Absolute, out Uri result)) 
                 throw new ArgumentException("Invalid Url", nameof(url));
-            if (cookieJar == null)
-                cookieJar = new TikTokCookieJar();
-            if (handler == null)
-                handler = new HttpClientHandler
-                {
-                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-                    Proxy = WebProxy,
-                    UseProxy = WebProxy != null,
-                    UseCookies = false
-                };
+            CookieJar ??= new TikTokCookieJar();
+            handler ??= new HttpClientHandler
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                Proxy = WebProxy,
+                UseProxy = WebProxy != null,
+                UseCookies = useCookies
+            };
             if (client == null)
             {
                 client = new HttpClient(handler)
                 {
                     Timeout = Timeout
                 };
-                foreach (var header in Constants.DEFAULT_REQUEST_HEADERS)
+                foreach (KeyValuePair<string, string> header in Constants.DEFAULT_REQUEST_HEADERS)
                     client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                if (!string.IsNullOrEmpty(clientLanguage))
+                    client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue(clientLanguage, 0.9));
             }
             request = new HttpRequestMessage
             {
@@ -92,46 +165,13 @@ namespace TikTokLiveSharp.Client.HTTP
             };
             sent = false;
         }
+        #endregion
 
         /// <summary>
-        /// The timeout value used.
+        /// Sends a Get request
         /// </summary>
-        public static TimeSpan Timeout
-        {
-            get => timeout;
-            set
-            {
-                if (timeout != value)
-                {
-                    if (client != null) 
-                        throw new Exception("Timeout cannot be set after client has been initalised.");
-                    timeout = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// The web proxy used.
-        /// </summary>
-        public static IWebProxy WebProxy
-        {
-            get => webProxy;
-            set
-            {
-                if (webProxy != value)
-                {
-                    if (client != null) 
-                        throw new Exception("Web proxy cannot be set after client has been initalised.");
-                    webProxy = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Sends an async get request.
-        /// </summary>
-        /// <returns>HttpContent returned.</returns>
-        /// <exception cref="Exception">Requests should not be reused.</exception>
+        /// <returns>HttpContent returned by request</returns>
+        /// <exception cref="Exception">Thrown if Request has already been sent. Requests should not be reused</exception>
         public async Task<HttpContent> Get()
         {
             if (sent) 
@@ -141,11 +181,11 @@ namespace TikTokLiveSharp.Client.HTTP
         }
 
         /// <summary>
-        /// Sends an async post request.
+        /// Sends a Post request
         /// </summary>
         /// <param name="data">The data to be sent.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">Requests should not be reused.</exception>
+        /// <returns>HttpContent returned by request</returns>
+        /// <exception cref="Exception">Thrown if Request has already been sent. Requests should not be reused</exception>
         public async Task<HttpContent> Post(HttpContent data)
         {
             if (sent) 
@@ -156,10 +196,10 @@ namespace TikTokLiveSharp.Client.HTTP
         }
 
         /// <summary>
-        /// Sets the queries for the request.
+        /// Sets the queries for the request
         /// </summary>
-        /// <param name="queries">The queries to append to the URL.</param>
-        /// <returns>Request with queries added.</returns>
+        /// <param name="queries">Queries to append to the URL</param>
+        /// <returns>Request with queries added</returns>
         public ITikTokHttpRequest SetQueries(IDictionary<string, object> queries)
         {
             if (queries == null) 
@@ -169,31 +209,32 @@ namespace TikTokLiveSharp.Client.HTTP
         }
 
         /// <summary>
-        /// Sends the request and returns the response.
+        /// Sends off this request
         /// </summary>
-        /// <returns>The value in the response.</returns>
+        /// <returns>HttpContent for Response</returns>
         /// <exception cref="HttpRequestException">If the request was unsuccessful</exception>
         private async Task<HttpContent> GetContent()
         {
             if (query != null)
                 request.RequestUri = new Uri($"{request.RequestUri.AbsoluteUri}?{query}");
-            var response = await client.SendAsync(request);
+            HttpResponseMessage response = await client.SendAsync(request);
             request.Dispose();
             sent = true;
             if (response.StatusCode == HttpStatusCode.NotFound)
                 throw new HttpRequestException($"Request responded with 404 NOT_FOUND");
             if (!response.IsSuccessStatusCode) 
                 throw new HttpRequestException($"Request was unsuccessful [{(int)response.StatusCode}]");
-            var ct = response.Content.Headers?.ContentType;
+            MediaTypeHeaderValue ct = response.Content.Headers?.ContentType;
             if (ct?.CharSet != null)
                 ct.CharSet = ct.CharSet.Replace("\"", "");
-            response.Headers.TryGetValues("Set-Cookie", out var vals);
-            if (vals != null)
-                foreach (string val in vals)
-                {
-                    string[] cookie = val.Split(';')[0].Split('=');
-                    cookieJar[cookie[0]] = cookie[1];
-                }
+            response.Headers.TryGetValues("Set-Cookie", out IEnumerable<string> cookieValues);
+            if (cookieValues == null) 
+                return response.Content;
+            foreach (string val in cookieValues)
+            {
+                string[] cookie = val.Split(';')[0].Split('=');
+                CookieJar[cookie[0]] = cookie[1];
+            }
             return response.Content;
         }
     }

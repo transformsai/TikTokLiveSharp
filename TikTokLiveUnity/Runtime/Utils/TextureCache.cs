@@ -18,6 +18,10 @@ namespace TikTokLiveUnity.Utils
     {
         #region Properties
         /// <summary>
+        /// Event raised when an Exception occurred
+        /// </summary>
+        public static event Action<Exception> OnException;
+        /// <summary>
         /// Max number of Textures Cached (to limit Memory-Usage)
         /// </summary>
         private readonly uint MAX_CACHE_SIZE;
@@ -48,15 +52,20 @@ namespace TikTokLiveUnity.Utils
         {
             MAX_CACHE_SIZE = maxCacheSize;
         }
+
         /// <summary>
         /// Clears Dictionaries to minimize floating References to Textures
         /// </summary>
         ~TextureCache() 
         {
-            textureCache.Clear();
-            textureCallbacks.Clear();
-            spriteCache.Clear();
-            spriteCallbacks.Clear();
+            lock(textureCache)
+                textureCache.Clear();
+            lock(textureCallbacks)
+                textureCallbacks.Clear();
+            lock(spriteCache)
+                spriteCache.Clear();
+            lock(spriteCallbacks)
+                spriteCallbacks.Clear();
         }
         #endregion
 
@@ -68,11 +77,11 @@ namespace TikTokLiveUnity.Utils
         /// <param name="onComplete">Callback for Texture-Retrieval</param>
         public void RequestImage(IEnumerable<string> urls, Action<Texture2D> onComplete = null)
         {
-            if (urls == null || urls.Count() == 0)
+            IEnumerable<string> enumerable = urls as string[] ?? urls.ToArray();
+            if (!enumerable.Any())
                 return;
-            string url = urls.FirstOrDefault(url => url.Contains("jpg") || url.Contains("jpeg") || url.Contains("png"));
-            if (url == null) 
-                url = urls.FirstOrDefault(url => url.Contains("webp"));
+            string url = enumerable.FirstOrDefault(url => url.Contains("jpg") || url.Contains("jpeg") || url.Contains("png")) ??
+                         enumerable.FirstOrDefault(url => url.Contains("webp"));
             if (url != null)
                 RequestImage(url, onComplete);
             else onComplete?.Invoke(null);
@@ -87,22 +96,24 @@ namespace TikTokLiveUnity.Utils
         {
             if (string.IsNullOrEmpty(url))
                 return;
-            if (textureCache.ContainsKey(url))
-            {
-                onComplete?.Invoke(textureCache[url]);
-                return;
-            }
+            lock (textureCache)
+                if (textureCache.TryGetValue(url, out Texture2D value))
+                {
+                    onComplete?.Invoke(value); // Texture was Cached
+                    return;
+                }
             lock (textureCallbacks)
             {
-                if (textureCallbacks.ContainsKey(url))
+                if (textureCallbacks.TryGetValue(url, out List<Action<Texture2D>> callbacks))
                 {
-                    textureCallbacks[url].Add(onComplete);
+                    callbacks.Add(onComplete); // Texture is already being downloaded
                     return;
                 }
                 textureCallbacks.Add(url, new List<Action<Texture2D>> { onComplete });
             }
             Dispatcher.RunCoroutineOnMainThread(DownloadTexture(url, OnCompleteDownload));
         }
+
         /// <summary>
         /// Requests a Sprite from the Caches
         /// </summary>
@@ -110,15 +121,16 @@ namespace TikTokLiveUnity.Utils
         /// <param name="onComplete">Callback for Sprite-Retrieval</param>
         public void RequestSprite(IEnumerable<string> urls, Action<Sprite> onComplete = null)
         {
-            if (urls == null || urls.Count() == 0)
+            IEnumerable<string> enumerable = urls as string[] ?? urls.ToArray();
+            if (!enumerable.Any())
                 return;
-            string url = urls.FirstOrDefault(url => url.Contains("jpg") || url.Contains("jpeg") || url.Contains("png"));
-            if (url == null)
-                url = urls.FirstOrDefault(url => url.Contains("webp"));
+            string url = enumerable.FirstOrDefault(url => url.Contains("jpg") || url.Contains("jpeg") || url.Contains("png")) ??
+                         enumerable.FirstOrDefault(url => url.Contains("webp"));
             if (url != null)
                 RequestSprite(url, onComplete);
             else onComplete?.Invoke(null);
         }
+
         /// <summary>
         /// Requests a Sprite from the Cache
         /// </summary>
@@ -128,42 +140,33 @@ namespace TikTokLiveUnity.Utils
         {
             if (string.IsNullOrEmpty(url))
                 return;
-            if (spriteCache.ContainsKey(url)) // Sprite Cached
-            {
-                onComplete?.Invoke(spriteCache[url]);
-                return;
-            }
-            if (textureCache.ContainsKey(url)) // Texture Cached, but no Sprite
-            {
-                Texture2D tex = textureCache[url];
-                Sprite spr = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(tex.width / 2f, tex.height / 2f));
-                spriteCache.Add(url, spr);
-                onComplete?.Invoke(spr);
-                return;
-            }
-            if (spriteCallbacks.ContainsKey(url))
-            {
-                spriteCallbacks[url].Add(onComplete);
-                return;
-            }
-            spriteCallbacks.Add(url, new List<Action<Sprite>>() { onComplete });
-            Action<Texture2D> texOnComplete = tex =>
-            {
-                Sprite spr = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(tex.width / 2f, tex.height / 2f));
-                spriteCache.Add(url, spr);
-                List<Action<Sprite>> sprCallbacks = null;
-                lock(spriteCallbacks)
+            lock (spriteCache)
+                if (spriteCache.TryGetValue(url, out Sprite value)) // Sprite Cached
                 {
-                    if (spriteCallbacks.ContainsKey(url))
-                        sprCallbacks = spriteCallbacks[url];
-                    spriteCallbacks.Remove(url);
+                    onComplete?.Invoke(value);
+                    return;
                 }
-                if (sprCallbacks != null)
-                    for (int i = 0; i < sprCallbacks.Count; i++)
-                        sprCallbacks[i]?.Invoke(spr);
-            };
-            RequestImage(url, texOnComplete);
+            lock (textureCache)
+                if (textureCache.TryGetValue(url, out Texture2D tex)) // Texture Cached, but no Sprite
+                {
+                    Sprite spr = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+                    lock(spriteCache)
+                        spriteCache.Add(url, spr);
+                    onComplete?.Invoke(spr);
+                    return;
+                }
+            lock (spriteCallbacks)
+            {
+                if (spriteCallbacks.TryGetValue(url, out List<Action<Sprite>> callbacks))
+                {
+                    callbacks.Add(onComplete);
+                    return;
+                }
+                spriteCallbacks.Add(url, new List<Action<Sprite>>() { onComplete });
+            }
+            RequestImage(url);
         }
+
         /// <summary>
         /// Callback for Download-Completion. 
         /// Handles stored User-Callbacks
@@ -174,33 +177,29 @@ namespace TikTokLiveUnity.Utils
         {
             if (tex == null)
             {
-                // TODO: Handle Error
+                OnException?.Invoke(new NullReferenceException("Texture was NULL after downloading"));
                 return;
             }
-            if (textureCallbacks.ContainsKey(url))
+            lock (textureCallbacks)
             {
-                List<Action<Texture2D>> texCallbacks;
-                lock (textureCallbacks)
+                if (textureCallbacks.TryGetValue(url, out List<Action<Texture2D>> texCallbacks))
                 {
-                    texCallbacks = textureCallbacks[url];
                     textureCallbacks.Remove(url);
+                    for (int i = 0; i < texCallbacks.Count; i++)
+                        texCallbacks[i]?.Invoke(tex);
                 }
-                for (int i = 0; i < texCallbacks.Count; i++)
-                    texCallbacks[i]?.Invoke(tex);
             }
-            if (spriteCallbacks.ContainsKey(url))
+            Sprite s = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+            lock (spriteCache)
+                spriteCache.Add(url, s);
+            lock (spriteCallbacks)
             {
-                Sprite s = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f * tex.width, 0.5f * tex.width));
-                lock (spriteCache)
-                    spriteCache.Add(url, s);
-                List<Action<Sprite>> sprCallbacks;
-                lock (spriteCallbacks)
+                if (spriteCallbacks.TryGetValue(url, out List<Action<Sprite>> sprCallbacks))
                 {
-                    sprCallbacks = spriteCallbacks[url];
                     spriteCallbacks.Remove(url);
+                    for (int i = 0; i < sprCallbacks.Count; i++)
+                        sprCallbacks[i]?.Invoke(s);
                 }
-                for (int i = 0; i < sprCallbacks.Count; i++)
-                    sprCallbacks[i]?.Invoke(s);
             }
         }
 
@@ -222,28 +221,25 @@ namespace TikTokLiveUnity.Utils
                     onComplete?.Invoke(url, pic);
                 }
 #if WEBP_INSTALLED
-            else if (url.Contains("webp") && texRequest.result == UnityWebRequest.Result.DataProcessingError)
-            {
-                // Process webp-file to Texture2D
-                byte[] bytes = texRequest.downloadHandler.data;
-                Texture2D tex = WebP.Texture2DExt.CreateTexture2DFromWebP(bytes, false, false, out WebP.Error err, null, false);
-                AddTextureToCache(url, tex);
-                if (err == WebP.Error.Success)
-                    onComplete?.Invoke(url, tex);
-                else onComplete?.Invoke(url, null); // TODO: Handle Parsing-Failure
-            }
-#endif
-                else
+                else if (url.Contains("webp") && texRequest.result == UnityWebRequest.Result.DataProcessingError)
                 {
-                    // TODO: Handle Download-Failure
-                    onComplete?.Invoke(url, null);
+                    // Process webp-file to Texture2D
+                    byte[] bytes = texRequest.downloadHandler.data;
+                    Texture2D tex = WebP.Texture2DExt.CreateTexture2DFromWebP(bytes, false, false, out WebP.Error err, null, false);
+                    AddTextureToCache(url, tex);
+                    if (err == WebP.Error.Success)
+                        onComplete?.Invoke(url, tex);
+                    else throw new Exception("WebP-Texture failed to convert");
                 }
+#endif
+                else throw new Exception($"Texture failed to Download with result {texRequest.result} and code {texRequest.responseCode}.{Environment.NewLine}Error:{texRequest.error}");
             }
             catch (Exception e)
             {
                 Debug.LogError("Error whilst downloading Texture");
                 Debug.LogException(e);
                 onComplete?.Invoke(url, null);
+                OnException?.Invoke(e);
             }
         }
 
@@ -254,15 +250,20 @@ namespace TikTokLiveUnity.Utils
         /// <param name="tex">Texture to Add</param>
         private void AddTextureToCache(string url, Texture2D tex)
         {
-            if (textureCache.Count >= MAX_CACHE_SIZE)
-                for (int i = 0; i < MAX_CACHE_SIZE / 4; i++) // Randomly dump 1/4 of cache
-                {
-                    string tempURL = textureCache.Keys.ElementAt(UnityEngine.Random.Range(0, textureCache.Count));
-                    textureCache.Remove(tempURL);
-                    if (spriteCache.ContainsKey(tempURL))
-                        spriteCache.Remove(tempURL);
-                }
-            textureCache.Add(url, tex);
+            lock (textureCache)
+            {
+                if (textureCache.Count >= MAX_CACHE_SIZE)
+                    for (int i = 0; i < MAX_CACHE_SIZE / 4; i++) // Randomly dump 1/4 of cache
+                    {
+                        string tempUrl = textureCache.Keys.ElementAt(UnityEngine.Random.Range(0, textureCache.Count));
+                        textureCache.Remove(tempUrl);
+
+                        lock (spriteCache)
+                            if (spriteCache.ContainsKey(tempUrl))
+                                spriteCache.Remove(tempUrl);
+                    }
+                textureCache.Add(url, tex);
+            }
         }
         #endregion
     }
