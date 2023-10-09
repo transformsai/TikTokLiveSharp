@@ -8,16 +8,16 @@
         /// <summary>
         /// Rotate addresses consecutively, from proxy 0 -> 1 -> 2 -> ...etc.
         /// </summary>
-        CONSECUTIVE = 1,
+        Consecutive = 1,
 
         /// <summary>
         /// Rotate addresses randomly, from proxy 0 -> 69 -> 420 -> 1 -> ...etc.
         /// </summary>
-        RANDOM = 2,
+        Random = 2,
 
         /// <summary>
         /// Don't rotate addresses at all, pin to the indexed address.
         /// </summary>
-        PINNED = 3
+        Pinned = 3
     }
 }

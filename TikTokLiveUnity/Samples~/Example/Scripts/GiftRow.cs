@@ -1,4 +1,4 @@
-using TikTokLiveSharp.Events.MessageData.Objects;
+using TikTokLiveSharp.Events.Objects;
 using TikTokLiveUnity.Utils;
 using TMPro;
 using UnityEngine;
@@ -55,8 +55,11 @@ namespace TikTokLiveUnity.Example
             Gift.OnStreakFinished += StreakFinished;
             txtUserName.text = $"{Gift.Sender.UniqueId} sent a {Gift.Gift.Name}!";
             txtAmount.text = $"{Gift.Amount}x";
-            RequestImage(imgUserProfile, Gift.Sender.ProfilePicture);
-            RequestImage(imgGiftIcon, Gift.Gift.Picture);
+            RequestImage(imgUserProfile, Gift.Sender.AvatarThumbnail);
+            RequestImage(imgGiftIcon, Gift.Gift.Image);
+            // Run Streak-End for non-streakable gifts
+            if (gift.StreakFinished)
+                StreakFinished(gift, gift.Amount);
         }
         /// <summary>
         /// Deinitializes GiftRow
@@ -74,7 +77,7 @@ namespace TikTokLiveUnity.Example
         /// </summary>
         /// <param name="gift">Gift for Event</param>
         /// <param name="newAmount">New Amount</param>
-        private void AmountChanged(TikTokGift gift, uint newAmount)
+        private void AmountChanged(TikTokGift gift, long change, long newAmount)
         {
             txtAmount.text = $"{newAmount}x";
         }
@@ -83,9 +86,9 @@ namespace TikTokLiveUnity.Example
         /// </summary>
         /// <param name="gift">Gift for Event</param>
         /// <param name="finalAmount">Final Amount for Streak</param>
-        private void StreakFinished(TikTokGift gift, uint finalAmount)
+        private void StreakFinished(TikTokGift gift, long finalAmount)
         {
-            AmountChanged(gift, finalAmount);
+            AmountChanged(gift, 0, finalAmount);
             Destroy(gameObject, 2f);
         }
         /// <summary>
@@ -95,15 +98,15 @@ namespace TikTokLiveUnity.Example
         /// <param name="picture">Data for Image</param>
         private static void RequestImage(Image img, Picture picture)
         {
-//            Dispatcher.RunOnMainThread(() =>
-//            {
-//                if (TikTokLiveManager.Exists)
-//                    TikTokLiveManager.Instance.RequestSprite(picture, spr =>
-//                    {
-//                        if (img != null && img.gameObject != null && img.gameObject.activeInHierarchy)
-//                            img.sprite = spr;
-//                    });
-//            });
+            Dispatcher.RunOnMainThread(() =>
+            {
+                if (TikTokLiveManager.Exists)
+                    TikTokLiveManager.Instance.RequestSprite(picture, spr =>
+                    {
+                        if (img != null && img.gameObject != null && img.gameObject.activeInHierarchy)
+                            img.sprite = spr;
+                    });
+            });
         }
         #endregion
     }

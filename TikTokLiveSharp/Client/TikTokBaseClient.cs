@@ -2,8 +2,10 @@
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
@@ -11,14 +13,15 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using TikTokLiveSharp.Client.Config;
 using TikTokLiveSharp.Client.HTTP;
-using TikTokLiveSharp.Client.Proxy;
 using TikTokLiveSharp.Client.Socket;
 using TikTokLiveSharp.Debugging;
 using TikTokLiveSharp.Errors.Connections;
 using TikTokLiveSharp.Errors.FetchErrors;
 using TikTokLiveSharp.Errors.Messaging;
 using TikTokLiveSharp.Models.HTTP;
+using TikTokLiveSharp.Models.Protobuf.Messages;
 using TikTokLiveSharp.Models.Protobuf.Messages.Generic;
 
 namespace TikTokLiveSharp.Client
@@ -30,7 +33,7 @@ namespace TikTokLiveSharp.Client
     {
         #region Events
         /// <summary>
-        /// Event thrown if an Operation threw an Exception
+        /// Event fired if an Operation threw an Exception
         /// <para>
         /// Used to ensure Exceptions can be handled even if a Thread crashes
         /// </para>
@@ -43,7 +46,14 @@ namespace TikTokLiveSharp.Client
         /// <summary>
         /// Available Gifts for Room
         /// </summary>
-        public IReadOnlyDictionary<int, TikTokGift> AvailableGifts => availableGifts;
+        public IReadOnlyDictionary<long, TikTokGiftData> AvailableGifts => new ReadOnlyDictionary<long, TikTokGiftData>(availableGifts);
+        /// <summary>
+        /// Gifts Displayed for Room
+        /// <para>
+        /// Does not include gifts considered "Exclusive"
+        /// </para>
+        /// </summary>
+        public IReadOnlyDictionary<long, TikTokGiftData> DisplayedGifts => new ReadOnlyDictionary<long, TikTokGiftData>(availableGifts.Where(kvp => kvp.Value.Is_Displayed_On_Panel).ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
         /// <summary>
         /// Whether currently Connected to the TikTokServers
         /// </summary>
@@ -67,33 +77,21 @@ namespace TikTokLiveSharp.Client
         /// <summary>
         /// Number of Viewers in Connected Room
         /// </summary>
-        public uint? ViewerCount { get; protected set; }
+        public long? ViewerCount { get; protected set; }
         #endregion
 
         #region Protected
         /// <summary>
-        /// Available Gifts for Room
-        /// </summary>
-        protected Dictionary<int, TikTokGift> availableGifts;
-        /// <summary>
-        /// Additional Parameters for HTTP-Client
-        /// </summary>
-        protected Dictionary<string, object> clientParams;
-        /// <summary>
         /// Settings for this Client
         /// </summary>
         protected ClientSettings settings;
-        /// <summary>
-        /// WebSocket-Client
-        /// </summary>
-        public TikTokWebSocket socketClient;
         #endregion
 
         #region Private
         /// <summary>
         /// HTTP-Client
         /// </summary>
-        private TikTokHTTPClient httpClient;
+        private readonly TikTokHttpClient httpClient;
         /// <summary>
         /// Token used to Cancel this Client
         /// </summary>
@@ -106,6 +104,18 @@ namespace TikTokLiveSharp.Client
         /// Url that socket is connected to
         /// </summary>
         private string connectedSocketUrl;
+        /// <summary>
+        /// Available Gifts for Room
+        /// </summary>
+        private readonly Dictionary<long, TikTokGiftData> availableGifts;
+        /// <summary>
+        /// Additional Parameters for HTTP-Client
+        /// </summary>
+        private readonly Dictionary<string, object> clientParams;
+        /// <summary>
+        /// WebSocket-Client
+        /// </summary>
+        private TikTokWebSocket socketClient;
         #endregion
         #endregion
 
@@ -113,12 +123,16 @@ namespace TikTokLiveSharp.Client
         /// <summary>
         /// Constructor for a TikTokBaseClient
         /// </summary>
-        /// <param name="hostId">ID for Room to Connect to</param>
+        /// <param name="hostId">ID for Host of to Connect to (@-name, without the @-symbol)</param>
+        /// <param name="roomId">ID for Room to Connect to. Overrides HostId & skips scraping webpage</param>
         /// <param name="settings">Settings for Client</param>
         /// <param name="clientParams">Additional Parameters for HTTP-Client</param>
-        public TikTokBaseClient(string hostId, ClientSettings? settings = null, Dictionary<string, object> clientParams = null)
+        protected TikTokBaseClient(string hostId, string roomId = null, ClientSettings? settings = null, Dictionary<string, object> clientParams = null)
         {
+            if (string.IsNullOrEmpty(hostId) && string.IsNullOrEmpty(roomId))
+                throw new ArgumentNullException(nameof(hostId), "Either HostId or RoomId is required.");
             HostName = hostId;
+            RoomID = roomId;
             if (!settings.HasValue)
             {
                 Debug.Log("Using Default Settings");
@@ -127,28 +141,32 @@ namespace TikTokLiveSharp.Client
             this.settings = settings.Value;
             CheckSettings();
             RoomInfo = null;
-            availableGifts = new Dictionary<int, TikTokGift>();
-            RoomID = null;
+            availableGifts = new Dictionary<long, TikTokGiftData>();
             ViewerCount = null;
             Connecting = false;
             this.clientParams = new Dictionary<string, object>();
-            foreach (var parameter in Constants.DEFAULT_CLIENT_PARAMS)
+            // Set default params
+            foreach (KeyValuePair<string, object> parameter in Constants.DEFAULT_CLIENT_PARAMS)
                 this.clientParams.Add(parameter.Key, parameter.Value);
-            if (clientParams != null)
-                foreach (var param in clientParams)
-                    this.clientParams[param.Key] = param.Value;
+            // Override using ClientSettings
             this.clientParams["app_language"] = this.settings.ClientLanguage;
             this.clientParams["webcast_language"] = this.settings.ClientLanguage;
-            httpClient = new TikTokHTTPClient(this.settings.Timeout, this.settings.Proxy);
+            // Override using custom params
+            if (clientParams != null)
+                foreach (KeyValuePair<string, object> param in clientParams)
+                    this.clientParams[param.Key] = param.Value;
+            httpClient = new TikTokHttpClient(TimeSpan.FromSeconds(this.settings.Timeout), this.settings.EnableCompression, this.settings.Proxy, this.settings.ClientLanguage);
         }
-
-
+        
         /// <summary>
         /// Constructor for a TikTokBaseClient
         /// </summary>
-        /// <param name="uniqueID">Host-Name for Room to Connect to</param>
+        /// <param name="uniqueId">Host-Name for Room to Connect to</param>
         /// <param name="timeout">Timeout for Connections</param>
         /// <param name="pollingInterval">Polling Interval for WebSocket-Connection</param>
+        /// <param name="roomId">RoomId for Room to Connect to (overrides <paramref name="uniqueId"/> during connect)</param>
+        /// <param name="enableCompression">Enable Compression for Http-Response</param>
+        /// <param name="skipRoomInfo">Skip fetching RoomInfo</param>
         /// <param name="clientParams">Additional Parameters for HTTP-Client</param>
         /// <param name="processInitialData">Whether to process Data received when Connecting</param>
         /// <param name="enableExtendedGiftInfo">Whether to download List of Gifts on Connect</param>
@@ -159,25 +177,29 @@ namespace TikTokLiveSharp.Client
         /// <param name="logLevel">LoggingLevel for debugging</param>
         /// <param name="printMessageData">Whether to print Base64-Data for Messages to Console</param>
         /// <param name="checkForUnparsedData">Whether to check Messages for Unparsed Data</param>
-        public TikTokBaseClient(string uniqueID,
-            TimeSpan? timeout,
-            TimeSpan? pollingInterval,
+        protected TikTokBaseClient(string uniqueId,
+            float? timeout = null,
+            float? pollingInterval = null,
+            string roomId = "",
+            bool enableCompression = true,
+            bool skipRoomInfo = false,
             Dictionary<string, object> clientParams = null,
             bool processInitialData = true,
             bool enableExtendedGiftInfo = true,
-            RotatingProxy proxyHandler = null,
+            IWebProxy proxyHandler = null,
             string lang = "en-US",
             uint socketBufferSize = 10_000,
             bool logDebug = true, 
             LogLevel logLevel = LogLevel.Error | LogLevel.Warning,
             bool printMessageData = false,
-            bool checkForUnparsedData = false
-            )
-            : this(uniqueID,
+            bool checkForUnparsedData = false)
+            : this(uniqueId, roomId,
                   new ClientSettings
                   {
-                      Timeout = timeout ?? TimeSpan.FromSeconds(Constants.DEFAULT_TIMEOUT),
-                      PollingInterval = pollingInterval ?? TimeSpan.FromSeconds(Constants.DEFAULT_POLLTIME),
+                      Timeout = timeout ?? Constants.DEFAULT_TIMEOUT,
+                      PollingInterval = pollingInterval ?? Constants.DEFAULT_POLLTIME,
+                      EnableCompression = enableCompression,
+                      SkipRoomInfo = skipRoomInfo,
                       HandleExistingMessagesOnConnect = processInitialData,
                       DownloadGiftInfo = enableExtendedGiftInfo,
                       Proxy = proxyHandler,
@@ -192,14 +214,22 @@ namespace TikTokLiveSharp.Client
         { }
 
         /// <summary>
+        /// Disconnects Socket when destroying Client
+        /// </summary>
+        ~TikTokBaseClient()
+        {
+            socketClient?.Disconnect();
+        }
+
+        /// <summary>
         /// Checks if ClientSettings are Valid
         /// </summary>
         private void CheckSettings()
         {
             ClientSettings s = settings;
-            if (settings.Timeout == default)
+            if (settings.Timeout.Equals(0))
                 s.Timeout = Constants.DEFAULT_SETTINGS.Timeout;
-            if (settings.PollingInterval == default)
+            if (settings.PollingInterval.Equals(0))
                 s.PollingInterval = Constants.DEFAULT_SETTINGS.PollingInterval;
             if (string.IsNullOrEmpty(settings.ClientLanguage))
                 s.ClientLanguage = Constants.DEFAULT_SETTINGS.ClientLanguage;
@@ -214,18 +244,20 @@ namespace TikTokLiveSharp.Client
         /// Checks if a User exists on TikTok by attempting to get their Profile-Page
         /// </summary>
         /// <param name="userId">@-ID for User</param>
+        /// <param name="enableCompression">Enable Compression for Http-Response</param>
         /// <param name="timeOut">TimeOut for HTTP-Connection (set NULL for default)</param>
         /// <param name="proxy">Proxy to use with HTTP-Client</param>
+        /// <param name="queryParams">Additional Parameters for Query</param>
         /// <returns>True if User has a Profile-Page on TikTok</returns>
-        public static async Task<bool> GetUserExists(string userId, TimeSpan? timeOut = null, RotatingProxy proxy = null)
+        public static async Task<bool> GetUserExists(string userId, bool enableCompression = true, TimeSpan? timeOut = null, IWebProxy proxy = null, IDictionary<string, object> queryParams = null)
         {
-            if (!timeOut.HasValue)
-                timeOut = Constants.DEFAULT_SETTINGS.Timeout;
-            TikTokHTTPClient tempClient = new TikTokHTTPClient(timeOut.Value, proxy);
-            string html;
+            if (timeOut == null)
+                timeOut = TimeSpan.FromSeconds(Constants.DEFAULT_SETTINGS.Timeout);
+            TikTokHttpClient tempClient = new TikTokHttpClient(timeOut.Value, enableCompression, proxy);
             try
             {
-                html = await tempClient.GetProfilePage(userId);
+                await tempClient.GetProfilePage(userId, queryParams);
+                return true;
             }
             catch (HttpRequestException ex)
             {
@@ -245,25 +277,26 @@ namespace TikTokLiveSharp.Client
                 Debug.LogException(exc);
                 return false;
             }
-            return true;
         }
 
         /// <summary>
         /// Checks if a User is currently streaming by looking for a RoomId on their Live-Page
         /// </summary>
         /// <param name="userId">@-ID for User</param>
+        /// <param name="enableCompression">Enable Compression for Http-Response</param>
         /// <param name="timeOut">TimeOut for HTTP-Connection (set NULL for default)</param>
         /// <param name="proxy">Proxy to use with HTTP-Client</param>
+        /// <param name="queryParams">Additional Parameters for Query</param>
         /// <returns>True if User is currently streaming on TikTok</returns>
-        public static async Task<bool> GetUserStreaming(string userId, TimeSpan? timeOut = null, RotatingProxy proxy = null)
+        public static async Task<bool> GetUserStreaming(string userId, bool enableCompression = true, TimeSpan? timeOut = null, IWebProxy proxy = null, IDictionary<string, object> queryParams = null)
         {
-            if (!timeOut.HasValue)
-                timeOut = Constants.DEFAULT_SETTINGS.Timeout;
-            TikTokHTTPClient tempClient = new TikTokHTTPClient(timeOut.Value, proxy);
+            if (timeOut == null)
+                timeOut = TimeSpan.FromSeconds(Constants.DEFAULT_SETTINGS.Timeout);
+            TikTokHttpClient tempClient = new TikTokHttpClient(timeOut.Value, enableCompression, proxy);
             string html;
             try
             {
-                html = await tempClient.GetLivestreamPage(userId);
+                html = await tempClient.GetLivestreamPage(userId, queryParams);
             }
             catch (Exception e)
             {
@@ -271,10 +304,11 @@ namespace TikTokLiveSharp.Client
                 Debug.LogException(exc);
                 return false;
             }
-            var first = Regex.Match(html, "room_id=([0-9]*)");
-            var second = Regex.Match(html, "\"roomId\":\"([0 - 9] *)\"");
-            string id = first.Groups[1]?.Value ?? second.Groups[1]?.Value ?? string.Empty;
-            return !string.IsNullOrEmpty(id);
+            Match first = Regex.Match(html, "room_id=([0-9]*)");
+            Match second = Regex.Match(html, "\"roomId\":\"([0 - 9] *)\"");
+            if (first.Groups.Count >= 1 && first.Groups[1].Value != string.Empty)
+                return true;
+            return second.Groups.Count >= 1 && second.Groups[1].Value != string.Empty;
         }
         #endregion
 
@@ -291,10 +325,10 @@ namespace TikTokLiveSharp.Client
             token.ThrowIfCancellationRequested();
             if (ShouldLog(LogLevel.Information))
                 Debug.Log("Starting Threads");
-            var run = Task.Run(() => Start(token, null, retryConnection), token);
-            run.Wait();
-            runningTask.Wait();
-            pollingTask.Wait();
+            Task<string> run = Task.Run(() => Start(token, onConnectException, retryConnection), token);
+            run.Wait(cancellationToken.Value);
+            runningTask.Wait(cancellationToken.Value);
+            pollingTask.Wait(cancellationToken.Value);
         }
 
         /// <summary>
@@ -326,28 +360,25 @@ namespace TikTokLiveSharp.Client
             {
                 if (ShouldLog(LogLevel.Error))
                     Debug.LogException(e);
+                // Failed to Connect, but Host was Online
+                if (e is FailedConnectionException && retryConnection)
+                {
+                    if (ShouldLog(LogLevel.Information))
+                        Debug.Log("Retrying");
+                    await Task.Delay(TimeSpan.FromSeconds(settings.PollingInterval), cancellationToken.Value);
+                    return await Start(cancellationToken, onConnectException, true);
+                }
                 if (e is FailedConnectionException)
                 {
-                    // Failed to Connect, but Host was Online
-                    if (retryConnection)
-                    {
-                        if (ShouldLog(LogLevel.Information))
-                            Debug.Log("Retrying");
-                        await Task.Delay(settings.PollingInterval);
-                        return await Start(cancellationToken, onConnectException, retryConnection);
-                    }
-                    else
-                    {
-                        onConnectException?.Invoke(e);
-                        throw e;
-                    }
+                    onConnectException?.Invoke(e);
+                    throw e;
                 }
-                else if (e is AlreadyConnectedException || e is AlreadyConnectingException)
+                if (e is AlreadyConnectedException || e is AlreadyConnectingException)
                 {
                     onConnectException?.Invoke(e); // Already Connected
                     return null;  // Exit Quietly
                 }
-                else if (e is LiveNotFoundException)
+                if (e is LiveNotFoundException)
                 {
                     onConnectException?.Invoke(e); // LiveStream was not Found (or Host is not Online)
                     throw e;
@@ -359,14 +390,14 @@ namespace TikTokLiveSharp.Client
                 if (ShouldLog(LogLevel.Error))
                     Debug.LogException(e);
                 onConnectException?.Invoke(e); // Failed to fetch critical Info for Connection
-                throw e;
+                throw;
             }
             catch (Exception e) // Other type of Exception
             {
                 if (ShouldLog(LogLevel.Error))
                     Debug.LogException(e);
                 onConnectException?.Invoke(e);
-                throw e;
+                throw;
             }
         }
 
@@ -385,16 +416,28 @@ namespace TikTokLiveSharp.Client
             if (Connected)
                 throw new AlreadyConnectedException();
             Connecting = true;
-            if (ShouldLog(LogLevel.Verbose))
-                Debug.Log("Fetching RoomID");
-            RoomID = await FetchRoomId();
+            if (!string.IsNullOrEmpty(RoomID))
+            {
+                if (ShouldLog(LogLevel.Verbose))
+                    Debug.Log("Using provided RoomID");
+                clientParams["room_id"] = RoomID;
+            }
+            else
+            {
+                if (ShouldLog(LogLevel.Verbose))
+                    Debug.Log($"Fetching RoomID based on HostId {HostName}");
+                RoomID = await FetchRoomId();
+            }
             token.ThrowIfCancellationRequested();
-            if (ShouldLog(LogLevel.Verbose))
-                Debug.Log("Fetch RoomInfo");
-            JObject info = await FetchRoomInfo();
-            JToken status = info["data"]?["status"];
-            if (status == null || status.Value<int>() == 4)
-                throw new LiveNotFoundException("LiveStream for HostID could not be found. Is the Host online?");
+            if (!settings.SkipRoomInfo)
+            {
+                if (ShouldLog(LogLevel.Verbose))
+                    Debug.Log("Fetch RoomInfo");
+                JObject info = await FetchRoomInfo();
+                JToken status = info["data"]?["status"];
+                if (status == null || status.Value<int>() == 4)
+                    throw new LiveNotFoundException("LiveStream for HostID could not be found. Is the Host online?");
+            }
             token.ThrowIfCancellationRequested();
             if (settings.DownloadGiftInfo)
             {
@@ -415,7 +458,7 @@ namespace TikTokLiveSharp.Client
             token.ThrowIfCancellationRequested();
             if (ShouldLog(LogLevel.Verbose))
                 Debug.Log("Fetch ClientData");
-            WebcastResponse response = await FetchClientData();
+            Response response = await FetchClientData();
             token.ThrowIfCancellationRequested();
             if (ShouldLog(LogLevel.Information))
                 Debug.Log("Creating WebSocketClient");
@@ -428,30 +471,27 @@ namespace TikTokLiveSharp.Client
         /// <summary>
         /// Creates WebSocket-Connection for Client
         /// </summary>
-        /// <param name="webcastResponse">Response with Client-Data</param>
+        /// <param name="response">Response with Client-Data</param>
         /// <returns>Task to await</returns>
         /// <exception cref="LiveNotFoundException">Thrown if Room could not be found (Invalid WebcastResponse)</exception>
         /// <exception cref="FailedConnectionException">Thrown if WebSocket could not Connect</exception>
-        /// <exception cref="WebcastMessageException">Thrown if an Error occurred during Parse of initial Messages</exception>
-        protected async Task CreateWebSocket(WebcastResponse webcastResponse)
+        /// <exception cref="HandleMessageException">Thrown if an Error occurred during Parse of initial Messages</exception>
+        private async Task CreateWebSocket(Response response)
         {
-            if (string.IsNullOrEmpty(webcastResponse.SocketUrl) || webcastResponse.SocketParams == null)
+            if (string.IsNullOrEmpty(response.PushServer) || response.RouteParamsMap == null)
                 throw new LiveNotFoundException("Could not find Room");
             try
             {
-                for (int i = 0; i < webcastResponse.SocketParams.Count; i++)
+                foreach (KeyValuePair<string, string> param in response.RouteParamsMap)
                 {
-                    WebsocketRouteParam param = webcastResponse.SocketParams[i];
                     if (ShouldLog(LogLevel.Verbose))
-                        Debug.Log($"Adding Custom Param {param.Name}-{param.Value}");
-                    if (clientParams.ContainsKey(param.Name))
-                        clientParams[param.Name] = param.Value;
-                    else clientParams.Add(param.Name, param.Value);
+                        Debug.Log($"Adding Custom Param {param.Key}-{param.Value}");
+                    clientParams[param.Key] = param.Value;
                 }
-                string url = $"{webcastResponse.SocketUrl}?{string.Join("&", clientParams.Select(x => $"{x.Key}={HttpUtility.UrlEncode(x.Value.ToString())}"))}";
+                string url = $"{response.PushServer}?{string.Join("&", clientParams.Select(x => $"{x.Key}={HttpUtility.UrlEncode(x.Value.ToString())}"))}";
                 if (ShouldLog(LogLevel.Verbose))
                     Debug.Log($"Creating Socket with URL {url}");
-                socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, token, settings.SocketBufferSize);
+                socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, settings.SocketBufferSize, token, settings.Proxy);
                 connectedSocketUrl = url;
                 await socketClient.Connect(url);
                 if (ShouldLog(LogLevel.Information))
@@ -470,13 +510,13 @@ namespace TikTokLiveSharp.Client
             {
                 try
                 {
-                    HandleWebcastMessages(webcastResponse);
+                    HandleMessages(response);
                 }
                 catch (Exception e)
                 {
                     if (ShouldLog(LogLevel.Error))
                         Debug.LogException(e);
-                    throw new WebcastMessageException("Error Handling Initial Messages", e);
+                    throw new HandleMessageException("Error Handling Initial Messages", e);
                 }
             }
         }
@@ -505,6 +545,7 @@ namespace TikTokLiveSharp.Client
         /// <returns>Task to await</returns>
         protected virtual async Task Disconnect()
         {
+            RoomID = null;
             RoomInfo = null;
             Connecting = false;
             connectedSocketUrl = null;
@@ -526,12 +567,16 @@ namespace TikTokLiveSharp.Client
         /// </summary>
         /// <returns></returns>
         /// <exception cref="FailedFetchRoomInfoException">Thrown if valid RoomID for Host could not be parsed</exception>
-        protected async Task<string> FetchRoomId()
+        private async Task<string> FetchRoomId(IDictionary<string, object> parameters = null)
         {
+            IDictionary<string, object> queryParams = clientParams ?? new Dictionary<string, object>();
+            if (parameters != null)
+                foreach (KeyValuePair<string, object> param in parameters)
+                    queryParams[param.Key] = param.Value;
             string html;
             try
             {
-                html = await httpClient.GetLivestreamPage(HostName);
+                html = await httpClient.GetLivestreamPage(HostName, queryParams);
             }
             catch (Exception e)
             {
@@ -540,9 +585,13 @@ namespace TikTokLiveSharp.Client
                     Debug.LogException(exc);
                 throw exc;
             }
-            var first = Regex.Match(html, "room_id=([0-9]*)");
-            var second = Regex.Match(html, "\"roomId\":\"([0 - 9] *)\"");
-            string id = first.Groups[1]?.Value ?? second.Groups[1]?.Value ?? string.Empty;
+            Match first = Regex.Match(html, "room_id=([0-9]*)");
+            Match second = Regex.Match(html, "\"roomId\":\"([0 - 9] *)\"");
+            string id = string.Empty;
+            if (first.Groups.Count >= 1 && first.Groups[1].Value != string.Empty)
+                id = first.Groups[1].Value;
+            else if (second.Groups.Count >= 1 && second.Groups[1].Value != string.Empty)
+                id = second.Groups[1].Value;
             if (!string.IsNullOrEmpty(id))
             {
                 clientParams["room_id"] = id;
@@ -565,22 +614,25 @@ namespace TikTokLiveSharp.Client
         /// </summary>
         /// <returns>Task to await. Result is Gifts by ID</returns>
         /// <exception cref="FailedFetchGiftsException">Thrown if Operation had an Error</exception>
-        public async Task<Dictionary<int, TikTokGift>> FetchAvailableGifts()
+        private async Task FetchAvailableGifts(IDictionary<string, object> parameters = null)
         {
             try
             {
-                JObject response = await httpClient.GetJObjectFromWebcastAPI("gift/list/", clientParams);
-                var giftTokens = response.SelectTokens("..gifts")?.FirstOrDefault()?.Children() ?? null;
+                IDictionary<string, object> queryParams = clientParams ?? new Dictionary<string, object>();
+                if (parameters != null)
+                    foreach (KeyValuePair<string, object> param in parameters)
+                        queryParams[param.Key] = param.Value;
+                JObject response = await httpClient.GetJObjectFromWebcastApi("gift/list/", queryParams);
+                JToken giftTokens = response["data"]?["gifts"];
                 if (giftTokens == null)
-                    return new Dictionary<int, TikTokGift>();
+                    return;
                 foreach (JToken giftToken in giftTokens)
                 {
-                    TikTokGift gift = giftToken.ToObject<TikTokGift>();
+                    TikTokGiftData gift = giftToken.ToObject<TikTokGiftData>();
                     if (ShouldLog(LogLevel.Verbose))
-                        Debug.Log($"Found Available Gift {gift.name} with ID {gift.id}");
-                    availableGifts[gift.id] = gift;
+                        Debug.Log($"Found Available Gift {gift.Name} with ID {gift.Id}");
+                    availableGifts[gift.Id] = gift;
                 }
-                return availableGifts;
             }
             catch (Exception e)
             {
@@ -595,12 +647,16 @@ namespace TikTokLiveSharp.Client
         /// Fetches Client-Cursor for User
         /// </summary>
         /// <returns>Task to Await. Result is ResponseMessage</returns>
-        protected async Task<WebcastResponse> FetchClientData()
+        private async Task<Response> FetchClientData(IDictionary<string, object> parameters = null)
         {
-            WebcastResponse webcastResponse = await httpClient.GetDeserializedMessage("im/fetch/", clientParams, true);
-            clientParams["cursor"] = webcastResponse.Cursor;
-            clientParams["internal_ext"] = webcastResponse.AckIds;
-            return webcastResponse;
+            IDictionary<string, object> queryParams = clientParams ?? new Dictionary<string, object>();
+            if (parameters != null)
+                foreach (KeyValuePair<string, object> param in parameters)
+                    queryParams[param.Key] = param.Value;
+            Response response = await httpClient.GetDeserializedMessage("im/fetch/", queryParams, true);
+            clientParams["cursor"] = response.Cursor;
+            clientParams["internal_ext"] = response.InternalExt;
+            return response;
         }
 
         /// <summary>
@@ -608,11 +664,15 @@ namespace TikTokLiveSharp.Client
         /// </summary>
         /// <returns>Task to await. Result is JSON for RoomInfo</returns>
         /// <exception cref="FailedFetchRoomInfoException">Thrown if Operation had an Error</exception>
-        protected async Task<JObject> FetchRoomInfo()
+        private async Task<JObject> FetchRoomInfo(IDictionary<string, object> parameters = null)
         {
             try
             {
-                JObject response = await httpClient.GetJObjectFromWebcastAPI("room/info/", clientParams);
+                IDictionary<string, object> queryParams = clientParams ?? new Dictionary<string, object>();
+                if (parameters != null)
+                    foreach (KeyValuePair<string, object> param in parameters)
+                        queryParams[param.Key] = param.Value;
+                JObject response = await httpClient.GetJObjectFromWebcastApi("room/info/", queryParams);
                 RoomInfo = response;
                 return response;
             }
@@ -628,11 +688,11 @@ namespace TikTokLiveSharp.Client
 
         #region SocketLoop
         /// <summary>
-        /// Receives Messages from WebSocket. Sends back Acknowledgements for each
+        /// Receives Messages from WebSocket. Sends back Acknowledgement for each
         /// </summary>
         /// <returns>Task to await</returns>
         /// <exception cref="WebSocketException">Thrown if WebSocket crashed with an Error</exception>
-        protected async Task WebSocketLoop()
+        private async Task WebSocketLoop()
         {
             while (!token.IsCancellationRequested && socketClient.IsConnected)
             {
@@ -645,20 +705,22 @@ namespace TikTokLiveSharp.Client
                 try
                 {
                     token.ThrowIfCancellationRequested();
-                    using (var websocketMessageStream = new MemoryStream(response.Array, 0, response.Count))
+                    using (MemoryStream websocketMessageStream = new MemoryStream(response.Array, 0, response.Count))
                     {
                         token.ThrowIfCancellationRequested();
-                        WebcastWebsocketMessage websocketMessage = Serializer.Deserialize<WebcastWebsocketMessage>(websocketMessageStream);
-                        if (websocketMessage.Binary != null)
+                        PushFrame pushFrame = Serializer.Deserialize<PushFrame>(websocketMessageStream);
+                        token.ThrowIfCancellationRequested();
+                        if (pushFrame.Payload != null)
                         {
-                            using (var messageStream = new MemoryStream(websocketMessage.Binary))
+                            using (MemoryStream messageStream = new MemoryStream(pushFrame.Payload))
                             {
                                 token.ThrowIfCancellationRequested();
-                                WebcastResponse message = Serializer.Deserialize<WebcastResponse>(messageStream);
+                                Response message = Serializer.Deserialize<Response>(messageStream);
                                 token.ThrowIfCancellationRequested();
-                                await SendAcknowledgement(websocketMessage.Id);
+                                if (message.NeedsAck)
+                                    await SendAcknowledgement(pushFrame.SeqId);
                                 token.ThrowIfCancellationRequested();
-                                HandleWebcastMessages(message);
+                                HandleMessages(message);
                             }
                         }
                     }
@@ -676,7 +738,8 @@ namespace TikTokLiveSharp.Client
                     Debug.LogException(e);
                     await Disconnect();
                     OnException?.Invoke(this, e); // Pass Exception to Controller
-                    throw new WebSocketException("Websocket saw an Error and Closed", e); // Crash this Thread (Violently)
+                    throw new WebSocketException("Websocket saw an Error and Closed",
+                        e); // Crash this Thread (Violently)
                 }
             }
         }
@@ -685,38 +748,33 @@ namespace TikTokLiveSharp.Client
         /// Pings the websocket
         /// </summary>
         /// <returns>Task to await</returns>
-        protected async Task PingLoop()
+        private async Task PingLoop()
         {
-            while (socketClient != null && socketClient.IsConnected)
+            while (socketClient?.IsConnected ?? false)
             {
                 token.ThrowIfCancellationRequested();
                 await CheckSocketConnection(); // Check SocketConnection
                 token.ThrowIfCancellationRequested();
-                using (var messageStream = new MemoryStream())
-                    await socketClient.WriteMessage(new ArraySegment<byte>(new byte[] { 58, 2, 104, 98 }));
-                await Task.Delay(10);
+                await socketClient.WriteMessage(new ArraySegment<byte>(new byte[] { 58, 2, 104, 98 }));
+                await Task.Delay(10, token);
             }
         }
 
         /// <summary>
-        /// Send an acknowlegement to the websocket
+        /// Send an acknowledgement to the websocket
         /// </summary>
         /// <param name="id">Acknowledgment id</param>
         /// <returns>Task to await</returns>
-        protected async Task SendAcknowledgement(ulong id)
+        private async Task SendAcknowledgement(ulong id)
         {
             token.ThrowIfCancellationRequested();
-            if (socketClient == null || !socketClient.IsConnected)
+            if (!socketClient?.IsConnected ?? true)
                 return; // Socket invalid (closed?)
             await CheckSocketConnection(); // Check SocketConnection
             token.ThrowIfCancellationRequested();
-            using (var messageStream = new MemoryStream())
+            using (MemoryStream messageStream = new MemoryStream())
             {
-                Serializer.Serialize(messageStream, new WebcastWebsocketAck
-                {
-                    Type = "ack",
-                    Id = id
-                });
+                Serializer.Serialize(messageStream, new WebsocketAck(id));
                 await socketClient.WriteMessage(new ArraySegment<byte>(messageStream.ToArray()));
             }
         }
@@ -744,14 +802,14 @@ namespace TikTokLiveSharp.Client
         /// <summary>
         /// Handles Response received from TikTokServer
         /// </summary>
-        /// <param name="webcastResponse">The current webcast response</param>
-        protected abstract void HandleWebcastMessages(WebcastResponse webcastResponse);
+        /// <param name="response">The current response</param>
+        protected abstract void HandleMessages(Response response);
 
         /// <summary>
         /// Checks if SocketConnection was Aborted, and reconnects if this was the case.
         /// </summary>
         /// <returns>Task to await</returns>
-        protected virtual async Task CheckSocketConnection()
+        private async Task CheckSocketConnection()
         {
             if (socketClient == null)
                 return;
@@ -762,7 +820,7 @@ namespace TikTokLiveSharp.Client
                 // Disconnect existing Client
                 await socketClient.Disconnect();
                 // Reconnect with new SocketClient
-                socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, token, settings.SocketBufferSize);
+                socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, settings.SocketBufferSize, token, settings.Proxy);
                 await socketClient.Connect(connectedSocketUrl);
             }
         }

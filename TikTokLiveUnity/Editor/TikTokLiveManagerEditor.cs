@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Net.WebSockets;
 using UnityEditor;
 using UnityEngine;
 
@@ -134,6 +133,7 @@ namespace TikTokLiveUnity.Editor
                 DrawRankEvents();
                 DrawLinkMicEvents();
                 DrawMiscEvents();
+                DrawBetaEvents();
                 EditorGUI.indentLevel--;
             }
         }
@@ -152,13 +152,15 @@ namespace TikTokLiveUnity.Editor
             {
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onLiveEnded"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onLivePaused"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onControlMessage"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onSystemMessage"));
             }
             if (DoFoldout("Events/Generic/Unhandled", new GUIContent("Unhandled Messages")))
             {
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onUnhandledEvent"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onUnhandledSocialEvent"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onUnhandledMemberEvent"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onUnhandled"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onUnhandledControlMessage"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onUnhandledSocialMessage"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onUnhandledMemberMessage"));
             }
         }
         /// <summary>
@@ -168,10 +170,11 @@ namespace TikTokLiveUnity.Editor
         {
             if (DoFoldout("Events/Room", new GUIContent("Room")))
             {
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onRoomIntro"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onViewerData"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onLiveIntro"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onRoomUpdate"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onRoomMessage"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onClosedCaption"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onRoomVerify"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onCaption"));
             }
         }
         /// <summary>
@@ -181,14 +184,17 @@ namespace TikTokLiveUnity.Editor
         {
             if (DoFoldout("Events/Viewer", new GUIContent("Viewer Events")))
             {
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onComment"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onChatMessage"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onEmoteChat"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onGift"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onGiftMessage"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onLike"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onShare"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onFollow"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onJoin"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onSubscribe"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onGiftMessage"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onMemberMessage"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onSocialMessage"));
             }
         }
         /// <summary>
@@ -198,7 +204,7 @@ namespace TikTokLiveUnity.Editor
         {
             if (DoFoldout("Events/Host", new GUIContent("Host Events")))
             {
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onPollMessage"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onPoll"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onRoomPinMessage"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onGoalUpdate"));
             }
@@ -212,6 +218,8 @@ namespace TikTokLiveUnity.Editor
             {
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onRankText"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onRankUpdate"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onHourlyRank"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onGameRankNotify"));
             }
         }
         /// <summary>
@@ -221,10 +229,11 @@ namespace TikTokLiveUnity.Editor
         {
             if (DoFoldout("Events/LinkMic", new GUIContent("Link Mic Battle")))
             {
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onLinkMicBattle"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onLinkMicArmies"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onLinkLayerMessage"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onLinkMessage"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onLinkMicFanTicketMethod"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onLinkMicMethod"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onLinkMicFanTicket"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onLinkState"));
             }
         }
         /// <summary>
@@ -234,19 +243,48 @@ namespace TikTokLiveUnity.Editor
         {
             if (DoFoldout("Events/Misc", new GUIContent("Miscellaneous")))
             {
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onInRoomBanner"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onDetectMessage"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onBarrageMessage"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onUnauthorizedMember"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onLinkMessage"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onLinkLayerMessage"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onGiftBroadcast"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onShopMessage"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onIMDelete"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onQuestion"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onAccessControl"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onAccessRecall"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onAlertBoxAuditResult"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onBarrage"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onBindingGift"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onBoostCardMessage"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onBottomMessage"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onEnvelope"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onGiftPrompt"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onImDelete"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onInRoomBannerMessage"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onMarqueeAnnouncement"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onMsgDetect"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onNotice"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onNotify"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onPartnershipDropsUpdate"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onPartnershipGameOffline"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onPartnershipPunish"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onPerception"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onSpeaker"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onSubCapsule"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("onSubNotify"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("onEmote"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onSubPinEvent"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onSubscriptionNotify"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onToast"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onUnauthorizedMember"));
+            }
+        }
+        /// <summary>
+        /// Draws Beta-Events. These events are less well understood.
+        /// </summary>
+        private void DrawBetaEvents()
+        {
+            if (DoFoldout("Events/Beta", new GUIContent("Beta")))
+            {
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onGiftBroadcast"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onLinkMicArmies"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onLinkMicBattle"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onLinkMicBattlePunishFinish"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onLinkmicBattleTask"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onOecLiveShopping"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("onQuestionNew"));
             }
         }
         #endregion

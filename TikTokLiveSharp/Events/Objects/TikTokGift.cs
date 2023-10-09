@@ -1,29 +1,36 @@
-using TikTokLiveSharp.Models.Protobuf.Messages;
-
-namespace TikTokLiveSharp.Events.MessageData.Objects
+namespace TikTokLiveSharp.Events.Objects
 {
     public class TikTokGift
     {
         public delegate void TikTokGiftEventHandler<TEventArgs>(TikTokGift gift, TEventArgs args);
+        public delegate void TikTokGiftChangedEventHandler(TikTokGift gift, long change, long newAmount);
 
-        public event TikTokGiftEventHandler<uint> OnAmountChanged;
-        public event TikTokGiftEventHandler<uint> OnStreakFinished;
+        public event TikTokGiftChangedEventHandler OnAmountChanged;
+        public event TikTokGiftEventHandler<long> OnStreakFinished;
 
         public readonly Gift Gift;
 
         public readonly User Sender;
 
-        public uint Amount { get; protected set; }
-        public bool StreakFinished { get; protected set; }
+        /// <summary>
+        /// Usually NULL (if null, receiver is the Host)
+        /// </summary>
+        public readonly User Receiver;
+
+        public long Amount { get; private set; }
+        public bool StreakFinished { get; private set; }
 
 
-        public TikTokGift(WebcastGiftMessage message)
+        public TikTokGift(Models.Protobuf.Messages.GiftMessage message)
         {
-            Gift = new Gift(message?.GiftDetails); 
-            if (message?.Sender != null)
-                Sender = new User(message.Sender);
-            Amount = message?.Amount ?? 0;
-            StreakFinished = message?.RepeatEnd ?? true;
+            Gift = message?.Gift;
+            Sender = message?.User;
+            Amount = message?.ComboCount ?? 0;
+            if (Gift.IsStreakable)
+                StreakFinished = message?.RepeatEnd == 1;
+            else
+                StreakFinished = true;
+            Receiver = message?.ToUser;
         }
 
         internal virtual void FinishStreak()
@@ -38,13 +45,16 @@ namespace TikTokLiveSharp.Events.MessageData.Objects
 #endif
         }
 
-        internal void UpdateGiftAmount(uint amount)
+        internal void UpdateGiftAmount(long amount)
         {
 #if UNITY // This Code is strictly for TikTokLive-Unity
             TikTokLiveUnity.Utils.Dispatcher.RunOnMainThread(() => {
 #endif
+                if (amount <= Amount)
+                    return; // Streak-Message was received out-of-order. Streak is already higher than this.
+                long change = amount - Amount;
                 Amount = amount;
-                OnAmountChanged?.Invoke(this, amount);
+                OnAmountChanged?.Invoke(this, change, Amount);
 #if UNITY
             });
 #endif

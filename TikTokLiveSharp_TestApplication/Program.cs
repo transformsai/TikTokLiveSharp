@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Linq;
 using TikTokLiveSharp.Client;
-using TikTokLiveSharp.Events.MessageData.Messages;
+using TikTokLiveSharp.Events;
 
 namespace TikTokLiveSharpTestApplication
 {
@@ -9,19 +10,19 @@ namespace TikTokLiveSharpTestApplication
         static void Main(string[] args)
         {
             Console.WriteLine("Enter a username:");            
-            var client = new TikTokLiveClient(Console.ReadLine());
+            TikTokLiveClient client = new TikTokLiveClient(Console.ReadLine(), "");
             client.OnConnected += Client_OnConnected;
             client.OnDisconnected += Client_OnDisconnected;
-            client.OnViewerData += Client_OnViewerData;
+            client.OnRoomUpdate += Client_OnViewerData;
             client.OnLiveEnded += Client_OnLiveEnded;
             client.OnJoin += Client_OnJoin;
-            client.OnComment += Client_OnComment;
+            client.OnChatMessage += Client_OnComment;
             client.OnFollow += Client_OnFollow;
             client.OnShare += Client_OnShare;
             client.OnSubscribe += Client_OnSubscribe;
             client.OnLike += Client_OnLike;
             client.OnGiftMessage += Client_OnGiftMessage;
-            client.OnEmote += Client_OnEmote;
+            client.OnEmoteChat += Client_OnEmote;
             client.Run(new System.Threading.CancellationToken());
         }
 
@@ -37,14 +38,14 @@ namespace TikTokLiveSharpTestApplication
             Console.WriteLine($"Disconnected from Room! [Connected:{e}]");
         }
 
-        private static void Client_OnViewerData(TikTokLiveClient sender, RoomViewerData e)
+        private static void Client_OnViewerData(TikTokLiveClient sender, RoomUpdate e)
         {
             SetConsoleColor(ConsoleColor.Cyan);
-            Console.WriteLine($"Viewer count is: {e.ViewerCount}");
+            Console.WriteLine($"Viewer count is: {e.NumberOfViewers}");
             SetConsoleColor(ConsoleColor.White);
         }
 
-        private static void Client_OnLiveEnded(TikTokLiveClient sender, EventArgs e)
+        private static void Client_OnLiveEnded(TikTokLiveClient sender, ControlMessage e)
         {
             SetConsoleColor(ConsoleColor.White);
             Console.WriteLine("Host ended Stream!");
@@ -57,17 +58,17 @@ namespace TikTokLiveSharpTestApplication
             SetConsoleColor(ConsoleColor.White);
         }
 
-        private static void Client_OnComment(TikTokLiveClient sender, Comment e)
+        private static void Client_OnComment(TikTokLiveClient sender, Chat e)
         {
             SetConsoleColor(ConsoleColor.Yellow);
-            Console.WriteLine($"{e.User.UniqueId}: {e.Text}");
+            Console.WriteLine($"{e.Sender.UniqueId}: {e.Message}");
             SetConsoleColor(ConsoleColor.White);
         }
 
         private static void Client_OnFollow(TikTokLiveClient sender, Follow e)
         {
             SetConsoleColor(ConsoleColor.DarkRed);
-            Console.WriteLine($"{e.NewFollower?.UniqueId} followed!");
+            Console.WriteLine($"{e.User?.UniqueId} followed!");
             SetConsoleColor(ConsoleColor.White);
         }
 
@@ -81,7 +82,7 @@ namespace TikTokLiveSharpTestApplication
         private static void Client_OnSubscribe(TikTokLiveClient sender, Subscribe e)
         {
             SetConsoleColor(ConsoleColor.DarkCyan);
-            Console.WriteLine($"{e.NewSubscriber.UniqueId} subscribed!");
+            Console.WriteLine($"{e.User.UniqueId} subscribed!");
             SetConsoleColor(ConsoleColor.White);
         }
 
@@ -95,14 +96,14 @@ namespace TikTokLiveSharpTestApplication
         private static void Client_OnGiftMessage(TikTokLiveClient sender, GiftMessage e)
         {
             SetConsoleColor(ConsoleColor.Magenta);
-            Console.WriteLine($"{e.Sender.UniqueId} sent {e.Amount}x {e.Gift.Name}!");
+            Console.WriteLine($"{e.User.UniqueId} sent {e.Amount}x {e.Gift.Name}!");
             SetConsoleColor(ConsoleColor.White);
         }
 
-        private static void Client_OnEmote(TikTokLiveClient sender, Emote e)
+        private static void Client_OnEmote(TikTokLiveClient sender, EmoteChat e)
         {
             SetConsoleColor(ConsoleColor.DarkGreen);
-            Console.WriteLine($"{e.User.UniqueId} sent {e.EmoteId}!");
+            Console.WriteLine($"{e.User.UniqueId} sent {e.Emotes?.First()?.Id}!");
             SetConsoleColor(ConsoleColor.White);
         }
 

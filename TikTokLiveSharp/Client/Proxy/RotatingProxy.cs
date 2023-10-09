@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 
 namespace TikTokLiveSharp.Client.Proxy
@@ -10,42 +8,24 @@ namespace TikTokLiveSharp.Client.Proxy
     /// </summary>
     public class RotatingProxy : IWebProxy
     {
+        #region Properties
         /// <summary>
-        /// List of addresses
+        /// List of proxy-addresses
         /// </summary>
-        public List<string> Addresses;
-        /// <summary>
-        /// Current Index
-        /// </summary>
-        private int index;
+        public readonly string[] Addresses;
 
         /// <summary>
-        /// Creates an instance of proxy client factory.
+        /// Credentials for Proxies
         /// </summary>
-        /// <param name="isEnabled">Are proxies enabled.</param>
-        /// <param name="settings">The inital rotation settings to use.</param>
-        /// <param name="addresses">The list of inital addresses.</param>
-        public RotatingProxy(bool isEnabled = false,
-            RotationSettings settings = RotationSettings.CONSECUTIVE,
-            params string[] addresses)
-        {
-            IsEnabled = isEnabled;
-            Settings = settings;
-            Addresses = addresses.ToList();
-        }
+        public ICredentials Credentials { get; set; }
 
         /// <summary>
-        /// The number of currently available addresses.
+        /// The number of available addresses.
         /// </summary>
-        public int Count => Addresses.Count;
+        public int Count => Addresses.Length;
 
         /// <summary>
-        /// Not implemented
-        /// </summary>
-        public ICredentials Credentials { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        /// <summary>
-        /// The index of the current address.
+        /// The index of the current proxy-address.
         /// </summary>
         public int Index
         {
@@ -69,32 +49,56 @@ namespace TikTokLiveSharp.Client.Proxy
         public RotationSettings Settings { get; set; }
 
         /// <summary>
+        /// Current Index
+        /// </summary>
+        private int index;
+        #endregion
+
+        #region Constructors
+        /// <summary>
+        /// Creates an instance of proxy client factory.
+        /// </summary>
+        /// <param name="isEnabled">Are proxies enabled.</param>
+        /// <param name="settings">The inital rotation settings to use.</param>
+        /// <param name="addresses">The list of inital addresses.</param>
+        public RotatingProxy(bool isEnabled = false,
+            RotationSettings settings = RotationSettings.Consecutive,
+            ICredentials credentials = null,
+            params string[] addresses)
+        {
+            IsEnabled = isEnabled;
+            Settings = settings;
+            Credentials = credentials;
+            Addresses = addresses;
+        }
+        #endregion
+
+        #region Methods
+        /// <summary>
         /// Proxies for Url
         /// </summary>
         /// <param name="destination">Url to Proxy</param>
         /// <returns>Proxied Address</returns>
         public Uri GetProxy(Uri destination)
         {
-            if (!IsEnabled || Addresses?.Count <= 0) 
+            if (!IsEnabled || Addresses?.Length <= 0) 
                 return destination;
             switch (Settings)
             {
-                case RotationSettings.CONSECUTIVE:
+                case RotationSettings.Consecutive:
                     string address = Addresses[Index];
                     Index = (Index + 1) % Count;
                     return new Uri(address);
-
-                case RotationSettings.RANDOM:
+                case RotationSettings.Random:
                     Index = new Random().Next(Count - 1);
                     return new Uri(Addresses[Index]);
-
-                case RotationSettings.PINNED:
+                case RotationSettings.Pinned:
                     return new Uri(Addresses[Index]);
-
                 default:
                     return destination;
             }
         }
+
         /// <summary>
         /// Whether this Proxy is Bypassed
         /// <para>
@@ -106,5 +110,6 @@ namespace TikTokLiveSharp.Client.Proxy
         {
             return !IsEnabled;
         }
+        #endregion
     }
 }

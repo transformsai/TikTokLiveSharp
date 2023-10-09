@@ -1,9 +1,10 @@
-# TikTokLiveSharp / TikTokLiveUnity v0.9.5
+# TikTokLiveSharp / TikTokLiveUnity v1.0.0
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white&style=flat-square)](https://www.linkedin.com/in/frankvhoof93/ )
 ![Issues](https://img.shields.io/github/issues/frankvHoof93/TikTokLiveSharp)
 ![Forks](https://img.shields.io/github/forks/frankvHoof93/TikTokLiveSharp)
 ![Stars](https://img.shields.io/github/stars/frankvHoof93/TikTokLiveSharp)
+![Nuget](https://img.shields.io/nuget/dt/TikTokLive_Sharp?logo=nuget)
 [![Support Server](https://img.shields.io/discord/977648006063091742.svg?color=7289da&logo=discord&style=flat-square)](https://discord.gg/e2XwPNTBBr)
 
 #### ***This is not an official library nor associated with TikTok or ByteDance in any way***
@@ -26,6 +27,7 @@ Other available versions include:
 - [TikTok-Live-Connector](https://github.com/zerodytrash/TikTok-Live-Connector) - Node.js Library (by zerodytrash)
 - [GoTikTokLive](https://github.com/Davincible/gotiktoklive) - Go Library (by David Brouwer)
 - [TikTokLive](https://github.com/isaackogan/TikTokLive) - Python Library (by Isaac Kogan)
+- [TikTokLiveJava](https://github.com/jwdeveloper/TikTokLiveJava) - Java Library (by JW)
 
 The primary incentive behind this library was to update the existing TikTokLive-Library with anew Messaging-Schema and additional Exception-Handling. It's implemented in .NET Standard and should work universally across all .NET supported platforms. An older version of Protobuf-net was used to ensure Unity compatibility.
 
@@ -42,7 +44,8 @@ Setup of the Unity Library can be found [here](Setup_Unity.MD)
 * **Sebheron** - *Original Creator of TikTokLiveSharp* - [sebheron](https://github.com/sebheron)
 * **Isaac Kogan** - *Creator of TikTokLive & Signing-Server* - [isaackogan](https://github.com/isaackogan)
 * **Zerody** - *Initial Reverse-Engineering Protobuf & Support* - [Zerody](https://github.com/zerodytrash/)
-* **Davincible** - *Reverse-Engineering Stream Downloads*  - [davincible](https://github.com/davincible)
+* **David Brouwer** - *Reverse-Engineering Stream Downloads*  - [davincible](https://github.com/davincible)
+* **JW** - *Creator of TikTokLiveJava* - [JW](https://github.com/jwdeveloper)
 * **David Teather** - *TikTokLive Introduction Tutorial* - [davidteather](https://github.com/davidteather)
 
 ## Contributing
