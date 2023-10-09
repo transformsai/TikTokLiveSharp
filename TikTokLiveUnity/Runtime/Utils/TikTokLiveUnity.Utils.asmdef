@@ -1,0 +1,22 @@
+{
+    "name": "TikTokLiveUnity.Utils",
+    "rootNamespace": "",
+    "references": [
+        "GUID:9e04c6f1d83f64c85a18cbf2fcccc31c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.netpyoung.webp",
+            "expression": "0.3.9",
+            "define": "WEBP_INSTALLED"
+        }
+    ],
+    "noEngineReferences": false
+}
