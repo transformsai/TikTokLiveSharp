@@ -214,6 +214,12 @@ namespace TikTokLiveUnity
         private void InvokeOnLivePaused(TikTokLiveClient sender, ControlMessage val) => OnLivePaused?.Invoke(sender, val);
 
         /// <summary>
+        /// Event fired when the Host resumes the stream.
+        /// </summary>
+        public event TikTokEventHandler<ControlMessage> OnLiveResumed;
+        private void InvokeOnLiveResumed(TikTokLiveClient sender, ControlMessage val) => OnLiveResumed?.Invoke(sender, val);
+
+        /// <summary>
         /// Event fired when the Host ends the stream.
         /// </summary>
         public event TikTokEventHandler<ControlMessage> OnLiveEnded;
@@ -526,6 +532,12 @@ namespace TikTokLiveUnity
         [SerializeField]
         [Tooltip("Event fired when the Host pauses the stream.")]
         private UnityEvent<ControlMessage> onLivePaused;
+        /// <summary>
+        /// Event fired when the Host resumes the stream.
+        /// </summary>
+        [SerializeField]
+        [Tooltip("Event fired when the Host resumes the stream.")]
+        private UnityEvent<ControlMessage> onLiveResumed;
         /// <summary>
         /// Event fired when the Host ends the stream.
         /// </summary>
@@ -1066,6 +1078,7 @@ namespace TikTokLiveUnity
             OnChatMessage += (_, args) => onChatMessage?.Invoke(args);
             OnControlMessage += (_, args) => onControlMessage?.Invoke(args);
             OnLivePaused += (_, args) => onLivePaused?.Invoke(args);
+            OnLiveResumed += (_, args) => onLiveResumed?.Invoke(args);
             OnLiveEnded += (_, args) => onLiveEnded?.Invoke(args);
             OnUnhandledControlMessage += (_, args) => onUnhandledControlMessage?.Invoke(args);
             OnEmoteChat += (_, args) => onEmoteChat?.Invoke(args);
@@ -1145,6 +1158,7 @@ namespace TikTokLiveUnity
             client.OnChatMessage += InvokeOnChatMessage;
             client.OnControlMessage += InvokeOnControlMessage;
             client.OnLivePaused += InvokeOnLivePaused;
+            client.OnLiveResumed += InvokeOnLiveResumed;
             client.OnLiveEnded += InvokeOnLiveEnded;
             client.OnUnhandledControlMessage += InvokeOnUnhandledControlMessage;
             client.OnEmoteChat += InvokeOnEmoteChat;
@@ -1226,6 +1240,7 @@ namespace TikTokLiveUnity
             client.OnChatMessage -= InvokeOnChatMessage;
             client.OnControlMessage -= InvokeOnControlMessage;
             client.OnLivePaused -= InvokeOnLivePaused;
+            client.OnLiveResumed -= InvokeOnLiveResumed;
             client.OnLiveEnded -= InvokeOnLiveEnded;
             client.OnUnhandledControlMessage -= InvokeOnUnhandledControlMessage;
             client.OnEmoteChat -= InvokeOnEmoteChat;

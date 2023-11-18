@@ -14,7 +14,6 @@ using TikTokLiveSharp.Events.Beta;
 using TikTokLiveSharp.Events.Enums;
 using TikTokLiveSharp.Events.Objects;
 using TikTokLiveSharp.Models.Protobuf;
-using TikTokLiveSharp.Models.Protobuf.Enums;
 
 namespace TikTokLiveSharp.Client
 {
@@ -106,6 +105,10 @@ namespace TikTokLiveSharp.Client
         /// Event fired when the Host pauses the stream.
         /// </summary>
         public event TikTokEventHandler<ControlMessage> OnLivePaused;
+        /// <summary>
+        /// Event fired when the Host resumes the stream.
+        /// </summary>
+        public event TikTokEventHandler<ControlMessage> OnLiveResumed;
         /// <summary>
         /// Event fired when the Host ends the stream.
         /// </summary>
@@ -999,20 +1002,25 @@ namespace TikTokLiveSharp.Client
                 Debug.Log("Handling ControlMessage!");
             ControlMessage msg = new ControlMessage(messageEvent);
             RunEvent(OnControlMessage, msg);
-            switch (messageEvent.Action)
+            switch (msg.Action)
             {
-                case (long)ControlAction.Stream_Paused:
+                case Events.Enums.ControlAction.Stream_Paused:
                     if (ShouldLog(LogLevel.Verbose))
                         Debug.Log("Handling Stream Paused!");
                     RunEvent(OnLivePaused, msg);
                     return;
-                case (long)ControlAction.Stream_Ended:
+                case Events.Enums.ControlAction.Stream_Unpaused:
+                    if (ShouldLog(LogLevel.Verbose))
+                        Debug.Log("Handling Stream Unpaused!");
+                    RunEvent(OnLiveResumed, msg);
+                    return;
+                case Events.Enums.ControlAction.Stream_Ended:
                     if (ShouldLog(LogLevel.Verbose))
                         Debug.Log("Handling Stream Ended!");
                     RunEvent(OnLiveEnded, msg);
                     return;
                 default:
-                case (long)ControlAction.Unknown:
+                case Events.Enums.ControlAction.Unknown:
                     if (ShouldLog(LogLevel.Verbose))
                         Debug.Log($"Handling Unhandled ControlMessage!{Environment.NewLine}Action: [{messageEvent.Action}]{Environment.NewLine}[{Convert.ToBase64String(message)}]");
                     RunEvent(OnUnhandledControlMessage, messageEvent);

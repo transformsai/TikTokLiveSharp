@@ -1,4 +1,4 @@
-namespace TikTokLiveSharp.Models.Protobuf.Enums
+namespace TikTokLiveSharp.Events.Enums
 {
     [System.Serializable]
     public enum ControlAction : long
@@ -8,7 +8,10 @@ namespace TikTokLiveSharp.Models.Protobuf.Enums
         /// Stream Paused by Host
         /// </summary>
         Stream_Paused = 1,
-        // Unknown type = 2
+        /// <summary>
+        /// Stream Unpaused (resumed) by Host
+        /// </summary>
+        Stream_Unpaused = 2,
         /// <summary>
         /// Stream Ended by Host
         /// </summary>
