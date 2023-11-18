@@ -102,6 +102,6 @@ namespace TikTokLiveSharp.Client.Config
             
         });
 
-        public static readonly KeyValuePair<string, string> COMPRESSION_HEADER = new KeyValuePair<string, string>( "Accept-Encoding", "gzip, deflate, br" );
+        public static readonly KeyValuePair<string, string> COMPRESSION_HEADER = new KeyValuePair<string, string>( "Accept-Encoding", "gzip, deflate" );
     }
 }
