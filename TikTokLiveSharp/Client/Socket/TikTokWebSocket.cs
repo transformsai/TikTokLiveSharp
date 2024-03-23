@@ -77,6 +77,8 @@ namespace TikTokLiveSharp.Client.Socket
             StringBuilder cookieHeader = new StringBuilder(cookieContainer.Count * 20);
             foreach (string cookie in cookieContainer)
                 cookieHeader.Append(cookie);
+            foreach (string additionalHeader in headers.Values)
+                cookieHeader.Append(additionalHeader);
             clientWebSocket.Options.SetRequestHeader("Cookie", cookieHeader.ToString());
         }
         #endregion
