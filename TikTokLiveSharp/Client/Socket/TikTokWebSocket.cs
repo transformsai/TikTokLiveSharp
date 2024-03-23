@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TikTokLiveSharp.Client.HTTP;
+using Unity.Android.Types;
 
 namespace TikTokLiveSharp.Client.Socket
 {
@@ -64,7 +65,7 @@ namespace TikTokLiveSharp.Client.Socket
         /// <param name="buffSize">Size for Message-Buffer</param>
         /// <param name="token">CancellationToken for the Socket-Connection</param>
         /// <param name="webProxy">Proxy to use for the Connection</param>
-        public TikTokWebSocket(TikTokCookieJar cookieContainer, uint buffSize = 500_000, CancellationToken? token = null, IWebProxy webProxy = null)
+        public TikTokWebSocket(TikTokCookieJar cookieContainer, uint buffSize = 500_000, Dictionary<string, string> headers = null, CancellationToken? token = null, IWebProxy webProxy = null)
         {
             this.token = token ?? CancellationToken.None;
             buffer = new byte[buffSize];
@@ -72,7 +73,7 @@ namespace TikTokLiveSharp.Client.Socket
             clientWebSocket = new ClientWebSocket();
             clientWebSocket.Options.Proxy = webProxy;
             clientWebSocket.Options.AddSubProtocol("echo-protocol");
-            clientWebSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(10);
+            clientWebSocket.Options.KeepAliveInterval = TimeSpan.Zero;
             StringBuilder cookieHeader = new StringBuilder(cookieContainer.Count * 20);
             foreach (string cookie in cookieContainer)
                 cookieHeader.Append(cookie);
@@ -88,6 +89,7 @@ namespace TikTokLiveSharp.Client.Socket
         /// <returns>Task to await</returns>
         public async Task Connect(string url)
         {
+            UnityEngine.Debug.LogError("Connect to " + url);
             token.ThrowIfCancellationRequested();
             await clientWebSocket.ConnectAsync(new Uri(url), token);
         }
@@ -100,6 +102,7 @@ namespace TikTokLiveSharp.Client.Socket
         {
             try
             {
+                UnityEngine.Debug.LogError("DISCONNECT");
                 token.ThrowIfCancellationRequested();
                 await clientWebSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
             }
@@ -150,9 +153,18 @@ namespace TikTokLiveSharp.Client.Socket
                 ArraySegment<byte> arr = new ArraySegment<byte>(readBuffer);
                 WebSocketReceiveResult response = await clientWebSocket.ReceiveAsync(arr, token);
                 if (response.MessageType != WebSocketMessageType.Binary || arr.Array == null)
+                {
+                    UnityEngine.Debug.LogWarning("Message Type of received Message: " + response.MessageType);
+                    var parsed = arr.ToArray();
+                    var b = Encoding.UTF8.GetString(parsed, 0, parsed.Length);
+                    UnityEngine.Debug.LogError(b);
                     valid = false;
+                }
                 else
+                {
+                    UnityEngine.Debug.LogWarning("Message Type of received Message: " + response.MessageType);
                     message.AddRange(arr.Take(response.Count));
+                }
                 endOfMessage = response.EndOfMessage;
             }
             token.ThrowIfCancellationRequested();

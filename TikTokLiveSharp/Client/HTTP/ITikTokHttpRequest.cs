@@ -24,6 +24,8 @@ namespace TikTokLiveSharp.Client.HTTP
         /// <exception cref="Exception">Requests should not be reused</exception>
         Task<HttpContent> Post(HttpContent content);
 
+        Task<HttpResponseMessage> GetResponse();
+
         /// <summary>
         /// Sets the queries for the request
         /// </summary>

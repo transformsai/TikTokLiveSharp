@@ -19,7 +19,7 @@ namespace TikTokLiveSharp.Client.Config
         /// <summary>
         /// Signing API by Isaac Kogan
         /// </summary>
-        public const string TIKTOK_SIGN_API = "https://tiktok.eulerstream.com/webcast/sign_url";
+        public const string TIKTOK_SIGN_API = "https://tiktok.eulerstream.com/webcast/fetch";
 
         /// <summary>
         /// Default TimeOut for Connections
@@ -93,13 +93,13 @@ namespace TikTokLiveSharp.Client.Config
         public static readonly IReadOnlyDictionary<string, string> DEFAULT_REQUEST_HEADERS = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>()
         {
             { "Connection", "keep-alive" },
+            { "authority", "www.tiktok.com" },
             { "Cache-Control", "no-cache" },
             { "Accept", "text/html,application/json,application/protobuf" },
             { "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36" },
             { "Referer", "https://www.tiktok.com/" },
             { "Origin", "https://www.tiktok.com" },
             { "Accept-Language", "en-US,en; q=0.8" }
-            
         });
 
         public static readonly KeyValuePair<string, string> COMPRESSION_HEADER = new KeyValuePair<string, string>( "Accept-Encoding", "gzip, deflate" );

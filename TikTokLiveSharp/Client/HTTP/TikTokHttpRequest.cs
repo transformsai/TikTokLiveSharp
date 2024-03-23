@@ -216,6 +216,24 @@ namespace TikTokLiveSharp.Client.HTTP
             return this;
         }
 
+        public async Task<HttpResponseMessage> GetResponse()
+        {
+            request.Method = HttpMethod.Get;
+            return await GetResponseMessage();
+        }
+
+        private async Task<HttpResponseMessage> GetResponseMessage()
+        {
+            if (sent)
+                throw new InvalidOperationException("Requests should not be reused");
+            if (query != null)
+                request.RequestUri = new Uri($"{request.RequestUri.AbsoluteUri}?{query}");
+            HttpResponseMessage response = await client.SendAsync(request);
+            request.Dispose();
+            sent = true;
+            return response;
+        }
+
         /// <summary>
         /// Sends off this request
         /// </summary>
@@ -223,16 +241,13 @@ namespace TikTokLiveSharp.Client.HTTP
         /// <exception cref="HttpRequestException">If the request was unsuccessful</exception>
         private async Task<HttpContent> GetContent()
         {
-            if (query != null)
-                request.RequestUri = new Uri($"{request.RequestUri.AbsoluteUri}?{query}");
-            
-            HttpResponseMessage response = await client.SendAsync(request);
-            request.Dispose();
-            sent = true;
+            HttpResponseMessage response = await GetResponseMessage();
             if (response.StatusCode == HttpStatusCode.NotFound)
                 throw new HttpRequestException("Request responded with 404 NOT_FOUND");
-            if (!response.IsSuccessStatusCode) 
+            if (!response.IsSuccessStatusCode)
+            {
                 throw new HttpRequestException($"Request was unsuccessful [{(int)response.StatusCode}]");
+            }
             MediaTypeHeaderValue ct = response.Content.Headers?.ContentType;
             if (ct?.CharSet != null)
                 ct.CharSet = ct.CharSet.Replace("\"", "");

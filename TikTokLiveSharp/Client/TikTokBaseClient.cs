@@ -116,6 +116,10 @@ namespace TikTokLiveSharp.Client
         /// WebSocket-Client
         /// </summary>
         private TikTokWebSocket socketClient;
+        /// <summary>
+        /// ConnectionData for WebSocketClient retrieved from Signing-Server
+        /// </summary>
+        private TikTokWebSocketConnectionData? connectionData;
         #endregion
         #endregion
 
@@ -457,12 +461,12 @@ namespace TikTokLiveSharp.Client
             }
             token.ThrowIfCancellationRequested();
             if (ShouldLog(LogLevel.Verbose))
-                Debug.Log("Fetch ClientData");
-            Response response = await FetchClientData();
+                Debug.Log("Fetch ConnectionData");
+            TikTokWebSocketConnectionData connectionData = await httpClient.GetSignedWebcastUrl(RoomID);
             token.ThrowIfCancellationRequested();
             if (ShouldLog(LogLevel.Information))
                 Debug.Log("Creating WebSocketClient");
-            await CreateWebSocket(response);
+            await CreateWebSocket(connectionData);
             token.ThrowIfCancellationRequested();
             Connecting = false;
             return RoomID;
@@ -476,12 +480,18 @@ namespace TikTokLiveSharp.Client
         /// <exception cref="LiveNotFoundException">Thrown if Room could not be found (Invalid WebcastResponse)</exception>
         /// <exception cref="FailedConnectionException">Thrown if WebSocket could not Connect</exception>
         /// <exception cref="HandleMessageException">Thrown if an Error occurred during Parse of initial Messages</exception>
-        private async Task CreateWebSocket(Response response)
+        private async Task CreateWebSocket(TikTokWebSocketConnectionData connectionData)
         {
-            if (string.IsNullOrEmpty(response.PushServer) || response.RouteParamsMap == null)
+            this.connectionData = connectionData;
+            Response response = connectionData.InitialWebcastResponse;
+            if (response == null || string.IsNullOrEmpty(response.PushServer) || response.RouteParamsMap == null)
                 throw new LiveNotFoundException("Could not find Room");
             try
             {
+                clientParams["room_id"] = connectionData.RoomId;
+                clientParams["cursor"] = response.Cursor;
+                clientParams["resp_content_type"] = "protobuf";
+                clientParams["internal_ext"] = response.InternalExt;
                 foreach (KeyValuePair<string, string> param in response.RouteParamsMap)
                 {
                     if (ShouldLog(LogLevel.Verbose))
@@ -491,7 +501,11 @@ namespace TikTokLiveSharp.Client
                 string url = $"{response.PushServer}?{string.Join("&", clientParams.Select(x => $"{x.Key}={HttpUtility.UrlEncode(x.Value.ToString())}"))}";
                 if (ShouldLog(LogLevel.Verbose))
                     Debug.Log($"Creating Socket with URL {url}");
-                socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, settings.SocketBufferSize, token, settings.Proxy);
+                Dictionary<string, string> customHeaders = new Dictionary<string, string>
+                {
+                    { "Cookie", connectionData.WebSocketCookies }
+                };
+                socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, settings.SocketBufferSize, customHeaders, token, settings.Proxy);
                 connectedSocketUrl = url;
                 await socketClient.Connect(url);
                 if (ShouldLog(LogLevel.Information))
@@ -504,6 +518,7 @@ namespace TikTokLiveSharp.Client
                 if (ShouldLog(LogLevel.Error))
                     Debug.LogException(e);
                 connectedSocketUrl = null;
+                this.connectionData = null;
                 throw new FailedConnectionException("Failed to connect to the websocket", e);
             }
             if (settings.HandleExistingMessagesOnConnect)
@@ -644,22 +659,6 @@ namespace TikTokLiveSharp.Client
         }
 
         /// <summary>
-        /// Fetches Client-Cursor for User
-        /// </summary>
-        /// <returns>Task to Await. Result is ResponseMessage</returns>
-        private async Task<Response> FetchClientData(IDictionary<string, object> parameters = null)
-        {
-            IDictionary<string, object> queryParams = clientParams ?? new Dictionary<string, object>();
-            if (parameters != null)
-                foreach (KeyValuePair<string, object> param in parameters)
-                    queryParams[param.Key] = param.Value;
-            Response response = await httpClient.GetDeserializedMessage("im/fetch/", queryParams, true);
-            clientParams["cursor"] = response.Cursor;
-            clientParams["internal_ext"] = response.InternalExt;
-            return response;
-        }
-
-        /// <summary>
         /// Fetches MetaData for Room
         /// </summary>
         /// <returns>Task to await. Result is JSON for RoomInfo</returns>
@@ -755,7 +754,7 @@ namespace TikTokLiveSharp.Client
                 token.ThrowIfCancellationRequested();
                 await CheckSocketConnection(); // Check SocketConnection
                 token.ThrowIfCancellationRequested();
-                await socketClient.WriteMessage(new ArraySegment<byte>(new byte[] { 58, 2, 104, 98 }));
+                await socketClient.WriteMessage(new ArraySegment<byte>(new byte[] { 1 }));
                 await Task.Delay(10, token);
             }
         }
@@ -820,7 +819,10 @@ namespace TikTokLiveSharp.Client
                 // Disconnect existing Client
                 await socketClient.Disconnect();
                 // Reconnect with new SocketClient
-                socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, settings.SocketBufferSize, token, settings.Proxy);
+                Dictionary<string, string> customHeaders = new Dictionary<string, string>();
+                if (connectionData.HasValue)
+                    customHeaders.Add("Cookie", connectionData.Value.WebSocketCookies);
+                socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, settings.SocketBufferSize, customHeaders, token, settings.Proxy);
                 await socketClient.Connect(connectedSocketUrl);
             }
         }
