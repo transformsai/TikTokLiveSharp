@@ -511,7 +511,7 @@ namespace TikTokLiveSharp.Client
                 if (ShouldLog(LogLevel.Information))
                     Debug.Log($"Starting Socket-Threads");
                 runningTask = Task.Run(WebSocketLoop, token);
-                pollingTask = Task.Run(PingLoop, token);
+             //   pollingTask = Task.Run(PingLoop, token);
             }
             catch (Exception e)
             {
