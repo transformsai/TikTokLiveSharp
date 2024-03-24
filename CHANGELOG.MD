@@ -5,7 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 
+## [1.1.0] - 
+
+Bugfix for failing/closing Websocket-Connections
+
+### Added
+
+- Added ControlAction-Enum
+- Added OnLiveResumed-Event
+- Added Reconnect-Timeout used when an exception occurs whilst connecting
+- Added full log of (outer) message when logging unparsed data
+
+### Fixed
+
+- Removed br from accepted encodings
+- Fixed an issue with Websocket-Headers & -Parameters causing the SocketConnection to close instantly.
+
+### Changed
+
+- Changed Signing to use new Fetch-Endpoint
+- Changed some parameters in the Unity-SampleScene to reduce overhead for default users.
+- Removed unneccesary memory allocations in Dispatcher-script
+
+
+## [1.0.0] - 2023-10-09
 
 Initial full release of TikTokLiveSharp/TikTokLiveUnity
 
