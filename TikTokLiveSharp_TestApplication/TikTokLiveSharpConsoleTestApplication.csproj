@@ -3,13 +3,14 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Description>Console-TestApp with .NET Core for TikTokLive_Sharp</Description>
-    <Copyright>2023 Frank van Hoof</Copyright>
+    <Copyright>2024 Frank van Hoof</Copyright>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/frankvHoof93/TikTokLiveSharp</PackageProjectUrl>
     <RepositoryUrl>https://github.com/frankvHoof93/TikTokLiveSharp</RepositoryUrl>
     <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIconUrl />
     <RepositoryType>Library</RepositoryType>
     <PackageTags>TikTok;Live</PackageTags>
@@ -29,6 +30,10 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
 </Project>

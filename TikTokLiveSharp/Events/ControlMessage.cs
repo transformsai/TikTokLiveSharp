@@ -1,3 +1,4 @@
+using TikTokLiveSharp.Events.Enums;
 using TikTokLiveSharp.Events.Objects;
 
 namespace TikTokLiveSharp.Events
@@ -30,7 +31,7 @@ namespace TikTokLiveSharp.Events
             public static implicit operator Extra(Models.Protobuf.Messages.ControlMessage.Extra extra) => new Extra(extra);
         }
 
-        public readonly long Action;
+        public readonly ControlAction Action;
         public readonly string Tips;
         public readonly Extra ExtraData;
         public readonly PerceptionDialogInfo PerceptionDialog;
@@ -42,7 +43,8 @@ namespace TikTokLiveSharp.Events
         internal ControlMessage(Models.Protobuf.Messages.ControlMessage msg)
             : base(msg?.Header)
         {
-            Action = msg?.Action ?? -1;
+            long actionIndex = msg?.Action != null ? (long)msg.Action : 0;
+            Action = (ControlAction)actionIndex;
             Tips = msg?.Tips ?? string.Empty;
             ExtraData = msg?.ExtraData;
             PerceptionDialog = msg?.PerceptionDialog;

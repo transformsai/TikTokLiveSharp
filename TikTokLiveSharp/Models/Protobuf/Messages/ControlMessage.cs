@@ -1,5 +1,6 @@
 using ProtoBuf;
 using System.ComponentModel;
+using TikTokLiveSharp.Models.Protobuf.Messages.Enums;
 using TikTokLiveSharp.Models.Protobuf.Objects;
 
 namespace TikTokLiveSharp.Models.Protobuf.Messages
@@ -44,7 +45,7 @@ namespace TikTokLiveSharp.Models.Protobuf.Messages
         public Header Header { get; }
         
         [ProtoMember(2)]
-        public long Action { get; }
+        public ControlAction Action { get; }
 
         [ProtoMember(3)]
         [DefaultValue("")]

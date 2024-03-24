@@ -10,13 +10,21 @@ namespace TikTokLiveSharp.Client.Config
     public struct ClientSettings
     {
         /// <summary>
-        /// Timeout for Connections (in Seconds)
+        /// Timeout for HTTP-Connections (in Seconds)
         /// </summary>
 #if UNITY
         [UnityEngine.Header("Settings")]
-        [UnityEngine.Tooltip("Timeout for Connections (in Seconds)")]
+        [UnityEngine.Tooltip("Timeout for HTTP-Connections (in Seconds)")]
 #endif
         public float Timeout;
+
+        /// <summary>
+        /// Interval before re-attempting a failed connection
+        /// </summary>
+#if UNITY
+        [UnityEngine.Tooltip("Interval before re-attempting a failed connection")]
+#endif
+        public float ReconnectInterval;
 
         /// <summary>
         /// Polling-Interval for Socket-Connection (in Seconds)

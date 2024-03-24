@@ -25,6 +25,13 @@ namespace TikTokLiveSharp.Client.HTTP
         Task<HttpContent> Post(HttpContent content);
 
         /// <summary>
+        /// Sends an async get request
+        /// </summary>
+        /// <returns>HttpResponse-Message (including Headers)</returns>
+        /// <exception cref="Exception">Requests should not be reused</exception>
+        Task<HttpResponseMessage> GetResponse();
+
+        /// <summary>
         /// Sets the queries for the request
         /// </summary>
         /// <param name="queries">The queries to append to the URL</param>
