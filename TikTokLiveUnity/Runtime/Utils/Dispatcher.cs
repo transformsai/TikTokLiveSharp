@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -131,25 +130,21 @@ namespace TikTokLiveUnity.Utils
             {
                 if (simpleActionBacklog.Count > 0)
                 {
-                    Action[] arrSimple = null;
                     lock (simpleActionBacklog)
                     {
-                        arrSimple = simpleActionBacklog.ToArray();
+                        for (int i = 0; i < simpleActionBacklog.Count; i++)
+                            simpleActionBacklog[i].Invoke();
                         simpleActionBacklog.Clear();
                     }
-                    for (int i = 0; i < arrSimple.Length; i++)
-                        arrSimple[i].Invoke();
                 }
                 if (complexActionBacklog.Count > 0)
                 {
-                    KeyValuePair<Action<object[]>, object[]>[] arrComplex = null;
                     lock (complexActionBacklog)
                     {
-                        arrComplex = complexActionBacklog.ToArray();
+                        foreach (KeyValuePair<Action<object[]>, object[]> kvp in complexActionBacklog)
+                            kvp.Key.Invoke(kvp.Value);
                         complexActionBacklog.Clear();
                     }
-                    for (int i = 0; i < arrComplex.Length; i++)
-                        arrComplex[i].Key.Invoke(arrComplex[i].Value);
                 }
                 hasWork = false;
             }
