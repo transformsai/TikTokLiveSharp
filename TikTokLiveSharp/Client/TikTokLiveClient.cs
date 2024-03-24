@@ -390,10 +390,7 @@ namespace TikTokLiveSharp.Client
             if (ShouldLog(LogLevel.Verbose))
                 Debug.Log($"Handling Message: {message.Method}");
             if (settings.PrintMessageData)
-            {
-                string msg = Convert.ToBase64String(message.Payload);
-                Debug.Log($"Handling Message:{Environment.NewLine}{msg}");
-            }
+                Debug.Log($"Handling Message:{Environment.NewLine}{Convert.ToBase64String(message.Payload)}");
 
             string method = message.Method;
             if (method.StartsWith("Webcast"))
@@ -408,7 +405,7 @@ namespace TikTokLiveSharp.Client
                         if (accessControlMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(accessControlMessage);
+                            CheckForUnparsedData(accessControlMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling AccessControlMessage!");
                         RunEvent(OnAccessControl, new AccessControl(accessControlMessage));
@@ -418,7 +415,7 @@ namespace TikTokLiveSharp.Client
                         if (accessRecallMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(accessRecallMessage);
+                            CheckForUnparsedData(accessRecallMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling AccessRecallMessage!");
                         RunEvent(OnAccessRecall, new AccessRecall(accessRecallMessage));
@@ -428,7 +425,7 @@ namespace TikTokLiveSharp.Client
                         if (alertBoxAuditResultMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(alertBoxAuditResultMessage);
+                            CheckForUnparsedData(alertBoxAuditResultMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling AlertBoxAuditResultMessage!");
                         RunEvent(OnAlertBoxAuditResult, new AlertBoxAuditResult(alertBoxAuditResultMessage));
@@ -438,7 +435,7 @@ namespace TikTokLiveSharp.Client
                         if (barrageMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(barrageMessage);
+                            CheckForUnparsedData(barrageMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling BarrageMessage!");
                         RunEvent(OnBarrage, new Barrage(barrageMessage));
@@ -448,7 +445,7 @@ namespace TikTokLiveSharp.Client
                         if (bindingGiftMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(bindingGiftMessage);
+                            CheckForUnparsedData(bindingGiftMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling BindingGiftMessage!");
                         RunEvent(OnBindingGift, new BindingGift(bindingGiftMessage));
@@ -458,7 +455,7 @@ namespace TikTokLiveSharp.Client
                         if (boostCardMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(boostCardMessage);
+                            CheckForUnparsedData(boostCardMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling BoostCardMessage!");
                         RunEvent(OnBoostCardMessage, new BoostCardMessage(boostCardMessage));
@@ -468,7 +465,7 @@ namespace TikTokLiveSharp.Client
                         if (bottomMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(bottomMessage);
+                            CheckForUnparsedData(bottomMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling BottomMessage!");
                         RunEvent(OnBottomMessage, new BottomMessage(bottomMessage));
@@ -478,7 +475,7 @@ namespace TikTokLiveSharp.Client
                         if (captionMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(captionMessage);
+                            CheckForUnparsedData(captionMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling CaptionMessage!");
                         RunEvent(OnCaption, new Caption(captionMessage));
@@ -488,7 +485,7 @@ namespace TikTokLiveSharp.Client
                         if (chatMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(chatMessage);
+                            CheckForUnparsedData(chatMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling ChatMessage!");
                         RunEvent(OnChatMessage, new Chat(chatMessage));
@@ -498,7 +495,7 @@ namespace TikTokLiveSharp.Client
                         if (controlMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(controlMessage);
+                            CheckForUnparsedData(controlMessage, message.Payload);
                         HandleControlMessage(controlMessage, message.Payload);
                         return;
                     case nameof(Models.Protobuf.Messages.EmoteChatMessage):
@@ -506,7 +503,7 @@ namespace TikTokLiveSharp.Client
                         if (emoteChatMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(emoteChatMessage);
+                            CheckForUnparsedData(emoteChatMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling EmoteChatMessage!");
                         RunEvent(OnEmoteChat, new EmoteChat(emoteChatMessage));
@@ -516,7 +513,7 @@ namespace TikTokLiveSharp.Client
                         if (envelopeMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(envelopeMessage);
+                            CheckForUnparsedData(envelopeMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling EnvelopeMessage!");
                         RunEvent(OnEnvelope, new Envelope(envelopeMessage));
@@ -526,7 +523,7 @@ namespace TikTokLiveSharp.Client
                         if (gameRankNotifyMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(gameRankNotifyMessage);
+                            CheckForUnparsedData(gameRankNotifyMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling GameRankNotifyMessage!");
                         RunEvent(OnGameRankNotify, new GameRankNotify(gameRankNotifyMessage));
@@ -536,7 +533,7 @@ namespace TikTokLiveSharp.Client
                         if (giftMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(giftMessage);
+                            CheckForUnparsedData(giftMessage, message.Payload);
                         HandleGiftMessage(giftMessage);
                         return;
                     case nameof(Models.Protobuf.Messages.GiftPromptMessage):
@@ -544,7 +541,7 @@ namespace TikTokLiveSharp.Client
                         if (giftPromptMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(giftPromptMessage);
+                            CheckForUnparsedData(giftPromptMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling GiftPromptMessage!");
                         RunEvent(OnGiftPrompt, new GiftPrompt(giftPromptMessage));
@@ -554,7 +551,7 @@ namespace TikTokLiveSharp.Client
                         if (goalUpdateMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(goalUpdateMessage);
+                            CheckForUnparsedData(goalUpdateMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling GoalUpdateMessage!");
                         RunEvent(OnGoalUpdate, new GoalUpdate(goalUpdateMessage));
@@ -564,7 +561,7 @@ namespace TikTokLiveSharp.Client
                         if (imDeleteMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(imDeleteMessage);
+                            CheckForUnparsedData(imDeleteMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling ImDeleteMessage!");
                         RunEvent(OnImDelete, new ImDelete(imDeleteMessage));
@@ -574,7 +571,7 @@ namespace TikTokLiveSharp.Client
                         if (inRoomBannerMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(inRoomBannerMessage);
+                            CheckForUnparsedData(inRoomBannerMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling InRoomBannerMessage!");
                         RunEvent(OnInRoomBannerMessage, new InRoomBannerMessage(inRoomBannerMessage));
@@ -584,7 +581,7 @@ namespace TikTokLiveSharp.Client
                         if (likeMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(likeMessage);
+                            CheckForUnparsedData(likeMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling LikeMessage!");
                         RunEvent(OnLike, new Like(likeMessage));
@@ -594,7 +591,7 @@ namespace TikTokLiveSharp.Client
                         if (linkLayerMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(linkLayerMessage);
+                            CheckForUnparsedData(linkLayerMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling LinkLayerMessage!");
                         RunEvent(OnLinkLayerMessage, new LinkLayerMessage(linkLayerMessage));
@@ -604,7 +601,7 @@ namespace TikTokLiveSharp.Client
                         if (linkMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(linkMessage);
+                            CheckForUnparsedData(linkMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling LinkMessage!");
                         RunEvent(OnLinkMessage, new LinkMessage(linkMessage));
@@ -614,7 +611,7 @@ namespace TikTokLiveSharp.Client
                         if (fanTicketMethod == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(fanTicketMethod);
+                            CheckForUnparsedData(fanTicketMethod, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling LinkMicFanTicketMethod!");
                         RunEvent(OnLinkMicFanTicketMethod, new LinkMicFanTicketMethod(fanTicketMethod));
@@ -624,7 +621,7 @@ namespace TikTokLiveSharp.Client
                         if (linkMicMethod == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(linkMicMethod);
+                            CheckForUnparsedData(linkMicMethod, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling LinkMicMethod");
                         RunEvent(OnLinkMicMethod, new LinkMicMethod(linkMicMethod));
@@ -634,7 +631,7 @@ namespace TikTokLiveSharp.Client
                         if (linkStateMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(linkStateMessage);
+                            CheckForUnparsedData(linkStateMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling LinkStateMessage");
                         RunEvent(OnLinkState, new LinkState(linkStateMessage));
@@ -644,7 +641,7 @@ namespace TikTokLiveSharp.Client
                         if (introMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(introMessage);
+                            CheckForUnparsedData(introMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling LiveIntroMessage!");
                         RunEvent(OnLiveIntro, new LiveIntro(introMessage));
@@ -654,7 +651,7 @@ namespace TikTokLiveSharp.Client
                         if (marqueeAnnouncementMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(marqueeAnnouncementMessage);
+                            CheckForUnparsedData(marqueeAnnouncementMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling MarqueeAnnouncementMessage!");
                         RunEvent(OnMarqueeAnnouncement, new MarqueeAnnouncement(marqueeAnnouncementMessage));
@@ -664,7 +661,7 @@ namespace TikTokLiveSharp.Client
                         if (memberMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(memberMessage);
+                            CheckForUnparsedData(memberMessage, message.Payload);
                         HandleMemberMessage(memberMessage, message.Payload);
                         return;
                     case nameof(Models.Protobuf.Messages.MsgDetectMessage):
@@ -672,7 +669,7 @@ namespace TikTokLiveSharp.Client
                         if (msgDetectMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(msgDetectMessage);
+                            CheckForUnparsedData(msgDetectMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling MsgDetectMessage!");
                         RunEvent(OnMsgDetect, new MsgDetect(msgDetectMessage));
@@ -682,7 +679,7 @@ namespace TikTokLiveSharp.Client
                         if (noticeMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(noticeMessage);
+                            CheckForUnparsedData(noticeMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling NoticeMessage!");
                         RunEvent(OnNotice, new Notice(noticeMessage));
@@ -692,7 +689,7 @@ namespace TikTokLiveSharp.Client
                         if (notifyMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(notifyMessage);
+                            CheckForUnparsedData(notifyMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling NotifyMessage!");
                         RunEvent(OnNotify, new Notify(notifyMessage));
@@ -702,7 +699,7 @@ namespace TikTokLiveSharp.Client
                         if (partnershipDropsUpdateMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(partnershipDropsUpdateMessage);
+                            CheckForUnparsedData(partnershipDropsUpdateMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling PartnershipDropsUpdateMessage!");
                         RunEvent(OnPartnershipDropsUpdate, new PartnershipDropsUpdate(partnershipDropsUpdateMessage));
@@ -712,7 +709,7 @@ namespace TikTokLiveSharp.Client
                         if (partnershipGameOfflineMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(partnershipGameOfflineMessage);
+                            CheckForUnparsedData(partnershipGameOfflineMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling PartnershipGameOfflineMessage!");
                         RunEvent(OnPartnershipGameOffline, new PartnershipGameOffline(partnershipGameOfflineMessage));
@@ -722,7 +719,7 @@ namespace TikTokLiveSharp.Client
                         if (partnershipPunishMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(partnershipPunishMessage);
+                            CheckForUnparsedData(partnershipPunishMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling PartnershipPunishMessage!");
                         RunEvent(OnPartnershipPunish, new PartnershipPunish(partnershipPunishMessage));
@@ -732,7 +729,7 @@ namespace TikTokLiveSharp.Client
                         if (perceptionMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(perceptionMessage);
+                            CheckForUnparsedData(perceptionMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling PerceptionMessage!");
                         RunEvent(OnPerception, new Perception(perceptionMessage));
@@ -742,7 +739,7 @@ namespace TikTokLiveSharp.Client
                         if (pollMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(pollMessage);
+                            CheckForUnparsedData(pollMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling PollMessage!");
                         RunEvent(OnPoll, new Poll(pollMessage));
@@ -752,7 +749,7 @@ namespace TikTokLiveSharp.Client
                         if (rankTextMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(rankTextMessage);
+                            CheckForUnparsedData(rankTextMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling RankTextMessage!");
                         RunEvent(OnRankText, new RankText(rankTextMessage));
@@ -762,7 +759,7 @@ namespace TikTokLiveSharp.Client
                         if (rankUpdateMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(rankUpdateMessage);
+                            CheckForUnparsedData(rankUpdateMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling RankUpdateMessage!");
                         RunEvent(OnRankUpdate, new RankUpdate(rankUpdateMessage));
@@ -772,7 +769,7 @@ namespace TikTokLiveSharp.Client
                         if (roomMessage == null) 
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(roomMessage);
+                            CheckForUnparsedData(roomMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling RoomMessage!");
                         RunEvent(OnRoomMessage, new RoomMessage(roomMessage));
@@ -782,7 +779,7 @@ namespace TikTokLiveSharp.Client
                         if (roomUserSeqMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(roomUserSeqMessage);
+                            CheckForUnparsedData(roomUserSeqMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling RoomUpdateMessage");
                         ViewerCount = roomUserSeqMessage.Total;
@@ -793,7 +790,7 @@ namespace TikTokLiveSharp.Client
                         if (roomVerifyMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(roomVerifyMessage);
+                            CheckForUnparsedData(roomVerifyMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling RoomVerifyMessage");
                         RunEvent(OnRoomVerify, new RoomVerify(roomVerifyMessage));
@@ -803,7 +800,7 @@ namespace TikTokLiveSharp.Client
                         if (socialMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(socialMessage);
+                            CheckForUnparsedData(socialMessage, message.Payload);
                         HandleSocialMessage(socialMessage, message.Payload);
                         return;
                     case nameof(Models.Protobuf.Messages.SpeakerMessage):
@@ -811,7 +808,7 @@ namespace TikTokLiveSharp.Client
                         if (speakerMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(speakerMessage);
+                            CheckForUnparsedData(speakerMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling SpeakerMessage");
                         RunEvent(OnSpeaker, new Speaker(speakerMessage));
@@ -821,7 +818,7 @@ namespace TikTokLiveSharp.Client
                         if (subCapsuleMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(subCapsuleMessage);
+                            CheckForUnparsedData(subCapsuleMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling SubCapsuleMessage");
                         RunEvent(OnSubCapsule, new SubCapsule(subCapsuleMessage));
@@ -831,7 +828,7 @@ namespace TikTokLiveSharp.Client
                         if (subNotifyMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(subNotifyMessage);
+                            CheckForUnparsedData(subNotifyMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling SubNotifyMessage");
                         RunEvent(OnSubNotify, new SubNotify(subNotifyMessage));
@@ -841,7 +838,7 @@ namespace TikTokLiveSharp.Client
                         if (subPinEventMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(subPinEventMessage);
+                            CheckForUnparsedData(subPinEventMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling SubPinEventMessage");
                         RunEvent(OnSubPinEvent, new SubPinEvent(subPinEventMessage));
@@ -851,7 +848,7 @@ namespace TikTokLiveSharp.Client
                         if (subscriptionNotifyMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(subscriptionNotifyMessage);
+                            CheckForUnparsedData(subscriptionNotifyMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling SubscriptionNotifyMessage");
                         RunEvent(OnSubscriptionNotify, new SubscriptionNotify(subscriptionNotifyMessage));
@@ -861,7 +858,7 @@ namespace TikTokLiveSharp.Client
                         if (toastMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(toastMessage);
+                            CheckForUnparsedData(toastMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling ToastMessage");
                         RunEvent(OnToast, new Toast(toastMessage));
@@ -871,7 +868,7 @@ namespace TikTokLiveSharp.Client
                         if (unauthorizedMemberMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(unauthorizedMemberMessage);
+                            CheckForUnparsedData(unauthorizedMemberMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling UnauthorizedMemberMessage");
                         RunEvent(OnUnauthorizedMember, new UnauthorizedMember(unauthorizedMemberMessage));
@@ -884,7 +881,7 @@ namespace TikTokLiveSharp.Client
                         if (giftBroadcastMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(giftBroadcastMessage);
+                            CheckForUnparsedData(giftBroadcastMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling GiftBroadcastMessage!");
                         RunEvent(OnGiftBroadcast, new GiftBroadcast(giftBroadcastMessage));
@@ -894,7 +891,7 @@ namespace TikTokLiveSharp.Client
                         if (hourlyRankMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(hourlyRankMessage);
+                            CheckForUnparsedData(hourlyRankMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling HourlyRankMessage!");
                         RunEvent(OnHourlyRank, new HourlyRank(hourlyRankMessage));
@@ -904,7 +901,7 @@ namespace TikTokLiveSharp.Client
                         if (linkMicArmies == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(linkMicArmies);
+                            CheckForUnparsedData(linkMicArmies, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling LinkMicArmies!");
                         RunEvent(OnLinkMicArmies, new LinkMicArmies(linkMicArmies));
@@ -914,7 +911,7 @@ namespace TikTokLiveSharp.Client
                         if (linkMicBattle == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(linkMicBattle);
+                            CheckForUnparsedData(linkMicBattle, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling LinkMicBattle!");
                         RunEvent(OnLinkMicBattle, new LinkMicBattle(linkMicBattle));
@@ -924,7 +921,7 @@ namespace TikTokLiveSharp.Client
                         if (linkMicBattlePunishFinish == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(linkMicBattlePunishFinish);
+                            CheckForUnparsedData(linkMicBattlePunishFinish, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling LinkMicBattlePunishFinish!");
                         RunEvent(OnLinkMicBattlePunishFinish, new LinkMicBattlePunishFinish(linkMicBattlePunishFinish));
@@ -934,7 +931,7 @@ namespace TikTokLiveSharp.Client
                         if (linkMicBattleTaskMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(linkMicBattleTaskMessage);
+                            CheckForUnparsedData(linkMicBattleTaskMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling LinkmicBattleTaskMessage!");
                         RunEvent(OnLinkmicBattleTask, new LinkmicBattleTask(linkMicBattleTaskMessage));
@@ -944,7 +941,7 @@ namespace TikTokLiveSharp.Client
                         if (oecLiveShoppingMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(oecLiveShoppingMessage);
+                            CheckForUnparsedData(oecLiveShoppingMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling OecLiveShoppingMessage!");
                         RunEvent(OnOecLiveShopping, new OecLiveShopping(oecLiveShoppingMessage));
@@ -954,7 +951,7 @@ namespace TikTokLiveSharp.Client
                         if (questionNewMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(questionNewMessage);
+                            CheckForUnparsedData(questionNewMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling QuestionNewMessage!");
                         RunEvent(OnQuestionNew, new QuestionNew(questionNewMessage));
@@ -964,7 +961,7 @@ namespace TikTokLiveSharp.Client
                         if (roomPinMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(roomPinMessage);
+                            CheckForUnparsedData(roomPinMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling RoomPinMessage!");
                         RunEvent(OnRoomPinMessage, new RoomPinMessage(roomPinMessage));
@@ -974,7 +971,7 @@ namespace TikTokLiveSharp.Client
                         if (systemMessage == null)
                             return;
                         if (settings.CheckForUnparsedData)
-                            CheckForUnparsedData(systemMessage);
+                            CheckForUnparsedData(systemMessage, message.Payload);
                         if (ShouldLog(LogLevel.MessageHandling))
                             Debug.Log("Handling SystemMessage!");
                         RunEvent(OnSystemMessage, new SystemMessage(systemMessage));
@@ -1294,7 +1291,8 @@ namespace TikTokLiveSharp.Client
         /// </para>
         /// </summary>
         /// <param name="msg">Object to Check</param>
-        private void CheckForUnparsedData(AProtoBase msg)
+        /// <param name="fullPayload">Full payload for (outer) message</param>
+        private void CheckForUnparsedData(AProtoBase msg, byte[] fullPayload)
         {
             if (ShouldLog(LogLevel.Verbose))
                 Debug.Log($"Checking {msg.GetType().Name} for Unparsed Data");
@@ -1306,24 +1304,26 @@ namespace TikTokLiveSharp.Client
                     byte[] foundMsg = (byte[])f.GetValue(msg._extension);
                     Debug.LogWarning($"Found unparsed Data in Message {msg.GetType()}");
                     Debug.Log($"Unparsed Data: {Environment.NewLine}{Convert.ToBase64String(foundMsg)}");
+                    Debug.Log($"Full Payload for Message: {Environment.NewLine}{Convert.ToBase64String(fullPayload)}");
                 }
             }
             // Check Child-Objects
-            RecursiveCheckForUnparsedData(msg);
+            RecursiveCheckForUnparsedData(msg, fullPayload);
         }
 
         /// <summary>
         /// Checks Properties for Unparsed Data
         /// </summary>
         /// <param name="msg">Message to check Properties on</param>
-        private void RecursiveCheckForUnparsedData(AProtoBase msg)
+        /// <param name="fullPayload">Full payload for (outer) message</param>
+        private void RecursiveCheckForUnparsedData(AProtoBase msg, byte[] fullPayload)
         {
             PropertyInfo[] properties = msg.GetType().GetProperties();
             for (int i = 0; i < properties.Length; i++)
             {
                 object obj = properties[i].GetValue(msg);
                 if (obj is AProtoBase baseObj)
-                    CheckForUnparsedData(baseObj);
+                    CheckForUnparsedData(baseObj, fullPayload);
             }
         }
         #endregion
