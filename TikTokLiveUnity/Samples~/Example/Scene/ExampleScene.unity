@@ -3093,7 +3093,9 @@ MonoBehaviour:
   autoConnectHostId: 
   settings:
     Timeout: 20
+    ReconnectInterval: 1
     PollingInterval: 2
+    EnableCompression: 0
     ClientLanguage: en-US
     SocketBufferSize: 500000
     RetryOnConnectionFailure: 1
@@ -3101,7 +3103,7 @@ MonoBehaviour:
     HandleExistingMessagesOnConnect: 1
     DownloadGiftInfo: 1
     PrintToConsole: 1
-    LogLevel: 7
+    LogLevel: 3
     PrintMessageData: 0
     CheckForUnparsedData: 0
   onException:
@@ -3144,6 +3146,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   onLivePaused:
+    m_PersistentCalls:
+      m_Calls: []
+  onLiveResumed:
     m_PersistentCalls:
       m_Calls: []
   onLiveEnded:

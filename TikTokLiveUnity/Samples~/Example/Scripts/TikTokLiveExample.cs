@@ -151,7 +151,7 @@ namespace TikTokLiveUnity.Example
                     mgr.ConnectToStreamAsync(ifHostId.text, Debug.LogException);
             }
             UpdateStatus();
-            Invoke(nameof(UpdateStatus), .5f);
+            Invoke(nameof(UpdateStatus), 1.5f);
         }
         /// <summary>
         /// Handler for Connection-Events. Updates StatusPanel
