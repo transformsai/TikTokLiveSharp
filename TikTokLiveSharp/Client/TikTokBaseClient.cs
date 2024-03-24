@@ -183,6 +183,7 @@ namespace TikTokLiveSharp.Client
         /// <param name="checkForUnparsedData">Whether to check Messages for Unparsed Data</param>
         protected TikTokBaseClient(string uniqueId,
             float? timeout = null,
+            float? reconnectInterval = null,
             float? pollingInterval = null,
             string roomId = "",
             bool enableCompression = true,
@@ -202,6 +203,7 @@ namespace TikTokLiveSharp.Client
                   {
                       Timeout = timeout ?? Constants.DEFAULT_TIMEOUT,
                       PollingInterval = pollingInterval ?? Constants.DEFAULT_POLLTIME,
+                      ReconnectInterval = reconnectInterval ?? Constants.DEFAULT_RECONNECT_TIMEOUT,
                       EnableCompression = enableCompression,
                       SkipRoomInfo = skipRoomInfo,
                       HandleExistingMessagesOnConnect = processInitialData,
@@ -233,6 +235,8 @@ namespace TikTokLiveSharp.Client
             ClientSettings s = settings;
             if (settings.Timeout.Equals(0))
                 s.Timeout = Constants.DEFAULT_SETTINGS.Timeout;
+            if (settings.ReconnectInterval.Equals(0))
+                s.ReconnectInterval = Constants.DEFAULT_SETTINGS.ReconnectInterval;
             if (settings.PollingInterval.Equals(0))
                 s.PollingInterval = Constants.DEFAULT_SETTINGS.PollingInterval;
             if (string.IsNullOrEmpty(settings.ClientLanguage))
@@ -369,7 +373,7 @@ namespace TikTokLiveSharp.Client
                 {
                     if (ShouldLog(LogLevel.Information))
                         Debug.Log("Retrying");
-                    await Task.Delay(TimeSpan.FromSeconds(settings.PollingInterval), cancellationToken.Value);
+                    await Task.Delay(TimeSpan.FromSeconds(settings.ReconnectInterval), cancellationToken.Value);
                     return await Start(cancellationToken, onConnectException, true);
                 }
                 if (e is FailedConnectionException)
@@ -462,7 +466,7 @@ namespace TikTokLiveSharp.Client
             token.ThrowIfCancellationRequested();
             if (ShouldLog(LogLevel.Verbose))
                 Debug.Log("Fetch ConnectionData");
-            TikTokWebSocketConnectionData connectionData = await httpClient.GetSignedWebcastUrl(RoomID);
+            TikTokWebSocketConnectionData connectionData = await httpClient.GetSignedWebsocketData(RoomID);
             token.ThrowIfCancellationRequested();
             if (ShouldLog(LogLevel.Information))
                 Debug.Log("Creating WebSocketClient");
@@ -511,7 +515,7 @@ namespace TikTokLiveSharp.Client
                 if (ShouldLog(LogLevel.Information))
                     Debug.Log($"Starting Socket-Threads");
                 runningTask = Task.Run(WebSocketLoop, token);
-             //   pollingTask = Task.Run(PingLoop, token);
+                pollingTask = Task.Run(PingLoop, token);
             }
             catch (Exception e)
             {
@@ -749,14 +753,21 @@ namespace TikTokLiveSharp.Client
         /// <returns>Task to await</returns>
         private async Task PingLoop()
         {
+            int pollingMillis = (int)(settings.PollingInterval * 1000f);
+            ArraySegment<byte> pingMessage = new ArraySegment<byte>(new byte[] { 58, 2, 104, 98 });
             while (socketClient?.IsConnected ?? false)
-            {
-                token.ThrowIfCancellationRequested();
-                await CheckSocketConnection(); // Check SocketConnection
-                token.ThrowIfCancellationRequested();
-                await socketClient.WriteMessage(new ArraySegment<byte>(new byte[] { 1 }));
-                await Task.Delay(10, token);
-            }
+                try
+                {
+                    token.ThrowIfCancellationRequested();
+                    await CheckSocketConnection(); // Check SocketConnection
+                    token.ThrowIfCancellationRequested();
+                    await socketClient.WriteMessage(pingMessage);
+                    await Task.Delay(pollingMillis, token);
+                }
+                catch (TaskCanceledException)
+                {
+                    return; // Loop was ended. Clean exit.
+                }
         }
 
         /// <summary>

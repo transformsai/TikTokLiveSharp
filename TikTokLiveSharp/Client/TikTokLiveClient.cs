@@ -283,6 +283,7 @@ namespace TikTokLiveSharp.Client
         /// <param name="checkForUnparsedData">Whether to check Messages for Unparsed Data</param>
         public TikTokLiveClient(string uniqueID,
             float? timeout = null,
+            float? reconnectInterval = null,
             float? pollingInterval = null,
             string roomId = "",
             bool enableCompression = true,
@@ -299,6 +300,7 @@ namespace TikTokLiveSharp.Client
             bool checkForUnparsedData = false) 
             : base(uniqueID,
                 timeout,
+                reconnectInterval,
                 pollingInterval,
                 roomId,
                 skipRoomInfo,
@@ -364,7 +366,6 @@ namespace TikTokLiveSharp.Client
             if (ShouldLog(LogLevel.Information))
                 Debug.Log($"Handling {response.MessagesList.Count} Messages in Response");
             foreach (Models.Protobuf.Messages.Message message in response.MessagesList)
-            {
                 try
                 {
                     HandleMessage(message);
@@ -378,7 +379,6 @@ namespace TikTokLiveSharp.Client
                     // This is an irrecoverable error. Crash this Thread
                     throw exc;
                 }
-            }
         }
 
         /// <summary>

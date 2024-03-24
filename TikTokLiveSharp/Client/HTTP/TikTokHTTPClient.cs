@@ -118,7 +118,7 @@ namespace TikTokLiveSharp.Client.HTTP
             return await get.ReadAsStringAsync();
         }
 
-        internal async Task<TikTokWebSocketConnectionData> GetSignedWebcastUrl(string roomId)
+        internal async Task<TikTokWebSocketConnectionData> GetSignedWebsocketData(string roomId)
         {
             ITikTokHttpRequest request = new TikTokHttpRequest(Constants.TIKTOK_SIGN_API, false, false)
                 .SetQueries(new Dictionary<string, object>()

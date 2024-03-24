@@ -28,7 +28,11 @@ namespace TikTokLiveSharp.Client.Config
         /// <summary>
         /// Default Polling-Time for Socket-Connection
         /// </summary>
-        public const float DEFAULT_POLLTIME = .5f;
+        public const float DEFAULT_POLLTIME = 1f;
+        /// <summary>
+        /// Default Reconnection-Interval
+        /// </summary>
+        public const float DEFAULT_RECONNECT_TIMEOUT = 1f;
 
         /// <summary>
         /// Default Settings for Client
@@ -36,6 +40,7 @@ namespace TikTokLiveSharp.Client.Config
         public static readonly ClientSettings DEFAULT_SETTINGS = new ClientSettings()
         {
             Timeout = DEFAULT_TIMEOUT,
+            ReconnectInterval = DEFAULT_RECONNECT_TIMEOUT,
             PollingInterval = DEFAULT_POLLTIME,
             ClientLanguage = "en-US",
             EnableCompression = true,
@@ -59,7 +64,7 @@ namespace TikTokLiveSharp.Client.Config
             { "aid",  1988 },
             { "app_language",  "en-US" },
             { "app_name",  "tiktok_web" },
-            { "browser_language",  "en" },
+            { "browser_language",  "en-US" },
             { "browser_name",  "Mozilla" },
             { "browser_online",  true },
             { "browser_platform",  "Win32" },

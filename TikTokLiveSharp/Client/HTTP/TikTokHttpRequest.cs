@@ -144,7 +144,6 @@ namespace TikTokLiveSharp.Client.HTTP
             if (CookieJar == null)
                 CookieJar = new TikTokCookieJar();
             if (handler == null)
-            {
                 handler = new HttpClientHandler
                 {
                     AutomaticDecompression = enableCompression ? ~DecompressionMethods.None : DecompressionMethods.None,
@@ -152,7 +151,6 @@ namespace TikTokLiveSharp.Client.HTTP
                     UseProxy = WebProxy != null,
                     UseCookies = useCookies
                 };
-            }
             if (client == null)
             {
                 client = new HttpClient(handler)
@@ -216,12 +214,22 @@ namespace TikTokLiveSharp.Client.HTTP
             return this;
         }
 
+        /// <summary>
+        /// Sends an async get request
+        /// </summary>
+        /// <returns>HttpResponse-Message (including Headers)</returns>
+        /// <exception cref="Exception">Requests should not be reused</exception>
         public async Task<HttpResponseMessage> GetResponse()
         {
             request.Method = HttpMethod.Get;
             return await GetResponseMessage();
         }
 
+        /// <summary>
+        /// Sends Request and returns Response.
+        /// </summary>
+        /// <returns>Response for Request</returns>
+        /// <exception cref="InvalidOperationException">Requests should not be reused</exception>
         private async Task<HttpResponseMessage> GetResponseMessage()
         {
             if (sent)
@@ -245,9 +253,7 @@ namespace TikTokLiveSharp.Client.HTTP
             if (response.StatusCode == HttpStatusCode.NotFound)
                 throw new HttpRequestException("Request responded with 404 NOT_FOUND");
             if (!response.IsSuccessStatusCode)
-            {
                 throw new HttpRequestException($"Request was unsuccessful [{(int)response.StatusCode}]");
-            }
             MediaTypeHeaderValue ct = response.Content.Headers?.ContentType;
             if (ct?.CharSet != null)
                 ct.CharSet = ct.CharSet.Replace("\"", "");
