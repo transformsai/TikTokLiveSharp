@@ -132,7 +132,7 @@ namespace TikTokLiveSharp.Client.HTTP
                 throw new HttpRequestException("Request responded with 404 NOT_FOUND");
             if (!response.IsSuccessStatusCode)
             {
-                if (response.StatusCode == HttpStatusCode.TooManyRequests)
+                if ((int)response.StatusCode == 429) // TooManyRequests
                 {
                     if (response.Headers.TryGetValues("RateLimit-Reset", out IEnumerable<string> rateHeaders))
                     {

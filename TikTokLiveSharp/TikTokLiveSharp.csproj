@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Authors>Frank van Hoof</Authors>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/frankvHoof93/TikTokLiveSharp</PackageProjectUrl>
@@ -19,7 +19,7 @@
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIconUrl />
-    <Copyright>2023 Frank van Hoof</Copyright>
+    <Copyright>2024 Frank van Hoof</Copyright>
     <RepositoryUrl>https://github.com/frankvHoof93/TikTokLiveSharp</RepositoryUrl>
     <RepositoryType>Library</RepositoryType>
     <PackageId>TikTokLive_Sharp</PackageId>
