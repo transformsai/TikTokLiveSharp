@@ -64,7 +64,7 @@ namespace TikTokLiveSharp.Client.Socket
         /// <param name="buffSize">Size for Message-Buffer</param>
         /// <param name="token">CancellationToken for the Socket-Connection</param>
         /// <param name="webProxy">Proxy to use for the Connection</param>
-        public TikTokWebSocket(TikTokCookieJar cookieContainer, uint buffSize = 500_000, CancellationToken? token = null, IWebProxy webProxy = null)
+        public TikTokWebSocket(TikTokCookieJar cookieContainer, uint buffSize = 500_000, Dictionary<string, string> headers = null, CancellationToken? token = null, IWebProxy webProxy = null)
         {
             this.token = token ?? CancellationToken.None;
             buffer = new byte[buffSize];
@@ -72,10 +72,12 @@ namespace TikTokLiveSharp.Client.Socket
             clientWebSocket = new ClientWebSocket();
             clientWebSocket.Options.Proxy = webProxy;
             clientWebSocket.Options.AddSubProtocol("echo-protocol");
-            clientWebSocket.Options.KeepAliveInterval = TimeSpan.FromSeconds(10);
+            clientWebSocket.Options.KeepAliveInterval = TimeSpan.Zero;
             StringBuilder cookieHeader = new StringBuilder(cookieContainer.Count * 20);
             foreach (string cookie in cookieContainer)
                 cookieHeader.Append(cookie);
+            foreach (string additionalHeader in headers.Values)
+                cookieHeader.Append(additionalHeader);
             clientWebSocket.Options.SetRequestHeader("Cookie", cookieHeader.ToString());
         }
         #endregion

@@ -19,7 +19,7 @@ namespace TikTokLiveSharp.Client.Config
         /// <summary>
         /// Signing API by Isaac Kogan
         /// </summary>
-        public const string TIKTOK_SIGN_API = "https://tiktok.eulerstream.com/webcast/sign_url";
+        public const string TIKTOK_SIGN_API = "https://tiktok.eulerstream.com/webcast/fetch";
 
         /// <summary>
         /// Default TimeOut for Connections
@@ -28,7 +28,11 @@ namespace TikTokLiveSharp.Client.Config
         /// <summary>
         /// Default Polling-Time for Socket-Connection
         /// </summary>
-        public const float DEFAULT_POLLTIME = .5f;
+        public const float DEFAULT_POLLTIME = 1f;
+        /// <summary>
+        /// Default Reconnection-Interval
+        /// </summary>
+        public const float DEFAULT_RECONNECT_TIMEOUT = 1f;
 
         /// <summary>
         /// Default Settings for Client
@@ -36,6 +40,7 @@ namespace TikTokLiveSharp.Client.Config
         public static readonly ClientSettings DEFAULT_SETTINGS = new ClientSettings()
         {
             Timeout = DEFAULT_TIMEOUT,
+            ReconnectInterval = DEFAULT_RECONNECT_TIMEOUT,
             PollingInterval = DEFAULT_POLLTIME,
             ClientLanguage = "en-US",
             EnableCompression = true,
@@ -63,7 +68,7 @@ namespace TikTokLiveSharp.Client.Config
             { "browser_name",  "Mozilla" },
             { "browser_online",  true },
             { "browser_platform",  "Win32" },
-            { "browser_version",  "5.0 (Windows NT 2010.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36" },
+            { "browser_version",  "5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36" },
             { "cookie_enabled",  true },
             { "cursor",  "" },
             { "internal_ext",  "" },
@@ -75,16 +80,18 @@ namespace TikTokLiveSharp.Client.Config
             { "is_page_visible",  true },
             { "did_rule",  3 },
             { "fetch_rule",  1 },
+            { "last_rtt",  0 },
+            { "live_id",  12 },
             { "resp_content_type",  "protobuf" },
             { "screen_height",  1152 },
             { "screen_width",  2048 },
             { "tz_name",  "Europe/London" },
             { "referer",  "https, //www.tiktok.com/" },
             { "root_referer",  "https, //www.tiktok.com/" },
-            { "msToken",  ""},
-            { "version_code",  180800},
-            { "webcast_sdk_version",  "1.3.2" },
-            { "update_version_code",  "1.3.2" }
+            { "msToken", "" },
+            { "version_code",  180800 },
+            { "webcast_sdk_version",  "1.3.0" },
+            { "update_version_code",  "1.3.0" }
         });
 
         /// <summary>
@@ -93,15 +100,15 @@ namespace TikTokLiveSharp.Client.Config
         public static readonly IReadOnlyDictionary<string, string> DEFAULT_REQUEST_HEADERS = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>()
         {
             { "Connection", "keep-alive" },
+            { "authority", "www.tiktok.com" },
             { "Cache-Control", "no-cache" },
             { "Accept", "text/html,application/json,application/protobuf" },
             { "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36" },
             { "Referer", "https://www.tiktok.com/" },
             { "Origin", "https://www.tiktok.com" },
             { "Accept-Language", "en-US,en; q=0.8" }
-            
         });
 
-        public static readonly KeyValuePair<string, string> COMPRESSION_HEADER = new KeyValuePair<string, string>( "Accept-Encoding", "gzip, deflate, br" );
+        public static readonly KeyValuePair<string, string> COMPRESSION_HEADER = new KeyValuePair<string, string>( "Accept-Encoding", "gzip, deflate" );
     }
 }
