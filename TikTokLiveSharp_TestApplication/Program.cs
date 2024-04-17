@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using TikTokLiveSharp.Client;
 using TikTokLiveSharp.Events;
 
@@ -7,8 +8,9 @@ namespace TikTokLiveSharpTestApplication
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
+            
             Console.WriteLine("Enter a username:");            
             TikTokLiveClient client = new TikTokLiveClient(Console.ReadLine(), "");
             client.OnConnected += Client_OnConnected;
@@ -23,9 +25,18 @@ namespace TikTokLiveSharpTestApplication
             client.OnLike += Client_OnLike;
             client.OnGiftMessage += Client_OnGiftMessage;
             client.OnEmoteChat += Client_OnEmote;
-            client.Run(new System.Threading.CancellationToken());
+            
+            if (args.Length > 0 && args[0] == "--async")
+            {
+                await client.RunAsync(new System.Threading.CancellationToken());
+            }
+            
+            else
+            {
+                client.Run(new System.Threading.CancellationToken());
+            }
         }
-
+        
         private static void Client_OnConnected(TikTokLiveClient sender, bool e)
         {
             SetConsoleColor(ConsoleColor.White);
