@@ -340,6 +340,23 @@ namespace TikTokLiveSharp.Client
         }
 
         /// <summary>
+        /// Asynchronously Creates Threads for & Runs Connection with TikTokServers
+        /// </summary>
+        /// <param name="cancellationToken">Token used to Cancel Client</param>
+        /// <param name="onConnectException">Callback for Errors during Exception</param>
+        /// <param name="retryConnection">Whether to Retry connections that might be recoverable</param>
+        public async Task RunAsync(CancellationToken? cancellationToken = null, Action<Exception> onConnectException = null, bool retryConnection = false)
+        {
+            token = cancellationToken ?? new CancellationToken();
+            token.ThrowIfCancellationRequested();
+            if (ShouldLog(LogLevel.Information))
+                Debug.Log("Starting Threads");
+            await Start(token, onConnectException, retryConnection);
+            await runningTask;
+            await pollingTask;
+        }
+        
+        /// <summary>
         /// Starts Connection with TikTokServers
         /// </summary>
         /// <param name="cancellationToken">Token used to Cancel Client</param>
