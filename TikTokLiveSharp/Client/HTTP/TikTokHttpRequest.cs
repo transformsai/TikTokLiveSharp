@@ -157,7 +157,7 @@ namespace TikTokLiveSharp.Client.HTTP
                 {
                     Timeout = Timeout
                 };
-                foreach (KeyValuePair<string, string> header in Constants.DEFAULT_REQUEST_HEADERS)
+                foreach (KeyValuePair<string, string> header in Constants.DEFAULT_HTTP_HEADERS)
                     client.DefaultRequestHeaders.Add(header.Key, header.Value);
                 if (enableCompression)
                     client.DefaultRequestHeaders.Add(Constants.COMPRESSION_HEADER.Key, Constants.COMPRESSION_HEADER.Value);

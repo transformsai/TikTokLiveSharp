@@ -97,12 +97,27 @@ namespace TikTokLiveSharp.Client.Config
         /// <summary>
         /// Default Headers for HTTP-Request
         /// </summary>
-        public static readonly IReadOnlyDictionary<string, string> DEFAULT_REQUEST_HEADERS = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>()
+        public static readonly IReadOnlyDictionary<string, string> DEFAULT_HTTP_HEADERS = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>()
         {
             { "Connection", "keep-alive" },
             { "authority", "www.tiktok.com" },
             { "Cache-Control", "no-cache" },
-            { "Accept", "text/html,application/json,application/protobuf" },
+            { "Accept", "text/html,application/json" },
+            { "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36" },
+            { "Referer", "https://www.tiktok.com/" },
+            { "Origin", "https://www.tiktok.com" },
+            { "Accept-Language", "en-US,en; q=0.8" }
+        });
+
+        /// <summary>
+        /// Default Headers for Websocket-Client
+        /// </summary>
+        public static readonly IReadOnlyDictionary<string, string> DEFAULT_SOCKET_HEADERS = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>()
+        {
+            { "Connection", "keep-alive" },
+            { "authority", "www.tiktok.com" },
+            { "Cache-Control", "no-cache" },
+            { "Accept", "application/protobuf" },
             { "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36" },
             { "Referer", "https://www.tiktok.com/" },
             { "Origin", "https://www.tiktok.com" },
