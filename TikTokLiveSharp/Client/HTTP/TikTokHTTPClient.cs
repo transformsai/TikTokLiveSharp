@@ -128,7 +128,7 @@ namespace TikTokLiveSharp.Client.HTTP
             };
             if (!string.IsNullOrEmpty(apiKey))
             {
-                queries.Add("authorization", apiKey);
+                queries.Add("apiKey", apiKey);
             }
             ITikTokHttpRequest request = new TikTokHttpRequest(string.IsNullOrEmpty(customServerUrl) ? Constants.TIKTOK_SIGN_API : customServerUrl, false, false)
                 .SetQueries(queries);
@@ -142,16 +142,20 @@ namespace TikTokLiveSharp.Client.HTTP
                     if (response.Headers.TryGetValues("RateLimit-Reset", out IEnumerable<string> rateHeaders))
                     {
                         TimeSpan span = TimeSpan.FromSeconds(long.Parse(rateHeaders.First()));
-                        throw new HttpRequestException($"[{(int)response.StatusCode}] Rate Limit Reached. Try again in {span:mm\\:ss}.");
+                        throw new HttpRequestException($"[{(int)response.StatusCode}] Signing Rate Limit Reached. Try again in {span:mm\\:ss}.");
                     }
                     else
                     {
-                        throw new HttpRequestException($"[{(int)response.StatusCode}] Rate Limit Reached.");
+                        throw new HttpRequestException($"[{(int)response.StatusCode}] Signing Rate Limit Reached.");
                     }
                 }
                 else if ((int)response.StatusCode == 502) // Bad Gateway
                 {
                     throw new HttpRequestException($"[{(int)response.StatusCode}] Signing Server not reachable.");
+                }
+                else if ((int)response.StatusCode == 503) // Unavailable
+                {
+                    throw new HttpRequestException($"[{(int)response.StatusCode}] Signing Server unavailable.");
                 }
                 else
                 {
