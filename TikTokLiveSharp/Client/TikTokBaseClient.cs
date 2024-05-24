@@ -390,6 +390,7 @@ namespace TikTokLiveSharp.Client
                 {
                     if (ShouldLog(LogLevel.Information))
                         Debug.Log("Retrying");
+                    Connecting = false;
                     await Task.Delay(TimeSpan.FromSeconds(settings.ReconnectInterval), cancellationToken.Value);
                     return await Start(cancellationToken, onConnectException, true);
                 }
