@@ -196,7 +196,9 @@ namespace TikTokLiveSharp.Client
             bool logDebug = true, 
             LogLevel logLevel = LogLevel.Error | LogLevel.Warning,
             bool printMessageData = false,
-            bool checkForUnparsedData = false)
+            bool checkForUnparsedData = false,
+            string customSigningServer = null,
+            string signingServerApiKey = null)
             : this(uniqueId, roomId,
                   new ClientSettings
                   {
@@ -213,7 +215,9 @@ namespace TikTokLiveSharp.Client
                       PrintToConsole = logDebug,
                       LogLevel = logLevel,
                       PrintMessageData = printMessageData,
-                      CheckForUnparsedData = checkForUnparsedData
+                      CheckForUnparsedData = checkForUnparsedData,
+                      CustomSigningServerUrl = customSigningServer,
+                      SigningKey = signingServerApiKey
                   },
                   clientParams)
         { }
@@ -483,7 +487,7 @@ namespace TikTokLiveSharp.Client
             token.ThrowIfCancellationRequested();
             if (ShouldLog(LogLevel.Verbose))
                 Debug.Log("Fetch ConnectionData");
-            TikTokWebSocketConnectionData connectionData = await httpClient.GetSignedWebsocketData(RoomID);
+            TikTokWebSocketConnectionData connectionData = await httpClient.GetSignedWebsocketData(RoomID, settings.CustomSigningServerUrl, settings.SigningKey);
             token.ThrowIfCancellationRequested();
             if (ShouldLog(LogLevel.Information))
                 Debug.Log("Creating WebSocketClient");
