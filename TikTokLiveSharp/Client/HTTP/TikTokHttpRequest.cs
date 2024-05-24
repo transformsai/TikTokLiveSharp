@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Web;
 using TikTokLiveSharp.Client.Config;
 
 namespace TikTokLiveSharp.Client.HTTP
@@ -210,7 +209,7 @@ namespace TikTokLiveSharp.Client.HTTP
         {
             if (queries == null) 
                 return this;
-            query = string.Join("&", queries.Select(x => $"{x.Key}={HttpUtility.UrlEncode(x.Value.ToString())}"));
+            query = string.Join("&", queries.Select(x => $"{x.Key}={WebUtility.UrlEncode(x.Value.ToString())}"));
             return this;
         }
 

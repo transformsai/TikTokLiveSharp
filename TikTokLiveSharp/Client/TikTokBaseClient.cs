@@ -12,7 +12,6 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using TikTokLiveSharp.Client.Config;
 using TikTokLiveSharp.Client.HTTP;
 using TikTokLiveSharp.Client.Socket;
@@ -520,7 +519,7 @@ namespace TikTokLiveSharp.Client
                         Debug.Log($"Adding Custom Param {param.Key}-{param.Value}");
                     clientParams[param.Key] = param.Value;
                 }
-                string url = $"{response.PushServer}?{string.Join("&", clientParams.Select(x => $"{x.Key}={HttpUtility.UrlEncode(x.Value.ToString())}"))}";
+                string url = $"{response.PushServer}?{string.Join("&", clientParams.Select(x => $"{x.Key}={WebUtility.UrlEncode(x.Value.ToString())}"))}";
                 if (ShouldLog(LogLevel.Verbose))
                     Debug.Log($"Creating Socket with URL {url}");
                 Dictionary<string, string> customHeaders = new Dictionary<string, string>
