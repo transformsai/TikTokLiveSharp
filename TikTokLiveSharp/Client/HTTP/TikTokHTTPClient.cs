@@ -167,7 +167,7 @@ namespace TikTokLiveSharp.Client.HTTP
                 try
                 {
                     Response signingResponse = Serializer.Deserialize<Response>(await response.Content.ReadAsStreamAsync());
-                    return new TikTokWebSocketConnectionData(roomId, cookieHeaders.First(), signingResponse);
+                    return new TikTokWebSocketConnectionData(roomId, cookieHeaders, signingResponse);
                 }
                 catch (Exception ex)
                 {

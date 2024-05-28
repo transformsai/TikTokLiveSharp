@@ -74,11 +74,16 @@ namespace TikTokLiveSharp.Client.Socket
             clientWebSocket.Options.Proxy = webProxy;
             clientWebSocket.Options.AddSubProtocol("echo-protocol");
             clientWebSocket.Options.KeepAliveInterval = TimeSpan.Zero;
+            if (headers.ContainsKey("ttwid"))
+                cookieContainer["ttwid"] = headers["ttwid"];
+            Dictionary<string, string> combinedCookies = new Dictionary<string, string>(cookieContainer.Cookies);
+            foreach (KeyValuePair<string, string> overrideCookie in headers)
+            {
+                combinedCookies[overrideCookie.Key] = overrideCookie.Value;
+            }
             StringBuilder cookieHeader = new StringBuilder(cookieContainer.Count * 20);
-            foreach (string cookie in cookieContainer)
-                cookieHeader.Append(cookie);
-            foreach (string additionalHeader in headers.Values)
-                cookieHeader.Append(additionalHeader);
+            foreach (KeyValuePair<string, string> cookie in combinedCookies)
+                cookieHeader.Append($"{cookie.Key}={cookie.Value};");
             foreach (KeyValuePair<string, string> header in Constants.DEFAULT_SOCKET_HEADERS)
                 clientWebSocket.Options.SetRequestHeader(header.Key, header.Value);
             clientWebSocket.Options.SetRequestHeader("Cookie", cookieHeader.ToString());

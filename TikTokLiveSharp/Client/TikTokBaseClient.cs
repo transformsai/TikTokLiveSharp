@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -456,6 +457,8 @@ namespace TikTokLiveSharp.Client
                 if (ShouldLog(LogLevel.Verbose))
                     Debug.Log($"Fetching RoomID based on HostId {HostName}");
                 RoomID = await FetchRoomId();
+                if (ShouldLog(LogLevel.Verbose))
+                    Debug.Log($"Found RoomId {RoomID} for Host {HostName}");
             }
             token.ThrowIfCancellationRequested();
             if (!settings.SkipRoomInfo)
@@ -486,7 +489,7 @@ namespace TikTokLiveSharp.Client
             }
             token.ThrowIfCancellationRequested();
             if (ShouldLog(LogLevel.Verbose))
-                Debug.Log("Fetch ConnectionData");
+                Debug.Log("Signing Connection");
             TikTokWebSocketConnectionData connectionData = await httpClient.GetSignedWebsocketData(RoomID, settings.CustomSigningServerUrl, settings.SigningKey);
             token.ThrowIfCancellationRequested();
             if (ShouldLog(LogLevel.Information))
@@ -526,11 +529,7 @@ namespace TikTokLiveSharp.Client
                 string url = $"{response.PushServer}?{string.Join("&", clientParams.Select(x => $"{x.Key}={WebUtility.UrlEncode(x.Value.ToString())}"))}";
                 if (ShouldLog(LogLevel.Verbose))
                     Debug.Log($"Creating Socket with URL {url}");
-                Dictionary<string, string> customHeaders = new Dictionary<string, string>
-                {
-                    { "Cookie", connectionData.WebSocketCookies }
-                };
-                socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, settings.SocketBufferSize, customHeaders, token, settings.Proxy);
+                socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, settings.SocketBufferSize, connectionData.CookieHeaders, token, settings.Proxy);
                 connectedSocketUrl = url;
                 await socketClient.Connect(url);
                 if (ShouldLog(LogLevel.Information))
@@ -853,7 +852,14 @@ namespace TikTokLiveSharp.Client
                 // Reconnect with new SocketClient
                 Dictionary<string, string> customHeaders = new Dictionary<string, string>();
                 if (connectionData.HasValue)
-                    customHeaders.Add("Cookie", connectionData.Value.WebSocketCookies);
+                {
+                    StringBuilder cookieString = new StringBuilder();
+                    foreach (KeyValuePair<string, string> cookie in connectionData.Value.CookieHeaders)
+                    {
+                        cookieString.Append($"{cookie.Key}={cookie.Value};");
+                    }
+                    customHeaders.Add("Cookie", cookieString.ToString());
+                }
                 socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, settings.SocketBufferSize, customHeaders, token, settings.Proxy);
                 await socketClient.Connect(connectedSocketUrl);
             }
