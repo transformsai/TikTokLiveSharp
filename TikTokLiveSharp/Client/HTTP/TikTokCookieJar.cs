@@ -29,6 +29,11 @@ namespace TikTokLiveSharp.Client.HTTP
         /// <summary>
         /// Cookies in Jar
         /// </summary>
+        public IDictionary<string, string> Cookies => cookies;
+
+        /// <summary>
+        /// Cookies in Jar
+        /// </summary>
         private readonly IDictionary<string, string> cookies;
         #endregion
 

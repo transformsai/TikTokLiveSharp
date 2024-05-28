@@ -104,6 +104,25 @@ namespace TikTokLiveSharp.Client.Config
         public bool DownloadGiftInfo;
         #endregion
 
+        #region Signing
+        /// <summary>
+        /// API-Key for Signing Server
+        /// </summary>
+#if UNITY
+        [UnityEngine.Header("Signing-Server")]
+        [UnityEngine.Tooltip("API-Key for Signing Server")]
+#endif
+        public string SigningKey;
+
+        /// <summary>
+        /// Custom URL for Signing Server
+        /// </summary>
+#if UNITY
+        [UnityEngine.Tooltip("Custom URL for Signing Server")]
+#endif
+        public string CustomSigningServerUrl;
+        #endregion
+
         #region Debug
         /// <summary>
         /// Whether to print Logs to Console

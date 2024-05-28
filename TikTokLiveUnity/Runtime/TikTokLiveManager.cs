@@ -848,7 +848,7 @@ namespace TikTokLiveUnity
             try
             {
                 await client.Start(tokenSource.Token, onConnectException, settings.RetryOnConnectionFailure);
-                if (ShouldLog(LogLevel.Verbose))
+                if (ShouldLog(LogLevel.Verbose) && Connected)
                     Debug.Log("Connected");
             }
             catch (Exception e)
