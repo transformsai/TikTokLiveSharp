@@ -34,7 +34,7 @@ namespace TikTokLiveSharp.Client.Socket
             CookieHeaders = new Dictionary<string, string>(cookies.Count());
             foreach (string val in cookies)
             {
-                string[] cookieString = val.Split(';', System.StringSplitOptions.RemoveEmptyEntries);
+                string[] cookieString = val.Split(';');
                 foreach (string cookie in cookieString)
                 {
                     string[] parsed = cookie.Split('=');
