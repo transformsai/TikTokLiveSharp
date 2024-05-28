@@ -118,15 +118,20 @@ namespace TikTokLiveSharp.Client.HTTP
             return await get.ReadAsStringAsync();
         }
 
-        internal async Task<TikTokWebSocketConnectionData> GetSignedWebsocketData(string roomId)
+        internal async Task<TikTokWebSocketConnectionData> GetSignedWebsocketData(string roomId, string customServerUrl = null, string apiKey = null)
         {
-            ITikTokHttpRequest request = new TikTokHttpRequest(Constants.TIKTOK_SIGN_API, false, false)
-                .SetQueries(new Dictionary<string, object>()
-                {
-                    { "client", CLIENT_NAME },
-                    { "uuc", clientNum },
-                    { "room_id", roomId }
-                });
+            Dictionary<string, object> queries = new Dictionary<string, object>()
+            {
+                { "client", CLIENT_NAME },
+                { "uuc", clientNum },
+                { "room_id", roomId },
+            };
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                queries.Add("apiKey", apiKey);
+            }
+            ITikTokHttpRequest request = new TikTokHttpRequest(string.IsNullOrEmpty(customServerUrl) ? Constants.TIKTOK_SIGN_API : customServerUrl, false, false)
+                .SetQueries(queries);
             HttpResponseMessage response = await request.GetResponse();
             if (response.StatusCode == HttpStatusCode.NotFound)
                 throw new HttpRequestException("Request responded with 404 NOT_FOUND");
@@ -137,16 +142,24 @@ namespace TikTokLiveSharp.Client.HTTP
                     if (response.Headers.TryGetValues("RateLimit-Reset", out IEnumerable<string> rateHeaders))
                     {
                         TimeSpan span = TimeSpan.FromSeconds(long.Parse(rateHeaders.First()));
-                        throw new HttpRequestException($"[{(int)response.StatusCode}] Rate Limit Reached. Try again in {span:mm\\:ss}.");
+                        throw new HttpRequestException($"[{(int)response.StatusCode}] Signing Rate Limit Reached. Try again in {span:mm\\:ss}.");
                     }
                     else
                     {
-                        throw new HttpRequestException($"[{(int)response.StatusCode}] Rate Limit Reached.");
+                        throw new HttpRequestException($"[{(int)response.StatusCode}] Signing Rate Limit Reached.");
                     }
+                }
+                else if ((int)response.StatusCode == 502) // Bad Gateway
+                {
+                    throw new HttpRequestException($"[{(int)response.StatusCode}] Signing Server not reachable.");
+                }
+                else if ((int)response.StatusCode == 503) // Unavailable
+                {
+                    throw new HttpRequestException($"[{(int)response.StatusCode}] Signing Server unavailable.");
                 }
                 else
                 {
-                    throw new HttpRequestException($"Request was unsuccessful [{(int)response.StatusCode}].");
+                    throw new HttpRequestException($"Signing request was unsuccessful [{(int)response.StatusCode}].");
                 }
             }
             if (response.Headers.TryGetValues("x-set-tt-cookie", out IEnumerable<string> cookieHeaders))
@@ -154,7 +167,7 @@ namespace TikTokLiveSharp.Client.HTTP
                 try
                 {
                     Response signingResponse = Serializer.Deserialize<Response>(await response.Content.ReadAsStreamAsync());
-                    return new TikTokWebSocketConnectionData(roomId, cookieHeaders.First(), signingResponse);
+                    return new TikTokWebSocketConnectionData(roomId, cookieHeaders, signingResponse);
                 }
                 catch (Exception ex)
                 {
