@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using TikTokLiveSharp.Models.Protobuf.Messages;
 
 namespace TikTokLiveSharp.Client.Socket
@@ -12,25 +14,33 @@ namespace TikTokLiveSharp.Client.Socket
         /// </summary>
         public readonly string RoomId;
         /// <summary>
-        /// Required Cookies obtained from signing-server Headers
-        /// </summary>
-        public readonly string WebSocketCookies;
-        /// <summary>
         /// TikTokServer-Response obtained from signing-server
         /// </summary>
         public readonly Response InitialWebcastResponse;
+        /// <summary>
+        /// Headers required for Websocket-Connection
+        /// </summary>
+        public readonly Dictionary<string, string> CookieHeaders;
 
         /// <summary>
         /// Creates instance of TikTokWebSocketConnectionData
         /// </summary>
         /// <param name="roomId">RoomID for stream to connect to</param>
-        /// <param name="cookies">Required Cookies obtained from signing-server Headers</param>
         /// <param name="initialResponse">TikTokServer-Response obtained from signing-server</param>
-        public TikTokWebSocketConnectionData(string roomId, string cookies, Response initialResponse)
+        public TikTokWebSocketConnectionData(string roomId, IEnumerable<string> cookies, Response initialResponse)
         {
             RoomId = roomId;
-            WebSocketCookies = cookies;
             InitialWebcastResponse = initialResponse;
+            CookieHeaders = new Dictionary<string, string>(cookies.Count());
+            foreach (string val in cookies)
+            {
+                string[] cookieString = val.Split(';', System.StringSplitOptions.RemoveEmptyEntries);
+                foreach (string cookie in cookieString)
+                {
+                    string[] parsed = cookie.Split('=');
+                    CookieHeaders.Add(parsed[0], parsed[1]);
+                }
+            }
         }
     }
 }

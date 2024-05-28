@@ -297,7 +297,9 @@ namespace TikTokLiveSharp.Client
             bool logDebug = true,
             LogLevel logLevel = LogLevel.Error | LogLevel.Warning,
             bool printMessageData = false,
-            bool checkForUnparsedData = false) 
+            bool checkForUnparsedData = false,
+            string customSigningServer = null,
+            string signingServerApiKey = null) 
             : base(uniqueID,
                 timeout,
                 reconnectInterval,
@@ -314,7 +316,9 @@ namespace TikTokLiveSharp.Client
                 logDebug,
                 logLevel,
                 printMessageData,
-                checkForUnparsedData)
+                checkForUnparsedData,
+                customSigningServer,
+                signingServerApiKey)
         { }
         #endregion
 

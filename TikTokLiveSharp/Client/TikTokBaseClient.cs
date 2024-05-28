@@ -9,10 +9,10 @@ using System.Net;
 using System.Net.Http;
 using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using TikTokLiveSharp.Client.Config;
 using TikTokLiveSharp.Client.HTTP;
 using TikTokLiveSharp.Client.Socket;
@@ -197,7 +197,9 @@ namespace TikTokLiveSharp.Client
             bool logDebug = true, 
             LogLevel logLevel = LogLevel.Error | LogLevel.Warning,
             bool printMessageData = false,
-            bool checkForUnparsedData = false)
+            bool checkForUnparsedData = false,
+            string customSigningServer = null,
+            string signingServerApiKey = null)
             : this(uniqueId, roomId,
                   new ClientSettings
                   {
@@ -214,7 +216,9 @@ namespace TikTokLiveSharp.Client
                       PrintToConsole = logDebug,
                       LogLevel = logLevel,
                       PrintMessageData = printMessageData,
-                      CheckForUnparsedData = checkForUnparsedData
+                      CheckForUnparsedData = checkForUnparsedData,
+                      CustomSigningServerUrl = customSigningServer,
+                      SigningKey = signingServerApiKey
                   },
                   clientParams)
         { }
@@ -340,6 +344,23 @@ namespace TikTokLiveSharp.Client
         }
 
         /// <summary>
+        /// Asynchronously Creates Threads for & Runs Connection with TikTokServers
+        /// </summary>
+        /// <param name="cancellationToken">Token used to Cancel Client</param>
+        /// <param name="onConnectException">Callback for Errors during Exception</param>
+        /// <param name="retryConnection">Whether to Retry connections that might be recoverable</param>
+        public async Task RunAsync(CancellationToken? cancellationToken = null, Action<Exception> onConnectException = null, bool retryConnection = false)
+        {
+            token = cancellationToken ?? new CancellationToken();
+            token.ThrowIfCancellationRequested();
+            if (ShouldLog(LogLevel.Information))
+                Debug.Log("Starting Threads");
+            await Start(token, onConnectException, retryConnection);
+            await runningTask;
+            await pollingTask;
+        }
+        
+        /// <summary>
         /// Starts Connection with TikTokServers
         /// </summary>
         /// <param name="cancellationToken">Token used to Cancel Client</param>
@@ -373,6 +394,7 @@ namespace TikTokLiveSharp.Client
                 {
                     if (ShouldLog(LogLevel.Information))
                         Debug.Log("Retrying");
+                    Connecting = false;
                     await Task.Delay(TimeSpan.FromSeconds(settings.ReconnectInterval), cancellationToken.Value);
                     return await Start(cancellationToken, onConnectException, true);
                 }
@@ -435,6 +457,8 @@ namespace TikTokLiveSharp.Client
                 if (ShouldLog(LogLevel.Verbose))
                     Debug.Log($"Fetching RoomID based on HostId {HostName}");
                 RoomID = await FetchRoomId();
+                if (ShouldLog(LogLevel.Verbose))
+                    Debug.Log($"Found RoomId {RoomID} for Host {HostName}");
             }
             token.ThrowIfCancellationRequested();
             if (!settings.SkipRoomInfo)
@@ -465,8 +489,8 @@ namespace TikTokLiveSharp.Client
             }
             token.ThrowIfCancellationRequested();
             if (ShouldLog(LogLevel.Verbose))
-                Debug.Log("Fetch ConnectionData");
-            TikTokWebSocketConnectionData connectionData = await httpClient.GetSignedWebsocketData(RoomID);
+                Debug.Log("Signing Connection");
+            TikTokWebSocketConnectionData connectionData = await httpClient.GetSignedWebsocketData(RoomID, settings.CustomSigningServerUrl, settings.SigningKey);
             token.ThrowIfCancellationRequested();
             if (ShouldLog(LogLevel.Information))
                 Debug.Log("Creating WebSocketClient");
@@ -502,14 +526,10 @@ namespace TikTokLiveSharp.Client
                         Debug.Log($"Adding Custom Param {param.Key}-{param.Value}");
                     clientParams[param.Key] = param.Value;
                 }
-                string url = $"{response.PushServer}?{string.Join("&", clientParams.Select(x => $"{x.Key}={HttpUtility.UrlEncode(x.Value.ToString())}"))}";
+                string url = $"{response.PushServer}?{string.Join("&", clientParams.Select(x => $"{x.Key}={WebUtility.UrlEncode(x.Value.ToString())}"))}";
                 if (ShouldLog(LogLevel.Verbose))
                     Debug.Log($"Creating Socket with URL {url}");
-                Dictionary<string, string> customHeaders = new Dictionary<string, string>
-                {
-                    { "Cookie", connectionData.WebSocketCookies }
-                };
-                socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, settings.SocketBufferSize, customHeaders, token, settings.Proxy);
+                socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, settings.SocketBufferSize, connectionData.CookieHeaders, token, settings.Proxy);
                 connectedSocketUrl = url;
                 await socketClient.Connect(url);
                 if (ShouldLog(LogLevel.Information))
@@ -832,7 +852,14 @@ namespace TikTokLiveSharp.Client
                 // Reconnect with new SocketClient
                 Dictionary<string, string> customHeaders = new Dictionary<string, string>();
                 if (connectionData.HasValue)
-                    customHeaders.Add("Cookie", connectionData.Value.WebSocketCookies);
+                {
+                    StringBuilder cookieString = new StringBuilder();
+                    foreach (KeyValuePair<string, string> cookie in connectionData.Value.CookieHeaders)
+                    {
+                        cookieString.Append($"{cookie.Key}={cookie.Value};");
+                    }
+                    customHeaders.Add("Cookie", cookieString.ToString());
+                }
                 socketClient = new TikTokWebSocket(TikTokHttpRequest.CookieJar, settings.SocketBufferSize, customHeaders, token, settings.Proxy);
                 await socketClient.Connect(connectedSocketUrl);
             }
