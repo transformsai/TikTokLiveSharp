@@ -15,10 +15,6 @@
   "license": "MIT",
   "type": "library",
   "hideInEditor": false,
-  "dependencies": {
-    "com.unity.nuget.newtonsoft-json": "3.0.2",
-    "com.unity.textmeshpro": "3.0.0"
-  },
   "samples": [
     {
       "displayName": "TikTokLive Example",
